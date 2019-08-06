@@ -10,22 +10,24 @@ source /home/patrick/workspace/catkin_ws_ov/devel/setup.bash
 
 
 # config locations
-usefej=(
-    "false"
-    "true"
+modes=(
+    "mono"
+    "stereo"
 )
 
-# inertial frequency
-frequency=(
-    "100"
-    "200"
-    "400"
-    "800"
+# dataset locations
+bagnames=(
+    "V1_01_easy"
+    "V1_02_medium"
+    "V1_03_difficult"
+    "V2_01_easy"
+    "V2_02_medium"
+    "V2_03_difficult"
 )
-
 
 # location to save log files into
-save_path="/home/patrick/github/pubs_data/pgeneva/2019_openvins/sim_frequency/algorithms"
+save_path="/home/patrick/github/pubs_data/pgeneva/2019_openvins/exp_realworld/algorithms"
+bag_path="/home/patrick/datasets/eth"
 
 
 #=============================================================
@@ -33,39 +35,40 @@ save_path="/home/patrick/github/pubs_data/pgeneva/2019_openvins/sim_frequency/al
 #=============================================================
 
 
-# Loop through if use fej or not
-for h in "${!usefej[@]}"; do
-# Loop through all representations
-for i in "${!frequency[@]}"; do
+
+
+# Loop through all modes
+for h in "${!modes[@]}"; do
+# Loop through all datasets
+for i in "${!bagnames[@]}"; do
 
 # Monte Carlo runs for this dataset
-for j in {00..01}; do
+for j in {00..08}; do
 
 # start timing
 start_time="$(date -u +%s)"
+filename="$save_path/ov_${modes[h]}/${bagnames[i]}/${start_time}_estimate.txt"
 
-# filename change if we are using fej
-if [ "${usefej[h]}" == "true" ]
+# number of cameras
+if [ "${modes[h]}" == "mono" ]
 then
-    temp="_FEJ"
+    temp="1"
 else
-    temp=""
+    temp="2"
 fi
-filename="$save_path/${frequency[i]}$temp/udel_gore/estimate_$j.txt"
 
 # run our ROS launch file (note we send console output to terminator)
-roslaunch ov_msckf pgeneva_sim.launch seed:="$j" fej:="${usefej[h]}" feat_rep:="GLOBAL_3D" num_clones:="15" num_slam:="50" num_pts:="50" freq_imu:="${frequency[i]}"  dosave:="true" path_est:="$filename" &> /dev/null
+roslaunch ov_msckf pgeneva_ros_eth.launch max_cameras:="$temp" bag:="$bag_path/${bagnames[i]}.bag" dosave:="true" path_est:="$filename" &> /dev/null
 
 # print out the time elapsed
 end_time="$(date -u +%s)"
 elapsed="$(($end_time-$start_time))"
-echo "BASH: ${usefej[h]} - ${frequency[i]} - run $j took $elapsed seconds";
-
+echo "BASH: ${modes[h]} - ${bagnames[i]} - run $j took $elapsed seconds";
 
 done
-
 
 
 done
 done
+
 
