@@ -1,4 +1,4 @@
-#include "Trajectory.h"
+#include "ResultTrajectory.h"
 
 
 using namespace ov_eval;
@@ -6,7 +6,7 @@ using namespace ov_eval;
 
 
 
-Trajectory::Trajectory(std::string path_est, std::string path_gt, std::string alignment_method) {
+ResultTrajectory::ResultTrajectory(std::string path_est, std::string path_gt, std::string alignment_method) {
 
     // Load from file
     Loader::load_data(path_est, est_times, est_poses, est_covori, est_covpos);
@@ -57,7 +57,7 @@ Trajectory::Trajectory(std::string path_est, std::string path_gt, std::string al
 
 
 
-void Trajectory::calculate_ate(Statistics &error_ori, Statistics &error_pos) {
+void ResultTrajectory::calculate_ate(Statistics &error_ori, Statistics &error_pos) {
 
     // Clear any old data
     error_ori.clear();
@@ -90,7 +90,7 @@ void Trajectory::calculate_ate(Statistics &error_ori, Statistics &error_pos) {
 
 
 
-void Trajectory::calculate_rpe(const std::vector<double> &segment_lengths, std::map<double,std::pair<Statistics,Statistics>> &error_rpe) {
+void ResultTrajectory::calculate_rpe(const std::vector<double> &segment_lengths, std::map<double,std::pair<Statistics,Statistics>> &error_rpe) {
 
     // Distance at each point along the trajectory
     std::vector<double> accum_distances(gt_poses.size());
@@ -106,7 +106,7 @@ void Trajectory::calculate_rpe(const std::vector<double> &segment_lengths, std::
         Statistics error_ori, error_pos;
 
         // Get end of subtrajectories for each possible starting point
-        std::vector<size_t> comparisons = compute_comparison_indices_length(accum_distances, distance, 0.2*distance);
+        std::vector<size_t> comparisons = compute_comparison_indices_length(accum_distances, distance, 0.4*distance);
 
         // Loop through each relative comparison
         for (size_t id_start = 0; id_start < comparisons.size(); id_start++) {
@@ -179,7 +179,7 @@ void Trajectory::calculate_rpe(const std::vector<double> &segment_lengths, std::
 
 
 
-void Trajectory::calculate_nees(Statistics &nees_ori, Statistics &nees_pos) {
+void ResultTrajectory::calculate_nees(Statistics &nees_ori, Statistics &nees_pos) {
 
     // Check that we have our covariance matrices to normalize with
     if(est_times.size() != est_covori.size() || est_times.size() != est_covpos.size()
@@ -229,9 +229,9 @@ void Trajectory::calculate_nees(Statistics &nees_ori, Statistics &nees_pos) {
 
 }
 
-void Trajectory::calculate_error(Statistics &posx, Statistics &posy, Statistics &posz,
-                                 Statistics &orix, Statistics &oriy, Statistics &oriz,
-                                 Statistics &roll, Statistics &pitch, Statistics &yaw) {
+void ResultTrajectory::calculate_error(Statistics &posx, Statistics &posy, Statistics &posz,
+                                       Statistics &orix, Statistics &oriy, Statistics &oriz,
+                                       Statistics &roll, Statistics &pitch, Statistics &yaw) {
 
     // Clear any old data
     posx.clear();
@@ -342,7 +342,7 @@ void Trajectory::calculate_error(Statistics &posx, Statistics &posy, Statistics 
 
 
 
-void Trajectory::perform_association(double offset, double max_difference) {
+void ResultTrajectory::perform_association(double offset, double max_difference) {
 
     // Temp results which keeps only the matches
     std::vector<double> est_times_temp, gt_times_temp;

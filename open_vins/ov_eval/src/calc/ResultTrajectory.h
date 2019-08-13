@@ -11,7 +11,7 @@
 #include <Eigen/Eigen>
 #include <Eigen/StdVector>
 
-#include "AlignTrajectory.h"
+#include "alignment/AlignTrajectory.h"
 #include "utils/Statistics.h"
 #include "utils/Math.h"
 #include "utils/Loader.h"
@@ -34,7 +34,7 @@ namespace ov_eval {
      *
      * Please see the @ref evaluation page for details and Zhang and Scaramuzza [A Tutorial on Quantitative Trajectory Evaluation for Visual(-Inertial) Odometry](http://rpg.ifi.uzh.ch/docs/IROS18_Zhang.pdf) paper for implementation specific details.
      */
-    class Trajectory {
+    class ResultTrajectory {
 
     public:
 
@@ -45,7 +45,7 @@ namespace ov_eval {
          * @param path_gt Path to the groundtruth text file
          * @param alignment_method The alignment method to use [sim3, se3, posyaw, none]
          */
-        Trajectory(std::string path_est, std::string path_gt, std::string alignment_method);
+        ResultTrajectory(std::string path_est, std::string path_gt, std::string alignment_method);
 
 
         /**
