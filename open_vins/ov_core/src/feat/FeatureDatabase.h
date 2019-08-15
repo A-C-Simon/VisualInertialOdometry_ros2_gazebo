@@ -5,7 +5,7 @@
 #include <vector>
 #include <Eigen/Eigen>
 
-#include "feat/Feature.h"
+#include "Feature.h"
 
 
 namespace ov_core {
@@ -51,7 +51,7 @@ namespace ov_core {
          * @param u raw u coordinate
          * @param v raw v coordinate
          * @param u_n undistorted/normalized u coordinate
-         * @param v_n undistorted/normalized v coordinate\
+         * @param v_n undistorted/normalized v coordinate
          *
          * This will update a given feature based on the passed ID it has.
          * It will create a new feature, if it is an ID that we have not seen before.
@@ -199,52 +199,6 @@ namespace ov_core {
 
         }
 
-
-        /**
-         * @brief Returns measurements that occurred at a given timestep
-         * @todo Need to generalize this function so it works for mono+ncam
-         *
-         * Given a timestamp, this will return all the raw and normalized feature measurements for this frame.
-         * This is used to get track information to our structure from motion initializers!
-         */
-        void get_frame_measurements(double timestamp, size_t cam_id_left, size_t cam_id_right,
-                                    std::vector<size_t> &ids,
-                                    std::vector<Eigen::VectorXf> &uvs0_n, std::vector<Eigen::VectorXf> &uvs1_n) {
-
-            // Now lets loop through all features, and just make sure they are stereo tracks
-            auto it = features_idlookup.begin();
-            while (it != features_idlookup.end()) {
-                // Our final ids
-                bool foundl = false;
-                bool foundr = false;
-                Eigen::Vector2f uvl, uvr;
-                // Loop through all timestamps, and see if it has it
-                for (size_t i = 0; i < (*it).second->timestamps[cam_id_left].size(); i++) {
-                    if ((*it).second->timestamps[cam_id_left].at(i) == timestamp) {
-                        uvl = (*it).second->uvs_norm[cam_id_left].at(i);
-                        foundl = true;
-                        break;
-                    }
-                }
-                for (size_t i = 0; i < (*it).second->timestamps[cam_id_right].size(); i++) {
-                    if ((*it).second->timestamps[cam_id_right].at(i) == timestamp) {
-                        uvr = (*it).second->uvs_norm[cam_id_right].at(i);
-                        foundr = true;
-                        break;
-                    }
-                }
-                // If found in both left and right, then lets add it!
-                if (foundl && foundr) {
-                    ids.push_back((*it).second->featid);
-                    uvs0_n.push_back(uvl);
-                    uvs1_n.push_back(uvr);
-                }
-                it++;
-            }
-
-        }
-
-
         /**
          * @brief This function will delete all features that have been used up.
          *
@@ -284,7 +238,6 @@ namespace ov_core {
         }
 
     protected:
-
 
         /// Our lookup array that allow use to query based on ID
         std::unordered_map<size_t, Feature *> features_idlookup;
