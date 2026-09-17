@@ -1,0 +1,107 @@
+ORB-SLAM3 ROS 2 AND GAZEBO WORK REPORT
+Date: 17 September 2026
+
+1. Purpose
+
+The goal was to add ORB-SLAM3 to the ROS 2 Humble workspace and connect it
+to a simulated ground rover. The finished setup provides a Gazebo rover,
+stereo cameras, an IMU, automatic or keyboard driving, ORB-SLAM3 tracking,
+and RViz2 visualization.
+
+2. Software added
+
+The ORB_SLAM3_ROS2 wrapper was brought into the workspace and connected to
+the ORB-SLAM3 library. A workspace-local Pangolin build was used because a
+different Pangolin installation in /usr/local depended on an unavailable
+OpenEXR version.
+
+A new ROS 2 package named orbslam3_rover_sim was created. It contains the
+rover model, test world, stereo and IMU calibration, launch file, automatic
+drive controller, keyboard controller, frame alignment node, and RViz2
+configuration.
+
+3. Wrapper review and corrections
+
+The original wrapper contained machine-specific Foxy and Python paths. It
+also assumed a fixed ORB-SLAM3 location. These assumptions were replaced
+with CMake options and workspace-relative discovery.
+
+Node ownership and shutdown behavior were corrected. The image and IMU
+synchronization thread now stops and joins cleanly. Buffer access is
+protected, command-line arguments are checked before use, image conversion
+errors are handled, and ROS message timestamps use stable numeric
+conversion.
+
+The wrapper now publishes ROS pose and path messages. ORB-SLAM optical
+coordinates are converted to ROS REP-103 coordinates. Inertial startup
+poses are excluded because ORB-SLAM3 changes scale and gravity alignment
+during initialization. This prevents false vertical path segments.
+
+4. Rover simulation
+
+The simulated rover uses differential drive, two synchronized grayscale
+cameras, and an IMU. The calibration file matches the simulated camera
+intrinsics, stereo baseline, image size, frame rate, and camera-to-IMU
+transform.
+
+The default automatic motion is a circle. Continuous translation and
+rotation provide better visual and inertial excitation than alternating
+straight motion and turns in place. A startup delay lets the rover settle
+onto the ground before wheel commands begin.
+
+5. Visualization
+
+RViz2 shows the rover model, ORB-SLAM3 path, sparse map points, left camera,
+right camera, and a tracking image with current ORB features marked in
+green.
+
+The sparse map is published as sensor_msgs/PointCloud2 on
+/orbslam3/map_points. A camera-height offset places the estimated floor on
+the RViz grid. The rover path is planar because this platform is constrained
+to the ground.
+
+The orb_map to odom transform is calculated from timestamp-matched rover and
+SLAM poses after inertial initialization. This keeps the green SLAM path and
+the displayed rover motion in the same visual frame.
+
+The wheel odometry display was removed from RViz2. It was useful during
+comparison and debugging, but it is not an ORB-SLAM3 input. Its covariance
+graphics added clutter without helping normal operation.
+
+6. Launcher
+
+The executable script orbslam3_gazebo.sh provides one entry point for build
+and launch operations. It accepts true or false options for Gazebo GUI,
+RViz2, keyboard teleoperation, automatic driving, and the native Pangolin
+viewer. It also supports circle or square automatic motion, a build option,
+and a dry-run option.
+
+The script safely sources ROS setup files when shell nounset checking is
+enabled. It selects the workspace-local ORB-SLAM3 and Pangolin libraries,
+uses separate ROS and Gazebo log directories, and starts a virtual display
+for headless operation.
+
+Example:
+
+  cd ~/ros2_ws/src
+  ./orbslam3_gazebo.sh --gui false --rviz true --teleop false
+
+7. Tests performed
+
+The two ROS packages built successfully with colcon. Headless integration
+runs confirmed rover spawning, stereo images, IMU data, vocabulary loading,
+map creation, visual-inertial bundle adjustment, frame alignment, loop
+detection, and clean shutdown.
+
+A live sparse map message contained 617 points during one check. The left,
+right, and feature-tracking image topics each had an active publisher. The
+tracking image used BGR8 encoding.
+
+8. Remaining considerations
+
+ORB-SLAM3 needs motion before its inertial estimate becomes valid, so the
+green path and aligned rover view appear after initialization rather than
+immediately at startup. The sparse point cloud represents tracked visual
+features, not a dense depth reconstruction. Tracking quality will still
+depend on visible texture, lighting, correct calibration, and sufficiently
+varied rover motion.
