@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!--
-  ov_rover: compact 4-wheel diff-drive rover for OpenVINS testing.
+  orb_rover: compact 4-wheel differential-drive rover for stereo ORB-SLAM3.
   4 driven wheels (libgazebo_ros_diff_drive, num_wheel_pairs=2),
-  stereo cameras + IMU. Built URDF-first like the proven reference rig:
-  generate the spawned SDF with: gz sdf -p urdf/rover.urdf > ../models/ov_rover/model.sdf
+  stereo cameras only (no IMU). Built URDF-first like the proven reference rig:
+  generate the spawned SDF with: gz sdf -p urdf/rover.urdf > ../models/orb_rover/model.sdf
   (robot_state_publisher keeps using this URDF for TF.)
 -->
-<robot name="ov_rover">
+<robot name="orb_rover">
   <material name="grey"><color rgba="0.4 0.4 0.4 1.0"/></material>
   <material name="black"><color rgba="0.1 0.1 0.1 1.0"/></material>
   <material name="blue"><color rgba="0.2 0.2 0.8 1.0"/></material>
@@ -121,13 +121,6 @@
     <origin xyz="0.12 -0.22 -0.08" rpy="0 0 0"/><axis xyz="0 1 0"/>
   </joint>
 
-  <!-- IMU (no geometry, sensor only) -->
-  <link name="imu_link"/>
-  <joint name="imu_joint" type="fixed">
-    <parent link="base_link"/><child link="imu_link"/>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
-  </joint>
-
   <!-- stereo cameras: baseline 0.11 m, forward looking -->
   <link name="cam0_link">
     <visual>
@@ -193,31 +186,6 @@
       <joint_name>wheel_front_right_joint</joint_name>
       <joint_name>wheel_rear_right_joint</joint_name>
     </plugin>
-  </gazebo>
-
-  <gazebo reference="imu_link">
-    <sensor name="imu_sensor" type="imu">
-      <always_on>true</always_on>
-      <update_rate>200</update_rate>
-      <imu>
-        <angular_velocity>
-          <x><noise type="gaussian"><mean>0.0</mean><stddev>1.7e-04</stddev></noise></x>
-          <y><noise type="gaussian"><mean>0.0</mean><stddev>1.7e-04</stddev></noise></y>
-          <z><noise type="gaussian"><mean>0.0</mean><stddev>1.7e-04</stddev></noise></z>
-        </angular_velocity>
-        <linear_acceleration>
-          <x><noise type="gaussian"><mean>0.0</mean><stddev>2.0e-03</stddev></noise></x>
-          <y><noise type="gaussian"><mean>0.0</mean><stddev>2.0e-03</stddev></noise></y>
-          <z><noise type="gaussian"><mean>0.0</mean><stddev>2.0e-03</stddev></noise></z>
-        </linear_acceleration>
-      </imu>
-      <plugin name="imu_plugin" filename="libgazebo_ros_imu_sensor.so">
-        <ros>
-          <remapping>~/out:=/imu0</remapping>
-        </ros>
-        <frame_name>imu_link</frame_name>
-      </plugin>
-    </sensor>
   </gazebo>
 
   <gazebo reference="cam0_link">

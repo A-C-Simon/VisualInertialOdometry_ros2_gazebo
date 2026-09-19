@@ -1,5 +1,5 @@
 <sdf version='1.7'>
-  <model name='ov_rover'>
+  <model name='orb_rover'>
     <link name='base_footprint'>
       <inertial>
         <pose>0 0 0.16 0 -0 0</pose>
@@ -110,59 +110,6 @@
           <frame_name>cam1_link</frame_name>
         </plugin>
         <pose>0.22 -0.055 0.28 0 -0 0</pose>
-      </sensor>
-      <sensor name='imu_sensor' type='imu'>
-        <always_on>1</always_on>
-        <update_rate>200</update_rate>
-        <imu>
-          <angular_velocity>
-            <x>
-              <noise type='gaussian'>
-                <mean>0</mean>
-                <stddev>0.00017</stddev>
-              </noise>
-            </x>
-            <y>
-              <noise type='gaussian'>
-                <mean>0</mean>
-                <stddev>0.00017</stddev>
-              </noise>
-            </y>
-            <z>
-              <noise type='gaussian'>
-                <mean>0</mean>
-                <stddev>0.00017</stddev>
-              </noise>
-            </z>
-          </angular_velocity>
-          <linear_acceleration>
-            <x>
-              <noise type='gaussian'>
-                <mean>0</mean>
-                <stddev>0.002</stddev>
-              </noise>
-            </x>
-            <y>
-              <noise type='gaussian'>
-                <mean>0</mean>
-                <stddev>0.002</stddev>
-              </noise>
-            </y>
-            <z>
-              <noise type='gaussian'>
-                <mean>0</mean>
-                <stddev>0.002</stddev>
-              </noise>
-            </z>
-          </linear_acceleration>
-        </imu>
-        <plugin name='imu_plugin' filename='libgazebo_ros_imu_sensor.so'>
-          <ros>
-            <remapping>~/out:=/imu0</remapping>
-          </ros>
-          <frame_name>imu_link</frame_name>
-        </plugin>
-        <pose>0 0 0.16 0 -0 0</pose>
       </sensor>
     </link>
     <joint name='wheel_front_left_joint' type='revolute'>
