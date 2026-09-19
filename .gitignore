@@ -1,0 +1,11 @@
+# ROS 2 and Python generated files
+build/
+install/
+log/
+__pycache__/
+*.py[cod]
+
+# Runtime outputs
+*_trajectory.txt
+*_keyframes.txt
+*.bag
