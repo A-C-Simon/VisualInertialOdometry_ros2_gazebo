@@ -3,9 +3,10 @@
 Exclusive ownership: only ONE node may publish /cmd_vel (a second writer,
 even an idle keyboard node spamming zeros, wins intermittently and the
 rover stutters or freezes). Run either auto_loop OR key_teleop, never both
-(orbslam3_gazebo.sh enforces this with exclusive --auto / --teleop modes).
+(gazebo_test.sh enforces this with exclusive --auto / --teleop modes).
 """
 import rclpy
+from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
 
@@ -15,9 +16,9 @@ class AutoLoop(Node):
         super().__init__('auto_loop')
         self.declare_parameter('enabled', True)
         self.declare_parameter('mode', 'circle')
-        self.declare_parameter('linear', 0.05)
+        self.declare_parameter('linear', 0.35)
         self.declare_parameter('angular', 0.6)
-        self.declare_parameter('circle_angular', 0.15)
+        self.declare_parameter('circle_angular', 0.3)
         self.declare_parameter('start_delay', 15.0)
         self.declare_parameter('forward_time', 5.0)
         self.declare_parameter('turn_time', 2.6)
@@ -55,15 +56,14 @@ class AutoLoop(Node):
         if not enabled:
             return
         # Circle mode (default): constant gentle turn while translating.
-        # Stereo SLAM needs translation for parallax and benefits from
-        # simultaneous gentle rotation, so a circle gives both continuously.
-        # Four-wheel skid-steer slips, so its circle is wider and drifts more
-        # than ideal differential-drive kinematics predict. Commands of
-        # 0.05 m/s and 0.15 rad/s keep the measured radius near 0.4 m. The old
-        # 0.18/0.15 path eventually reached pillar3 at y=4.9, blocking the
-        # right camera and destroying tracking.
-        # This slower, tighter path also keeps inter-frame motion manageable
-        # while Gazebo, RViz and the Pangolin viewer share the CPU.
+        # This is what VIO needs: the dynamic initializer requires some
+        # rotation to succeed, but stop-turns in place give rotation with
+        # zero translation (no parallax), so init kept locking onto turn
+        # windows with garbage velocity. A circle gives both at all times.
+        # Radius 1.17 m (0.35 / 0.3). Proven to lap cleanly with margin:
+        # even ballooned ~30 percent wide it stays clear of every pillar.
+        # Wider circles reach pillar3. Translation-vs-rotation flow (R/Z)
+        # is handled by keeping pillars CLOSE to this path instead.
         # Start delay: hold zero velocity for the first seconds so the
         # freshly spawned model drops, settles and makes clean contact
         # BEFORE any wheel is driven. Driving through the spawn drop
@@ -111,11 +111,9 @@ def main():
     node = AutoLoop()
     try:
         rclpy.spin(node)
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, ExternalShutdownException):
         pass
     finally:
-        if rclpy.ok():
-            node.pub.publish(Twist())
         node.destroy_node()
         if rclpy.ok():
             rclpy.shutdown()

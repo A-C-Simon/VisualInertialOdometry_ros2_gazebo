@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!-- Small 20x20m textured room. Light on CPU: primitives only, 1 sun, no shadows.
-     Walls/boxes use different Gazebo materials so visual SLAM has features to track.
-     Blank walls would kill camera-only ORB-SLAM3 tracking. -->
+     Walls/boxes use different Gazebo materials so VIO has features to track.
+     Blank walls would kill OpenVINS. -->
 <sdf version="1.6">
   <world name="small_room">
     <physics name="default" type="ode">
@@ -108,28 +108,6 @@
         <visual name="v"><geometry><cylinder><radius>0.4</radius><length>1.0</length></cylinder></geometry>
           <material><script><name>Gazebo/WoodPallet</name><uri>file://media/materials/scripts/gazebo.material</uri></script></material></visual></link></model>
 
-    <!-- Close, asymmetric landmarks for the camera-only inner loop. All are
-         more than 1 m clear of the rover path, but remain inside the 4.4 m
-         close-depth range of the stereo calibration. Their distinct shape,
-         orientation and material prevent the repetitive floor/wall textures
-         from becoming the only features visible at some headings. -->
-    <model name="landmark_east"><static>true</static><pose>2.2 0 0.65 0 0 0.35</pose>
-      <link name="l"><collision name="c"><geometry><box><size>0.45 0.8 1.3</size></box></geometry></collision>
-        <visual name="v"><geometry><box><size>0.45 0.8 1.3</size></box></geometry>
-          <material><script><name>Gazebo/WoodPallet</name><uri>file://media/materials/scripts/gazebo.material</uri></script></material></visual></link></model>
-    <model name="landmark_north"><static>true</static><pose>0 2.3 0.5 0 0 -0.2</pose>
-      <link name="l"><collision name="c"><geometry><box><size>0.9 0.4 1.0</size></box></geometry></collision>
-        <visual name="v"><geometry><box><size>0.9 0.4 1.0</size></box></geometry>
-          <material><script><name>Gazebo/Steps</name><uri>file://media/materials/scripts/gazebo.material</uri></script></material></visual></link></model>
-    <model name="landmark_west"><static>true</static><pose>-2.1 0 0.75 0 0 -0.45</pose>
-      <link name="l"><collision name="c"><geometry><box><size>0.55 0.55 1.5</size></box></geometry></collision>
-        <visual name="v"><geometry><box><size>0.55 0.55 1.5</size></box></geometry>
-          <material><script><name>Gazebo/Bricks</name><uri>file://media/materials/scripts/gazebo.material</uri></script></material></visual></link></model>
-    <model name="landmark_south"><static>true</static><pose>0 -2.2 0.4 0 0 0.6</pose>
-      <link name="l"><collision name="c"><geometry><box><size>0.7 0.45 0.8</size></box></geometry></collision>
-        <visual name="v"><geometry><box><size>0.7 0.45 0.8</size></box></geometry>
-          <material><script><name>Gazebo/CeilingTiled</name><uri>file://media/materials/scripts/gazebo.material</uri></script></material></visual></link></model>
-
     <!-- Tall textured pillars for mid-range parallax corners. (Close
          ones were tried and the rover clipped them; these stand well
          clear of the default circle while still subtending good
@@ -137,33 +115,25 @@
     <model name="pillar1"><static>true</static><pose>3.4 1.6 0.6 0 0 0.2</pose>
       <link name="l"><collision name="c"><geometry><box><size>0.8 0.8 1.2</size></box></geometry></collision>
         <visual name="v"><geometry><box><size>0.8 0.8 1.2</size></box></geometry>
-          <material><script><name>Gazebo/Bricks</name><uri>file://media/materials/scripts/gazebo.material</uri></script></material></visual></link></model>
+          <material><script><name>Gazebo/Steps</name><uri>file://media/materials/scripts/gazebo.material</uri></script></material></visual></link></model>
     <model name="pillar2"><static>true</static><pose>-3.3 1.6 0.6 0 0 -0.15</pose>
       <link name="l"><collision name="c"><geometry><box><size>0.8 0.8 1.2</size></box></geometry></collision>
         <visual name="v"><geometry><box><size>0.8 0.8 1.2</size></box></geometry>
-          <material><script><name>Gazebo/Wood</name><uri>file://media/materials/scripts/gazebo.material</uri></script></material></visual></link></model>
+          <material><script><name>Gazebo/CeilingTiled</name><uri>file://media/materials/scripts/gazebo.material</uri></script></material></visual></link></model>
     <model name="pillar3"><static>true</static><pose>0 4.9 0.6 0 0 0.45</pose>
       <link name="l"><collision name="c"><geometry><box><size>0.8 0.8 1.2</size></box></geometry></collision>
         <visual name="v"><geometry><box><size>0.8 0.8 1.2</size></box></geometry>
-          <material><script><name>Gazebo/Bricks</name><uri>file://media/materials/scripts/gazebo.material</uri></script></material></visual></link></model>
+          <material><script><name>Gazebo/Road</name><uri>file://media/materials/scripts/gazebo.material</uri></script></material></visual></link></model>
 
-    <!-- high-contrast poster boards on walls for visual SLAM -->
+    <!-- high-contrast poster boards on walls (VIO needs these) -->
     <model name="poster1"><static>true</static><pose>0 9.88 1.6 0 0 0</pose>
       <link name="l"><visual name="v"><geometry><box><size>2.0 0.02 1.2</size></box></geometry>
-        <material><script><name>Gazebo/Bricks</name><uri>file://media/materials/scripts/gazebo.material</uri></script></material></visual></link></model>
+        <material><script><name>Gazebo/Steps</name><uri>file://media/materials/scripts/gazebo.material</uri></script></material></visual></link></model>
     <model name="poster2"><static>true</static><pose>9.88 -2 1.6 0 0 1.5708</pose>
       <link name="l"><visual name="v"><geometry><box><size>2.0 0.02 1.2</size></box></geometry>
-        <material><script><name>Gazebo/WoodPallet</name><uri>file://media/materials/scripts/gazebo.material</uri></script></material></visual></link></model>
+        <material><script><name>Gazebo/Road</name><uri>file://media/materials/scripts/gazebo.material</uri></script></material></visual></link></model>
     <model name="poster3"><static>true</static><pose>-5 -9.88 1.6 0 0 0</pose>
       <link name="l"><visual name="v"><geometry><box><size>1.6 0.02 1.0</size></box></geometry>
         <material><script><name>Gazebo/Residential</name><uri>file://media/materials/scripts/gazebo.material</uri></script></material></visual></link></model>
-
-    <!-- Entity-state services for ground truth evaluation
-         (/get_entity_state for orb_rover::base_footprint; the base_link center
-         sits 0.16 m above it). Wheel odometry slips and visual SLAM drifts; poll this during
-         a run and align offline (Umeyama) for ATE. A model-level p3d
-         plugin was tried first but Gazebo never instantiates it. -->
-    <plugin name="gazebo_ros_state" filename="libgazebo_ros_state.so">
-    </plugin>
   </world>
 </sdf>

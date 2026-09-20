@@ -82,6 +82,15 @@ def generate_launch_description():
                    '--frame-id', 'map', '--child-frame-id', 'odom'],
         condition=IfCondition(LaunchConfiguration('orb_slam')))
 
+    # Stereo-only SLAM has metric scale but no gravity reference. Keep the raw
+    # ORB pose/path available, and publish a display path projected into odom
+    # with roll, pitch, and height removed so RViz follows the ground rover.
+    ground_path = Node(
+        package='orbslam3_rover_sim', executable='ground_path.py',
+        parameters=[{'use_sim_time': True}, {'ground_z': 0.0}],
+        condition=IfCondition(LaunchConfiguration('orb_slam')),
+        output='screen')
+
     return LaunchDescription([
         DeclareLaunchArgument('auto', default_value='true', description='drive automatically'),
         DeclareLaunchArgument('mode', default_value='circle', description='auto drive mode: circle or square'),
@@ -93,7 +102,7 @@ def generate_launch_description():
         DeclareLaunchArgument('orb_settings_path', default_value=default_orb_settings),
         DeclareLaunchArgument('trajectory_path', default_value='/tmp/orbslam3_gazebo_trajectory.txt'),
         DeclareLaunchArgument('keyframe_trajectory_path', default_value='/tmp/orbslam3_gazebo_keyframes.txt'),
-        gazebo, spawn, rsp, auto, orb_slam, map_to_odom,
+        gazebo, spawn, rsp, auto, orb_slam, map_to_odom, ground_path,
         # manual drive: ros2 run orbslam3_rover_sim key_teleop.py
         Node(package='rviz2', executable='rviz2',
              arguments=['-d', os.path.join(pkg, 'rviz', 'rover.rviz')],
