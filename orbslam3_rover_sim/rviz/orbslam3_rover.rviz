@@ -21,7 +21,7 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /orbslam3/path
+        Value: /orbslam3/ground_path
     - Class: rviz_default_plugins/PointCloud2
       Enabled: true
       Name: ORB-SLAM3 sparse map

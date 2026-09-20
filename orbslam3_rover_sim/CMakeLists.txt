@@ -8,7 +8,7 @@ find_package(rclpy REQUIRED)
 install(DIRECTORY launch worlds models urdf rviz
   DESTINATION share/${PROJECT_NAME})
 
-install(PROGRAMS scripts/auto_loop.py scripts/key_teleop.py
+install(PROGRAMS scripts/auto_loop.py scripts/key_teleop.py scripts/ground_path.py
   DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
