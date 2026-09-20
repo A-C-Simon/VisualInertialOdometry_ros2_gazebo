@@ -1,207 +1,182 @@
 #!/usr/bin/env bash
-# Run the ORB-SLAM3 Gazebo rover.
-#
-# Examples:
-#   ./orbslam3_gazebo.sh
-#   ./orbslam3_gazebo.sh --gui false --rviz false
-#   ./orbslam3_gazebo.sh --teleop true --gui false
-#   ./orbslam3_gazebo.sh --no-gui --no-rviz --auto true --mode circle
-#   ./orbslam3_gazebo.sh gui:=false rviz:=false teleop:=true
 set -Eeuo pipefail
 
-GUI=true
-RVIZ=true
-TELEOP=false
-AUTO=true
-MODE=circle
-ORB_VIEWER=false
-BUILD=false
-DRY_RUN=false
+workspace_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+orbslam3_root="${ORB_SLAM3_ROOT:-/home/ac/ORB_SLAM3}"
+mode="auto"
+mode_was_set=false
+build_requested=false
+gui=true
+rviz=true
+orb_viewer=true
+dry_run=false
 
 usage() {
-  sed -n '2,9p' "${BASH_SOURCE[0]}" | sed 's/^# *//'
   cat <<'EOF'
+Usage: ./orbslam3_gazebo.sh [--auto | --teleop] [options]
 
-Options (booleans accept true/false, 1/0, yes/no, or on/off):
-  --gui BOOL          Gazebo graphical client (default: true)
-  --rviz BOOL         RViz2 visualization (default: true)
-  --teleop BOOL       Keyboard control; automatically disables auto drive
-  --auto BOOL         Automatic rover drive (default: true)
-  --mode MODE         Automatic path: circle or square (default: circle)
-  --orb-viewer BOOL   Native Pangolin viewer (default: false)
-  --build             Build the two ROS packages before launching
-  --dry-run           Print the resolved commands without running them
-  -h, --help          Show this help
+Drive mode (mutually exclusive):
+  --auto            Drive a camera-friendly circle (default)
+  --teleop          Drive with arrow keys in this terminal
 
-Short boolean aliases are also accepted: --no-gui, --headless, --no-rviz,
---teleop, --no-teleop, --auto, --no-auto, --orb-viewer, --no-orb-viewer.
+Options:
+  --build           Rebuild both local ROS 2 packages before launching
+  --headless        Do not open the Gazebo GUI
+  --no-rviz         Do not open RViz2
+  --no-orb-viewer   Do not open the ORB-SLAM3 Pangolin viewer
+  --dry-run         Print the launch commands without running them
+  -h, --help        Show this help
 EOF
 }
 
-bool_value() {
-  case "${1,,}" in
-    true|1|yes|on) printf 'true' ;;
-    false|0|no|off) printf 'false' ;;
-    *) echo "Invalid boolean value: $1" >&2; exit 2 ;;
-  esac
+select_mode() {
+  local requested="$1"
+  if [[ "$mode_was_set" == true && "$mode" != "$requested" ]]; then
+    echo "Error: --auto and --teleop cannot be used together." >&2
+    exit 2
+  fi
+  mode="$requested"
+  mode_was_set=true
 }
 
 while (($#)); do
   case "$1" in
-    --gui) GUI=$(bool_value "${2:?--gui requires true or false}"); shift 2 ;;
-    --gui=*) GUI=$(bool_value "${1#*=}"); shift ;;
-    gui:=*) GUI=$(bool_value "${1#*:=}"); shift ;;
-    --no-gui|--headless) GUI=false; shift ;;
-    --rviz|--rviz2)
-      if (($# > 1)) && [[ "$2" != --* ]]; then RVIZ=$(bool_value "$2"); shift 2
-      else RVIZ=true; shift; fi ;;
-    --rviz=*|--rviz2=*) RVIZ=$(bool_value "${1#*=}"); shift ;;
-    rviz:=*) RVIZ=$(bool_value "${1#*:=}"); shift ;;
-    --no-rviz|--no-rviz2) RVIZ=false; shift ;;
-    --teleop)
-      if (($# > 1)) && [[ "$2" != --* ]]; then TELEOP=$(bool_value "$2"); shift 2
-      else TELEOP=true; shift; fi ;;
-    --teleop=*) TELEOP=$(bool_value "${1#*=}"); shift ;;
-    teleop:=*) TELEOP=$(bool_value "${1#*:=}"); shift ;;
-    --no-teleop) TELEOP=false; shift ;;
-    --auto)
-      if (($# > 1)) && [[ "$2" != --* ]]; then AUTO=$(bool_value "$2"); shift 2
-      else AUTO=true; shift; fi ;;
-    --auto=*) AUTO=$(bool_value "${1#*=}"); shift ;;
-    auto:=*) AUTO=$(bool_value "${1#*:=}"); shift ;;
-    --no-auto) AUTO=false; shift ;;
-    --mode) MODE="${2:?--mode requires circle or square}"; shift 2 ;;
-    --mode=*) MODE="${1#*=}"; shift ;;
-    mode:=*) MODE="${1#*:=}"; shift ;;
-    --circle) MODE=circle; shift ;;
-    --square) MODE=square; shift ;;
-    --orb-viewer)
-      if (($# > 1)) && [[ "$2" != --* ]]; then ORB_VIEWER=$(bool_value "$2"); shift 2
-      else ORB_VIEWER=true; shift; fi ;;
-    --orb-viewer=*) ORB_VIEWER=$(bool_value "${1#*=}"); shift ;;
-    orb_viewer:=*) ORB_VIEWER=$(bool_value "${1#*:=}"); shift ;;
-    --no-orb-viewer) ORB_VIEWER=false; shift ;;
-    --build) BUILD=true; shift ;;
-    --dry-run) DRY_RUN=true; shift ;;
+    --auto) select_mode auto ;;
+    --teleop) select_mode teleop ;;
+    --build) build_requested=true ;;
+    --headless) gui=false ;;
+    --no-rviz) rviz=false ;;
+    --no-orb-viewer) orb_viewer=false ;;
+    --dry-run) dry_run=true ;;
     -h|--help) usage; exit 0 ;;
-    *) echo "Unknown argument: $1" >&2; echo "Run with --help for usage." >&2; exit 2 ;;
+    *) echo "Error: unknown argument: $1" >&2; usage >&2; exit 2 ;;
   esac
+  shift
 done
 
-case "$MODE" in
-  circle|square) ;;
-  *) echo "Invalid mode '$MODE'; expected circle or square." >&2; exit 2 ;;
-esac
+launch_args=(
+  "auto:=$([[ "$mode" == auto ]] && echo true || echo false)"
+  "gui:=$gui"
+  "rviz:=$rviz"
+  "orb_viewer:=$orb_viewer"
+  "vocabulary_path:=$orbslam3_root/Vocabulary/ORBvoc.txt"
+  "trajectory_path:=$workspace_dir/gazebo_trajectory.txt"
+  "keyframe_trajectory_path:=$workspace_dir/gazebo_keyframes.txt"
+)
 
-# Only one process may own /cmd_vel.
-if [[ "$TELEOP" == true ]]; then
-  AUTO=false
-fi
+print_command() {
+  printf '%q ' "$@"
+  printf '\n'
+}
 
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-WS=$(cd -- "$SCRIPT_DIR/.." && pwd)
-ROS_SETUP=/opt/ros/humble/setup.bash
-PANGOLIN_DIR="$WS/src/Pangolin/install/lib/cmake/Pangolin"
-ORB_ROOT="$WS/src/ORB_SLAM3"
-cd "$WS"
-
-[[ -f "$ROS_SETUP" ]] || { echo "Missing ROS setup: $ROS_SETUP" >&2; exit 1; }
-# shellcheck disable=SC1091
-set +u
-source "$ROS_SETUP"
-set -u
-
-if [[ "$BUILD" == true ]]; then
-  [[ -f "$PANGOLIN_DIR/PangolinConfig.cmake" ]] || {
-    echo "Pangolin is not built. Follow $WS/src/ORB_SLAM3_ROS2/README.md first." >&2
-    exit 1
-  }
-  [[ -f "$ORB_ROOT/lib/libORB_SLAM3.so" ]] || {
-    echo "ORB-SLAM3 core is not built. Follow $WS/src/ORB_SLAM3_ROS2/README.md first." >&2
-    exit 1
-  }
-  colcon build --symlink-install --packages-select orbslam3 orbslam3_rover_sim \
-    --cmake-args "-DORB_SLAM3_ROOT_DIR=$ORB_ROOT" "-DPangolin_DIR=$PANGOLIN_DIR"
-fi
-
-if [[ ! -f "$WS/install/setup.bash" ]]; then
-  echo "Missing $WS/install/setup.bash; run this script once with --build." >&2
-  exit 1
-fi
-# shellcheck disable=SC1091
-set +u
-source "$WS/install/setup.bash"
-set -u
-
-# Prefer the workspace-local Pangolin build.  A different ABI-compatible
-# SONAME may be installed in /usr/local (and can pull in unavailable OpenEXR
-# versions), so relying on the dynamic linker's default order is unsafe.
-export LD_LIBRARY_PATH="$WS/src/Pangolin/install/lib:$WS/src/ORB_SLAM3/lib:$WS/src/ORB_SLAM3/Thirdparty/DBoW2/lib:$WS/src/ORB_SLAM3/Thirdparty/g2o/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-
-if ! ros2 pkg prefix orbslam3_rover_sim >/dev/null 2>&1; then
-  echo "orbslam3_rover_sim is not installed; run this script with --build." >&2
-  exit 1
-fi
-
-export ROS_DOMAIN_ID="${ROVER_DOMAIN_ID:-42}"
-export ROS_LOG_DIR="${ROS_LOG_DIR:-/tmp/orbslam3_ros_logs}"
-export GAZEBO_LOG_PATH="${GAZEBO_LOG_PATH:-/tmp/orbslam3_gazebo_logs}"
-mkdir -p "$ROS_LOG_DIR" "$GAZEBO_LOG_PATH"
-
-LAUNCH=(ros2 launch orbslam3_rover_sim rover_orbslam.launch.py
-  "gui:=$GUI" "rviz:=$RVIZ" "auto:=$AUTO" "mode:=$MODE"
-  "orb_viewer:=$ORB_VIEWER")
-TELEOP_CMD=(ros2 run orbslam3_rover_sim key_teleop.py)
-
-printf 'Workspace:  %s\n' "$WS"
-printf 'Settings:   gui=%s rviz=%s teleop=%s auto=%s mode=%s orb_viewer=%s\n' \
-  "$GUI" "$RVIZ" "$TELEOP" "$AUTO" "$MODE" "$ORB_VIEWER"
-printf 'ROS domain: %s\n' "$ROS_DOMAIN_ID"
-printf 'Launch:    '; printf ' %q' "${LAUNCH[@]}"; printf '\n'
-
-if [[ "$DRY_RUN" == true ]]; then
-  if [[ "$TELEOP" == true ]]; then
-    printf 'Teleop:   '; printf ' %q' "${TELEOP_CMD[@]}"; printf '\n'
+if [[ "$dry_run" == true ]]; then
+  if [[ "$build_requested" == true ]]; then
+    print_command colcon build --packages-select orb_slam_ros2 \
+      --symlink-install --cmake-args "-DORB_SLAM3_ROOT=$orbslam3_root"
+    print_command colcon build --packages-select orbslam3_rover_sim --symlink-install
+  fi
+  print_command ros2 launch orbslam3_rover_sim rover_sim.launch.py "${launch_args[@]}"
+  if [[ "$mode" == teleop ]]; then
+    print_command ros2 run orbslam3_rover_sim key_teleop.py
   fi
   exit 0
 fi
 
-if pgrep -x gzserver >/dev/null; then
-  echo "A gzserver is already running; stop it or use a separate Gazebo master." >&2
+if [[ ! -f /opt/ros/humble/setup.bash ]]; then
+  echo "Error: ROS 2 Humble was not found at /opt/ros/humble." >&2
+  exit 1
+fi
+if [[ ! -f "$orbslam3_root/Vocabulary/ORBvoc.txt" ]]; then
+  echo "Error: ORB-SLAM3 vocabulary not found under $orbslam3_root." >&2
   exit 1
 fi
 
-XVFB_PID=''
-LAUNCH_PID=''
+# ROS setup scripts may reference unset variables, so temporarily relax nounset.
+set +u
+source /opt/ros/humble/setup.bash
+set -u
+
+if [[ "$build_requested" == true || \
+      ! -x "$workspace_dir/install/orb_slam_ros2/lib/orb_slam_ros2/stereo_node" || \
+      ! -f "$workspace_dir/install/orbslam3_rover_sim/share/orbslam3_rover_sim/package.xml" ]]; then
+  cd "$workspace_dir"
+  colcon build \
+    --packages-select orb_slam_ros2 \
+    --symlink-install \
+    --cmake-args "-DORB_SLAM3_ROOT=$orbslam3_root"
+  colcon build --packages-select orbslam3_rover_sim --symlink-install
+fi
+
+if [[ ! -f "$workspace_dir/install/setup.bash" ]]; then
+  echo "Error: local ROS 2 overlay was not created." >&2
+  exit 1
+fi
+set +u
+source "$workspace_dir/install/setup.bash"
+set -u
+
+# A terminal may already have /home/ac/ros2_ws sourced. That workspace also
+# contains an older package with the same name but a different launch file.
+# Put this workspace first explicitly, then verify what the ROS index resolves.
+local_sim_prefix="$workspace_dir/install/orbslam3_rover_sim"
+local_orb_prefix="$workspace_dir/install/orb_slam_ros2"
+export AMENT_PREFIX_PATH="$local_sim_prefix:$local_orb_prefix:${AMENT_PREFIX_PATH:-/opt/ros/humble}"
+export CMAKE_PREFIX_PATH="$local_sim_prefix:$local_orb_prefix:${CMAKE_PREFIX_PATH:-}"
+export COLCON_PREFIX_PATH="$workspace_dir/install:${COLCON_PREFIX_PATH:-}"
+export ROS2CLI_NO_DAEMON=1
+resolved_sim_prefix="$(ros2 pkg prefix orbslam3_rover_sim 2>/dev/null || true)"
+if [[ "$resolved_sim_prefix" != "$local_sim_prefix" ]]; then
+  echo "Error: orbslam3_rover_sim resolved to '$resolved_sim_prefix', expected '$local_sim_prefix'." >&2
+  echo "Run this script from /home/ac/ORB_SLAM or rebuild with --build." >&2
+  exit 1
+fi
+
+export ROS_DOMAIN_ID="${ROS_DOMAIN_ID:-42}"
+export ROS_LOG_DIR="${ROS_LOG_DIR:-/tmp/orbslam3_gazebo_logs}"
+mkdir -p "$ROS_LOG_DIR"
+
+launch_command=(ros2 launch orbslam3_rover_sim rover_sim.launch.py "${launch_args[@]}")
+
+if [[ "$mode" == auto ]]; then
+  echo "Launching local camera-only ORB-SLAM3 Gazebo simulation in automatic mode."
+  echo "Package: $resolved_sim_prefix (ROS_DOMAIN_ID=$ROS_DOMAIN_ID)"
+  exec "${launch_command[@]}"
+fi
+
+launch_pid=""
 cleanup() {
-  trap - INT TERM EXIT
-  [[ -n "$LAUNCH_PID" ]] && kill -INT "$LAUNCH_PID" 2>/dev/null || true
-  [[ -n "$XVFB_PID" ]] && kill "$XVFB_PID" 2>/dev/null || true
-  wait "$LAUNCH_PID" 2>/dev/null || true
-}
-trap cleanup INT TERM EXIT
-
-# Gazebo cameras still need an OpenGL display when the GUI is hidden.
-if [[ "$GUI" == false && -z "${DISPLAY:-}" ]] && command -v Xvfb >/dev/null; then
-  DISPLAY_FILE=$(mktemp /tmp/orbslam3_xvfb.XXXXXX)
-  Xvfb -displayfd 3 -screen 0 1280x1024x24 3>"$DISPLAY_FILE" &
-  XVFB_PID=$!
-  for _ in {1..50}; do [[ -s "$DISPLAY_FILE" ]] && break; sleep 0.1; done
-  DISPLAY_NUMBER=$(<"$DISPLAY_FILE")
-  rm -f "$DISPLAY_FILE"
-  if [[ -n "$DISPLAY_NUMBER" ]]; then
-    export DISPLAY=":$DISPLAY_NUMBER"
-    echo "Headless camera rendering uses Xvfb on $DISPLAY."
+  if [[ -n "$launch_pid" ]] && kill -0 "$launch_pid" 2>/dev/null; then
+    kill -INT -- "-$launch_pid" 2>/dev/null || kill -INT "$launch_pid" 2>/dev/null || true
+    for _ in {1..30}; do
+      kill -0 "$launch_pid" 2>/dev/null || return
+      sleep 0.1
+    done
+    kill -TERM -- "-$launch_pid" 2>/dev/null || kill -TERM "$launch_pid" 2>/dev/null || true
   fi
+}
+trap cleanup EXIT INT TERM
+
+echo "Launching local camera-only ORB-SLAM3 Gazebo simulation in teleop mode."
+echo "Package: $resolved_sim_prefix (ROS_DOMAIN_ID=$ROS_DOMAIN_ID)"
+setsid "${launch_command[@]}" &
+launch_pid=$!
+
+echo "Waiting for the rover command topic..."
+for _ in {1..60}; do
+  if ! kill -0 "$launch_pid" 2>/dev/null; then
+    wait "$launch_pid" || true
+    echo "Error: the simulation stopped before teleop became ready." >&2
+    exit 1
+  fi
+  if ros2 topic list 2>/dev/null | rg -q '^/cmd_vel$'; then
+    break
+  fi
+  sleep 0.25
+done
+
+if ! ros2 topic list 2>/dev/null | rg -q '^/cmd_vel$'; then
+  echo "Error: /cmd_vel did not appear within 15 seconds." >&2
+  exit 1
 fi
 
-"${LAUNCH[@]}" &
-LAUNCH_PID=$!
-
-if [[ "$TELEOP" == true ]]; then
-  sleep 5
-  echo "Teleop active: use arrow keys; Q or Ctrl+C stops it."
-  "${TELEOP_CMD[@]}"
-else
-  wait "$LAUNCH_PID"
-fi
+ros2 run orbslam3_rover_sim key_teleop.py
