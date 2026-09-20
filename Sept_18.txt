@@ -1,0 +1,136 @@
+Sept_18 - Daily Work Report
+Date: 18 September 2026
+Directory: /home/ac/ORB_SLAM
+
+1. Objective
+
+The objective for the day was to convert a working standalone stereo
+demonstration into a reusable ROS 2 system and to validate it in
+simulation. Specifically: run the tested ORB-SLAM3 stereo pipeline as a
+standard ROS 2 node, and operate it on a Gazebo rover using cameras
+only, without OpenVINS and without an IMU. ORB-SLAM3 estimates
+camera motion and builds a sparse 3D map from visual features. ROS 2 is
+the middleware used here to pass images, poses, paths and maps between
+programs. Gazebo provides the simulated rover and room.
+
+2. Starting position
+
+Live tracking from the ELP stereo camera was made
+functional in a standalone executable. The setup used an ELP 3DGS1200P01
+pair over a single side-by-side MJPG frame (3200x1200 total, 1600x1200
+per eye), with calibration RMS 0.2908 px, rectified focal length
+1082.8 px and baseline 59.896 mm. Source: src/stereo_live_elp.cc,
+config/ELP_1600x1200.yaml, calib/.
+
+The limitation was integration. The tracker was not available to other
+ROS nodes, and the rover simulation remained tied to the OpenVINS
+workspace under /home/ac/ros2_ws, including inertial code and a
+simulated IMU.
+
+3. Work performed
+
+3.1 ROS 2 stereo wrapper
+
+A ROS 2 Humble package named orb_slam_ros2 was created around the
+existing ORB-SLAM3 library in System::STEREO mode. It has two input
+modes: direct capture from the side-by-side USB device, and subscribed
+left/right image topics with approximate-time synchronization.
+
+Published outputs under the /orbslam3 namespace are: camera pose, path,
+tracked map points, tracking image, tracking state, and TF. Reset and
+localization-mode services are provided. Trajectories are written on
+shutdown to gazebo_trajectory.txt and gazebo_keyframes.txt.
+
+Two calibrations are shipped: the physical ELP configuration and a
+Gazebo configuration (orb_slam_ros2/config/rover_gazebo_stereo.yaml)
+for 640x400 images at 20 Hz, fx = fy = 320, cx = 320, cy = 200,
+baseline 0.11 m, ThDepth 40. No IMU parameters are present in the active
+configuration.
+
+3.2 Local rover simulation package
+
+The simulation was consolidated into this directory as the package
+orbslam3_rover_sim. It contains the world, rover URDF and SDF model,
+stereo camera plugins, automatic driver, keyboard teleop, RViz
+configuration and launch file.
+
+OpenVINS launch entries, frame alignment utilities, inertial
+configurations and the simulated IMU were removed from the active
+launch path. The Gazebo cameras publish /cam0/image_raw and
+/cam1/image_raw directly to the stereo node. The package builds with
+colcon from /home/ac/ORB_SLAM and no longer requires the OpenVINS
+source tree.
+
+3.3 Coordinate frame correction
+
+Initial combined visualization showed incorrect geometry in RViz: the
+rover did not rest on the ground plane and motion appeared along the
+wrong axis. Gazebo ground truth showed the model itself was correct
+(position z = -0.0002 m, roll and pitch near zero).
+
+The cause was a frame convention mismatch. The visual SLAM output uses
+the optical convention with forward along +Z, while the rover and
+Gazebo use forward along +X with motion in the XY plane. The fix was to
+set RViz fixed frame to odom and add a static map-to-odom transform
+that rotates the optical frame into the rover frame. After this change,
+wheel contact and trajectory direction display correctly.
+
+3.4 Motion tuning and environment conditioning
+
+The initial automatic drive commands were unsuitable for the
+four-wheel skid-steer model and for visual tracking. The rover drifted
+wide, approached the pillar at y = 4.9 m, and placed one camera against
+the obstacle. With no common stereo overlap, tracking lost the local
+map.
+
+The driver (orbslam3_rover_sim/scripts/auto_loop.py) was set to
+0.05 m/s forward and 0.15 rad/s yaw, with slew-limited command shaping
+and a 15 s start delay so the chassis settles after spawning before
+wheel motion begins. Spawn height was set to z = 0.01 m to avoid drop
+and bounce. The resulting circular path provides steady translation
+with gentle rotation, which supports stereo parallax.
+
+The room (orbslam3_rover_sim/worlds/small_room.world) was also adjusted
+for camera-only operation. Distant walls and repeated brick texture are
+insufficient at some headings. Four asymmetric textured landmarks were
+placed around the nominal loop, clear of the path by more than 1 m but
+within the approximate 4.4 m close-depth range implied by the baseline
+and depth threshold. This reduced tracking loss to at most a brief
+relocalization during loop closure.
+
+3.5 Unified launcher and workspace isolation
+
+The entry script orbslam3_gazebo.sh provides two exclusive modes:
+./orbslam3_gazebo.sh or --auto for automatic driving, and --teleop for
+keyboard driving. Teleop disables the automatic /cmd_vel source so the
+two drivers cannot conflict. Options exist for rebuild and for
+disabling Gazebo GUI, RViz or the ORB viewer. Default ROS domain is 42.
+
+A package resolution fault was also addressed. An older package with the
+same name exists in /home/ac/ros2_ws/install but does not contain the
+current launch file. A shell with that workspace sourced could resolve
+the wrong package. The launcher now prepends /home/ac/ORB_SLAM/install
+to the relevant prefix variables, queries the resolved package path,
+aborts unless it is the local install, and prints the selected path and
+domain at startup.
+
+4. Verification and results
+
+The reference command ./orbslam3_gazebo.sh --auto was tested after
+these changes. It selected /home/ac/ORB_SLAM/install/orbslam3_rover_sim,
+spawned orb_rover, activated both image topics, initialized a map with
+661 points, and reached tracking state 2 (OK). In the extended run, a
+sampled tracked cloud contained 305 points, image throughput was about
+8.4 Hz under combined Gazebo, RViz and viewer load, and valid poses
+were received at about 5.8 Hz.
+
+5. Current status
+
+The repository now contains a continuous chain from physical stereo
+capture to camera-only Gazebo simulation through one ROS 2 node. Pose,
+path, tracking state and sparse map are available to downstream nodes.
+
+Remaining work is evaluation rather than integration: trajectory error
+against Gazebo ground truth, sensitivity to speed and lighting, and
+comparison of the Gazebo extractor setting (1200 features) with the
+physical-camera setting (2000 features).
