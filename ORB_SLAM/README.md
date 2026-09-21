@@ -1,4 +1,4 @@
-# ORB_SLAM --- live stereo ORB-SLAM3 with ELP USB camera
+# ORB_SLAM — live stereo ORB-SLAM3 with ELP USB camera
 
 Live stereo visual SLAM on this machine, packaged so everything needed to
 reproduce the run lives in `/home/ac/ORB_SLAM`. Tested working 2026-09-18:
@@ -26,10 +26,10 @@ ros2 launch orb_slam_ros2 stereo_live.launch.py device_id:=0
 The complete camera-only simulator now lives beside the ROS 2 wrapper in this
 workspace:
 
-- `orb_slam_ros2/` --- stereo ORB-SLAM3 ROS 2 node and Gazebo calibration.
-- `orbslam3_rover_sim/` --- rover, world, Gazebo launch, RViz setup, automatic
+- `orb_slam_ros2/` — stereo ORB-SLAM3 ROS 2 node and Gazebo calibration.
+- `orbslam3_rover_sim/` — rover, world, Gazebo launch, RViz setup, automatic
   driver, and keyboard teleop.
-- `orbslam3_gazebo.sh` --- local build/launch entry point. It does not source or
+- `orbslam3_gazebo.sh` — local build/launch entry point. It does not source or
   launch the former package under `/home/ac/ros2_ws/src/open_vins`.
 
 Build both packages from `/home/ac/ORB_SLAM`:
@@ -60,7 +60,7 @@ close-depth range throughout the loop while remaining clear of the rover.
 
 Teleop controls are arrow keys to drive/turn, `+` and `-` to change the speed
 limit, Space to stop, and `Q` to quit. The simulator uses only the synchronized
-stereo image topics---there is no IMU sensor or inertial SLAM mode:
+stereo image topics—there is no IMU sensor or inertial SLAM mode:
 
 - Input: `/cam0/image_raw`, `/cam1/image_raw`
 - Output: `/orbslam3/pose`, `/orbslam3/path`,
@@ -145,7 +145,7 @@ Heavy build products stay where they were built and are **not** duplicated:
 
 ## Build (already done on this machine; for a fresh setup)
 
-1. Pangolin --- must avoid the Linuxbrew OpenEXR 3.4 trap. The prebuilt
+1. Pangolin — must avoid the Linuxbrew OpenEXR 3.4 trap. The prebuilt
    `libpango_image.so` referenced `libOpenEXR-3_4.so.33` from
    `/home/linuxbrew/.linuxbrew`, which breaks system `cmake`/linking
    (brew libs need glibc 2.36/2.38, system has 2.35). Reconfigure without EXR
@@ -184,13 +184,13 @@ grow in Map Viewer. Stop with Ctrl+C; trajectories are saved in this directory.
 ## Config notes (`config/ELP_1600x1200.yaml`)
 
 - `Camera.type: PinHole` with k1/k2/p1/p2/**k3** per eye from `calibration_opencv.yaml`.
-- `Camera.width/height: 1600/1200`, `Camera.fps: 30` --- **must be an integer**;
+- `Camera.width/height: 1600/1200`, `Camera.fps: 30` — **must be an integer**;
   `30.0` aborts with `Camera.fps parameter must be an integer number`.
 - `Camera.RGB: 0` (OpenCV VideoCapture delivers BGR).
 - `Stereo.T_c1_c2`: 4x4 from OpenCV R|T (cam1 -> cam2).
-- `Stereo.ThDepth: 40.0` is **baseline-times**: 40 x 0.0599 m -�� 2.4 m close-point
+- `Stereo.ThDepth: 40.0` is **baseline-times**: 40 x 0.0599 m ≈ 2.4 m close-point
   range (code: `mThDepth = b * thDepth`, see `src/Tracking.cc:573`).
-- ORB: 2000 features, scaleFactor 1.2, 8 levels, FAST 20/7 --- suited to 1600x1200.
+- ORB: 2000 features, scaleFactor 1.2, 8 levels, FAST 20/7 — suited to 1600x1200.
 
 ## Troubleshooting
 
@@ -199,7 +199,7 @@ grow in Map Viewer. Stop with Ctrl+C; trajectories are saved in this directory.
   `v4l2-ctl --list-formats-ext -d /dev/video0` (expect MJPG 3200x1200).
 - `Camera.fps parameter must be an integer`: settings has `30.0` instead of `30`.
 - Link errors mentioning `libOpenEXR-3_4.so.33`: Pangolin picked up Linuxbrew
-  OpenEXR --- redo the Pangolin step above with `BUILD_PANGOLIN_LIBOPENEXR=OFF`.
+  OpenEXR — redo the Pangolin step above with `BUILD_PANGOLIN_LIBOPENEXR=OFF`.
 - `Fail to track local map!` / new maps spawning: normal during fast motion,
   textureless views, or a static camera. Add light + texture, slow down;
   it relocalizes automatically.
@@ -207,7 +207,7 @@ grow in Map Viewer. Stop with Ctrl+C; trajectories are saved in this directory.
   not headless SSH without X forwarding.
 - Slow tracking at 1600x1200 on 4 cores: reduce load (close browsers), ensure
   Release build; optionally add `Camera.newWidth/newHeight` to downscale
-  (scales fx/fy/cx/cy accordingly --- see `src/Settings.cc`).
+  (scales fx/fy/cx/cy accordingly — see `src/Settings.cc`).
 
 ## Provenance
 

@@ -1,13 +1,20 @@
 #!/usr/bin/env python3
 """Arrow-key teleop for the rover. Publishes geometry_msgs/Twist on /cmd_vel.
 
-  Up/Down    : forward / backward
-  Left/Right : turn left / right
+  Up/Down    : forward / backward speed (keeps current turn)
+  Left/Right : turn left / right (keeps current speed, so you drive
+               arcs, never spins in place unless already stopped)
   +/-        : faster / slower
   Space      : emergency stop
   Q          : quit
 
-Exclusive ownership: run this OR auto_loop, never both (gazebo_test.sh
+Hold a key (terminal auto-repeat) to move, release everything to stop.
+Commands are slew-limited like the auto driver: keys set TARGETS and
+the published command ramps toward them at 20 Hz, so there are no step
+jerks for the estimator to choke on. Pure in-place spins starve VIO of
+parallax, hence arcs by default and a modest turn cap.
+
+Exclusive ownership: run this OR auto_loop, never both (orbslam3_gazebo.sh
 enforces exclusive --auto / --teleop modes). A second /cmd_vel writer,
 even an idle keyboard node spamming zeros, fights for the topic.
 """
@@ -24,7 +31,8 @@ from geometry_msgs.msg import Twist
 
 HELP = """\
 Arrow-key teleop (/cmd_vel):
-  Up/Down     forward/backward      Left/Right  turn
+  Up/Down     forward/backward (keeps turn)
+  Left/Right  turn (keeps speed: arcs, not spins)
   + / -       speed up/down         Space       stop
   Q           quit
 """
@@ -32,7 +40,13 @@ Arrow-key teleop (/cmd_vel):
 LIN_STEP = 0.1
 ANG_STEP = 0.1
 MAX_LIN = 1.0
-MAX_ANG = 1.5
+MAX_ANG = 1.0
+# Slew rates toward targets (per second): no step changes, same as auto.
+SLEW_LIN = 0.6
+SLEW_ANG = 1.0
+# Release everything this long after the last keypress, then stop.
+IDLE_STOP = 0.4
+PUB_DT = 0.05
 
 
 def get_key(fd, timeout=0.1):
@@ -70,10 +84,12 @@ class KeyTeleop(Node):
     def __init__(self):
         super().__init__('key_teleop')
         self.pub = self.create_publisher(Twist, '/cmd_vel', 10)
+        self.tgt_lin = 0.0
+        self.tgt_ang = 0.0
         self.lin = 0.0
         self.ang = 0.0
         self.max_lin = 0.4
-        self.max_ang = 0.6
+        self.max_ang = 0.4
 
     def publish_cmd(self):
         msg = Twist()
@@ -89,22 +105,20 @@ def main():
     old = termios.tcgetattr(fd)
     print(HELP, flush=True)
     last_key = 0.0
+    last_pub = 0.0
     try:
         tty.setraw(fd)
         while rclpy.ok():
-            # Momentary drive: hold a key (terminal auto-repeat) to move,
-            # release to stop. Published only on change so auto-drive can
-            # resume ~2 s after the last keypress.
             k = get_key(fd)
             now = time.monotonic()
             if k == '\x1b[A':
-                node.lin, node.ang = node.max_lin, 0.0
+                node.tgt_lin = node.max_lin
             elif k == '\x1b[B':
-                node.lin, node.ang = -node.max_lin, 0.0
+                node.tgt_lin = -node.max_lin
             elif k == '\x1b[C':
-                node.lin, node.ang = 0.0, -node.max_ang
+                node.tgt_ang = -node.max_ang
             elif k == '\x1b[D':
-                node.lin, node.ang = 0.0, node.max_ang
+                node.tgt_ang = node.max_ang
             elif k == '+':
                 node.max_lin = min(node.max_lin + LIN_STEP, MAX_LIN)
                 node.max_ang = min(node.max_ang + ANG_STEP, MAX_ANG)
@@ -112,17 +126,27 @@ def main():
                 node.max_lin = max(node.max_lin - LIN_STEP, LIN_STEP)
                 node.max_ang = max(node.max_ang - ANG_STEP, ANG_STEP)
             elif k == ' ':
-                node.lin = 0.0
-                node.ang = 0.0
+                node.tgt_lin = 0.0
+                node.tgt_ang = 0.0
             elif k in ('q', 'Q', '\x03'):
                 break
             if k:
-                node.publish_cmd()
                 last_key = now
-            elif (node.lin or node.ang) and now - last_key > 0.25:
-                node.lin = 0.0
-                node.ang = 0.0
+            elif (node.tgt_lin or node.tgt_ang) and now - last_key > IDLE_STOP:
+                node.tgt_lin = 0.0
+                node.tgt_ang = 0.0
+            # Slew actual command toward targets, publish steadily.
+            dt = now - last_pub if last_pub else PUB_DT
+            dt = min(max(dt, 0.0), 0.5)
+            for attr, tgt, rate in (('lin', node.tgt_lin, SLEW_LIN),
+                                    ('ang', node.tgt_ang, SLEW_ANG)):
+                cur = getattr(node, attr)
+                dv = tgt - cur
+                lim = rate * dt
+                setattr(node, attr, cur + max(-lim, min(lim, dv)))
+            if now - last_pub >= PUB_DT:
                 node.publish_cmd()
+                last_pub = now
             rclpy.spin_once(node, timeout_sec=0.0)
     finally:
         termios.tcsetattr(fd, termios.TCSADRAIN, old)
