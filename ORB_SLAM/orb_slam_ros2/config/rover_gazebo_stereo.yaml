@@ -1,0 +1,55 @@
+%YAML:1.0
+
+# Gazebo orb_rover stereo rig. Both streams are ideal pinhole images at
+# 640x400, 20 Hz. Cam0 is left and cam1 is right with a 0.11 m horizontal
+# baseline. This is intentionally camera-only: no IMU settings are present
+# and the ROS node uses System::STEREO.
+File.version: "1.0"
+Camera.type: "PinHole"
+
+Camera1.fx: 320.0
+Camera1.fy: 320.0
+Camera1.cx: 320.0
+Camera1.cy: 200.0
+
+Camera2.fx: 320.0
+Camera2.fy: 320.0
+Camera2.cx: 320.0
+Camera2.cy: 200.0
+
+Camera.width: 640
+Camera.height: 400
+Camera.fps: 20
+
+# The ROS wrapper converts incoming sensor_msgs/Image data to BGR8.
+Camera.RGB: 0
+
+# Pose of the right camera in the left camera frame. ORB-SLAM3 internally
+# inverts this transform before passing it to OpenCV stereoRectify.
+Stereo.T_c1_c2: !!opencv-matrix
+  rows: 4
+  cols: 4
+  dt: f
+  data: [1.0, 0.0, 0.0, 0.11,
+         0.0, 1.0, 0.0, 0.0,
+         0.0, 0.0, 1.0, 0.0,
+         0.0, 0.0, 0.0, 1.0]
+Stereo.ThDepth: 40.0
+
+ORBextractor.nFeatures: 1200
+ORBextractor.scaleFactor: 1.2
+ORBextractor.nLevels: 8
+ORBextractor.iniThFAST: 15
+ORBextractor.minThFAST: 7
+
+Viewer.KeyFrameSize: 0.08
+Viewer.KeyFrameLineWidth: 1.0
+Viewer.GraphLineWidth: 0.9
+Viewer.PointSize: 2.0
+Viewer.CameraSize: 0.12
+Viewer.CameraLineWidth: 3.0
+Viewer.ViewpointX: 0.0
+Viewer.ViewpointY: -0.7
+Viewer.ViewpointZ: -2.2
+Viewer.ViewpointF: 500.0
+Viewer.imageViewScale: 1.0

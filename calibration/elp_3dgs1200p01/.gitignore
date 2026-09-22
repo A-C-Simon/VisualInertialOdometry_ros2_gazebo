@@ -1,0 +1,5 @@
+# raw captures (~119MB) stay local; rerun screen_calibrate.py to reproduce
+pairs/
+# regenerable rectify maps (30MB); rerun stereo_calibrate.py to reproduce
+*.npz
+__pycache__/
