@@ -24,6 +24,11 @@ def generate_launch_description():
         DeclareLaunchArgument("right_topic", default_value="/camera/right/image_raw"),
         DeclareLaunchArgument("viewer", default_value="true"),
         DeclareLaunchArgument("publish_tf", default_value="true"),
+        DeclareLaunchArgument(
+            "localization_only",
+            default_value="false",
+            description="stop local mapping after stereo initialization",
+        ),
         DeclareLaunchArgument("trajectory_path", default_value="live_session.txt"),
         DeclareLaunchArgument(
             "keyframe_trajectory_path", default_value="kf_live_session.txt"
@@ -45,6 +50,7 @@ def generate_launch_description():
                 "right_topic": LaunchConfiguration("right_topic"),
                 "use_viewer": LaunchConfiguration("viewer"),
                 "publish_tf": LaunchConfiguration("publish_tf"),
+                "localization_only": LaunchConfiguration("localization_only"),
                 "trajectory_path": LaunchConfiguration("trajectory_path"),
                 "keyframe_trajectory_path": LaunchConfiguration(
                     "keyframe_trajectory_path"

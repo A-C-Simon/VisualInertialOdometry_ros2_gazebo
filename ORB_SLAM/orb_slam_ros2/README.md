@@ -67,6 +67,21 @@ All relative names are under the node namespace if one is supplied.
 | `activate_localization_mode` | `std_srvs/srv/Trigger` | Stop map growth |
 | `activate_slam_mode` | `std_srvs/srv/Trigger` | Resume map growth |
 
+To reduce CPU use during a stereo run, set `localization_only:=true`. The node
+will allow stereo initialization to create the initial map, then stop local
+mapping. With no new keyframes, loop closing and global bundle adjustment will
+also remain inactive:
+
+```bash
+ros2 launch orb_slam_ros2 stereo_topics.launch.py localization_only:=true
+```
+
+For the camera-only Gazebo test, use:
+
+```bash
+./orbslam3_gazebo.sh --auto --localization-only
+```
+
 ORB-SLAM3 uses the camera optical convention (x right, y down, z forward).
 Consequently the `map` axes inherit the initial optical-camera orientation.
 Use a static/dynamic transform downstream if a REP-103 body frame is needed.

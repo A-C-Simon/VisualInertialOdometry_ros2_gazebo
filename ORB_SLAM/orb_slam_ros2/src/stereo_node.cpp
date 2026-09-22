@@ -81,6 +81,7 @@ public:
       [this](const std::shared_ptr<std_srvs::srv::Trigger::Request>,
       std::shared_ptr<std_srvs::srv::Trigger::Response> response) {
         slam_->ActivateLocalizationMode();
+        localization_mode_active_ = true;
         response->success = true;
         response->message = "Localization-only mode requested";
       });
@@ -89,6 +90,7 @@ public:
       [this](const std::shared_ptr<std_srvs::srv::Trigger::Request>,
       std::shared_ptr<std_srvs::srv::Trigger::Response> response) {
         slam_->DeactivateLocalizationMode();
+        localization_mode_active_ = false;
         response->success = true;
         response->message = "Mapping mode requested";
       });
@@ -130,6 +132,7 @@ private:
     declare_parameter<bool>("use_viewer", true);
     declare_parameter<bool>("publish_tf", true);
     declare_parameter<bool>("publish_tracking_image", true);
+    declare_parameter<bool>("localization_only", false);
     declare_parameter<std::string>("map_frame", "map");
     declare_parameter<std::string>("camera_frame", "camera_optical_frame");
     declare_parameter<int>("max_path_length", 10000);
@@ -155,6 +158,7 @@ private:
     use_viewer_ = get_parameter("use_viewer").as_bool();
     publish_tf_ = get_parameter("publish_tf").as_bool();
     publish_tracking_image_ = get_parameter("publish_tracking_image").as_bool();
+    localization_only_ = get_parameter("localization_only").as_bool();
     map_frame_ = get_parameter("map_frame").as_string();
     camera_frame_ = get_parameter("camera_frame").as_string();
     max_path_length_ = static_cast<std::size_t>(
@@ -323,6 +327,16 @@ private:
     if (state == 2 || state == 5) {
       publish_pose(t_camera_world.inverse(), stamp);
       ++successful_pose_count_;
+      if (localization_only_ && !localization_mode_active_) {
+        // Let stereo initialization create the initial map, then stop local
+        // mapping. With no new keyframes, loop closing and global BA also stay
+        // inactive while the tracker continues to localize against the map.
+        slam_->ActivateLocalizationMode();
+        localization_mode_active_ = true;
+        RCLCPP_INFO(
+          get_logger(),
+          "Localization-only mode enabled: local mapping and loop-closure work are disabled");
+      }
     }
   }
 
@@ -482,6 +496,8 @@ private:
   bool use_viewer_{true};
   bool publish_tf_{true};
   bool publish_tracking_image_{true};
+  bool localization_only_{false};
+  bool localization_mode_active_{false};
   std::string map_frame_;
   std::string camera_frame_;
   std::size_t max_path_length_{10000};

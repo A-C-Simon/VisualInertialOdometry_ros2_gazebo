@@ -9,6 +9,7 @@ build_requested=false
 gui=true
 rviz=true
 orb_viewer=true
+localization_only=false
 dry_run=false
 
 usage() {
@@ -24,6 +25,7 @@ Options:
   --headless        Do not open the Gazebo GUI
   --no-rviz         Do not open RViz2
   --no-orb-viewer   Do not open the ORB-SLAM3 Pangolin viewer
+  --localization-only  Stop local mapping after stereo initialization
   --dry-run         Print the launch commands without running them
   -h, --help        Show this help
 EOF
@@ -47,6 +49,7 @@ while (($#)); do
     --headless) gui=false ;;
     --no-rviz) rviz=false ;;
     --no-orb-viewer) orb_viewer=false ;;
+    --localization-only) localization_only=true ;;
     --dry-run) dry_run=true ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Error: unknown argument: $1" >&2; usage >&2; exit 2 ;;
@@ -59,6 +62,7 @@ launch_args=(
   "gui:=$gui"
   "rviz:=$rviz"
   "orb_viewer:=$orb_viewer"
+  "localization_only:=$localization_only"
   "vocabulary_path:=$orbslam3_root/Vocabulary/ORBvoc.txt"
   "trajectory_path:=$workspace_dir/gazebo_trajectory.txt"
   "keyframe_trajectory_path:=$workspace_dir/gazebo_keyframes.txt"

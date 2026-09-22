@@ -64,6 +64,7 @@ def generate_launch_description():
             'settings_path': LaunchConfiguration('orb_settings_path'),
             'use_viewer': LaunchConfiguration('orb_viewer'),
             'publish_tf': True,
+            'localization_only': LaunchConfiguration('localization_only'),
             'map_frame': 'map',
             'camera_frame': 'orb_camera_optical',
             'trajectory_path': LaunchConfiguration('trajectory_path'),
@@ -98,6 +99,9 @@ def generate_launch_description():
         DeclareLaunchArgument('gui', default_value='true', description='gazebo GUI (false=headless)'),
         DeclareLaunchArgument('orb_slam', default_value='true', description='run stereo ORB-SLAM3'),
         DeclareLaunchArgument('orb_viewer', default_value='true', description='open ORB-SLAM3 Pangolin viewer'),
+        DeclareLaunchArgument(
+            'localization_only', default_value='false',
+            description='stop local mapping after stereo initialization'),
         DeclareLaunchArgument('vocabulary_path', default_value=default_vocabulary),
         DeclareLaunchArgument('orb_settings_path', default_value=default_orb_settings),
         DeclareLaunchArgument('trajectory_path', default_value='/tmp/orbslam3_gazebo_trajectory.txt'),
