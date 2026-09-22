@@ -1,0 +1,98 @@
+ORB-SLAM3 ROS 2 Isolated No-Loop-Closure Test Report
+Date: 22 September 2026
+
+1. Introduction
+
+The objective was to test a reduced-computation ORB-SLAM3 configuration without changing the main ROS 2 ORB-SLAM codebase. The test was placed in a separate directory so that loop-closure changes, build products, runtime logs, and trajectory files could be evaluated independently.
+
+2. Isolated test structure
+
+The test directory was created at:
+
+  /home/ac/ORB_SLAM/orb_slam3_no_loop_closure_test
+
+It contains a detached ORB-SLAM3 worktree, a separate ROS 2 build and install space, a dedicated stereo settings file, and the test launcher. The main ORB-SLAM3 checkout and the main ROS 2 install were not modified by the loop-closure experiment.
+
+The isolated settings file was based on the Gazebo stereo calibration and included:
+
+  loopClosing: 0
+
+This setting disables loop-closure detection and place-recognition work. The isolated ORB-SLAM3 System implementation was additionally changed so that the loop-closure worker thread is not created when loop closing is disabled.
+
+3. Loop-closure and mapping changes
+
+The original ORB-SLAM3 implementation created the LoopClosing object and started its worker thread even when loop-closure processing was disabled by settings. The isolated test changes the thread startup logic. When loopClosing is zero, the LoopClosing object is constructed with inactive processing, but its worker thread is not started.
+
+This removes the loop-closure worker thread, its thread stack, and its runtime scheduling activity. The LoopClosing object itself remains allocated. Therefore, this test is a safe reduction in computational and memory overhead, but it is not the maximum possible memory reduction. Removing the object allocation completely would require additional changes to the ORB-SLAM3 System shutdown and pointer-management paths.
+
+The ROS 2 wrapper was run with localization_only enabled. After the first valid stereo pose, local mapping was stopped. The resulting runtime configuration therefore used stereo visual tracking while disabling local-map growth after initialization and disabling loop-closure processing from startup.
+
+4. Isolated build
+
+The detached ORB-SLAM3 worktree was configured and built separately. The ROS 2 stereo wrapper was then built with ORB_SLAM3_ROOT pointing to the isolated ORB-SLAM3 worktree. The build produced separate directories for compilation, installation, and logs.
+
+The isolated ROS 2 wrapper started successfully and loaded the dedicated vocabulary and stereo calibration settings. The startup output confirmed:
+
+  Loop closing disabled: worker thread not started
+
+5. Gazebo integration
+
+The isolated wrapper was connected to the existing camera-only rover simulation. The node consumed:
+
+  /cam0/image_raw
+  /cam1/image_raw
+
+The simulation did not use an IMU. The rover model, automatic drive controller, camera plugins, TF publishers, RViz2 configuration, and Pangolin viewer remained available for the visible baseline test.
+
+The first direct isolated run initialized a stereo map with hundreds of points and reported:
+
+  Tracking state: OK
+
+When localization-only mode was activated, the node reported that local mapping and loop-closure work were disabled. This confirmed that the isolated library, the ROS 2 wrapper, the Gazebo camera topics, and the reduced-computation settings were connected correctly.
+
+6. Test launcher
+
+A dedicated launcher was added at:
+
+  orb_slam3_no_loop_test.sh
+
+With no arguments, the launcher starts the visible baseline configuration: automatic rover motion, Gazebo GUI, RViz2, and the Pangolin viewer. The launcher also provides separate modes for headless testing, teleoperation, existing camera topics, RViz2 selection, Gazebo GUI selection, Pangolin selection, and rebuilding the isolated ROS 2 wrapper.
+
+The main commands are:
+
+  ./orbslam3_no_loop_test.sh
+  ./orbslam3_no_loop_test.sh --teleop
+  ./orbslam3_no_loop_test.sh --auto --headless
+  ./orbslam3_no_loop_test.sh --no-gazebo
+  ./orbslam3_no_loop_test.sh --auto --rviz
+
+The script sets the isolated library path and ROS 2 package prefixes explicitly. This prevents an older package with the same name in another workspace from replacing the isolated test package.
+
+7. Visible baseline run
+
+The no-argument launcher was run with Gazebo, RViz2, Pangolin, and automatic rover motion enabled. The visible run started all expected processes, including Gazebo, the camera plugins, the rover controller, RViz2, the isolated stereo node, and the trajectory display node.
+
+The stereo node loaded the isolated settings file and reported:
+
+  ORB-SLAM3 ready: input=topics, viewer=on, image scale=1.000
+  Loop closing disabled: worker thread not started
+  Tracking state: OK
+  Localization-only mode enabled: local mapping and loop-closure work are disabled
+
+The test was stopped with Ctrl+C. ORB-SLAM3 shut down normally and saved the isolated trajectory and keyframe trajectory files in the test directory. Gazebo, RViz2, Pangolin, and the supporting ROS 2 nodes were then stopped.
+
+8. Results
+
+The isolated configuration achieved the intended architecture for the reduced-computation test. Stereo tracking remained active, the rover simulation supplied camera data, loop-closure processing was disabled before tracking began, and the loop-closure worker thread was not created. Local mapping was stopped after the first valid map initialization through the localization-only control.
+
+The test demonstrated a lower-overhead runtime configuration without altering the main ROS 2 ORB-SLAM source tree. It also provided a repeatable launcher for visible, headless, teleoperation, and camera-topic-only tests.
+
+9. Limitations and next measurements
+
+The test confirms thread removal and successful tracking, but it does not by itself provide a controlled resident-memory comparison against the original build. A follow-up benchmark should run the original and isolated configurations over the same camera sequence and record peak RSS, steady-state RSS, CPU usage, tracked frame count, and trajectory output.
+
+The current isolated change leaves the LoopClosing object allocated for safe shutdown compatibility. A further memory reduction would require removing that allocation when loopClosing is zero and auditing every shutdown and service path that accesses the LoopClosing pointer.
+
+10. Conclusion
+
+The Gazebo stereo rover simulation was tested with a separately built ROS 2 ORB-SLAM3 configuration that disables loop closure and stops local mapping after initialization. The isolated node initialized and tracked successfully, and the visible baseline launcher operated with Gazebo, RViz2, and Pangolin. The main codebase remained unchanged. The isolated launcher and report provide the basis for repeatable runtime and memory measurements before any reduced-computation changes are promoted to the main implementation.
