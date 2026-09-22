@@ -1,9 +1,8 @@
-# VisualInertialOdometry_ros2_gazebo
+# Work reports
 
-Kept contents only:
+This directory stores technical reports and supporting report material.
 
-- `ORB_SLAM/` — working live stereo ORB-SLAM3 + Gazebo rover sim (synced from `/home/ac/ORB_SLAM`). See `ORB_SLAM/README.md`. Entry point: `ORB_SLAM/orbslam3_gazebo.sh`.
-- `open_vins/` — OpenVINS ROS 2 stack with `ov_rover_sim` Gazebo sim.
-- `calibration/elp_3dgs1200p01/` — ELP 3DGS1200P01 stereo calibration scripts and results.
+The VisualInertialOdometry_ros2_gazebo Git repository is maintained separately
+at `/home/ac/VisualInertialOdometry_ros2_gazebo`.
 
-All other (duplicate/outdated ORB-SLAM copies, root-level duplicates, submodule) were removed on 2026-09-21.
+Reports are kept in this directory and are not copied into the VIO repository.

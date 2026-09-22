@@ -1,1 +1,0 @@
-ov_rover_sim/gazebo.sh
