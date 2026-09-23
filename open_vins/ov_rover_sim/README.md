@@ -9,6 +9,11 @@ The true rover pose comes from `/gazebo/model_states`, filtered for the
 `/ov_msckf/posegt` and `/ov_msckf/pathgt` in the `world` frame. This avoids
 using wheel odometry as ground truth.
 
+The same node broadcasts `world` to `odom` using the model pose and Gazebo
+odometry. This connects the dynamic rover transform to the
+robot_state_publisher links, so RViz can resolve the robot from its `global`
+fixed frame.
+
 Build from the OpenVINS directory:
 
 ```bash

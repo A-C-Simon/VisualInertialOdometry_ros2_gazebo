@@ -69,6 +69,9 @@ OpenVINS publishes in the `/ov_msckf` namespace:
 in the `world` frame. This is the Gazebo model pose, not wheel odometry.
 `align_frames.py` timestamp-matches the truth and VIO poses, estimates the
 initial yaw and translation, and publishes the `global` to `world` transform.
+The same ground truth node publishes the dynamic `world` to `odom` transform,
+which connects Gazebo's diff-drive TF to the robot_state_publisher tree. This
+allows RViz to resolve `global` to `base_link` and display the robot model.
 
 The world state plugin is enabled in `ov_rover_sim/worlds/small_room.world` so
 that Gazebo provides the true model state.

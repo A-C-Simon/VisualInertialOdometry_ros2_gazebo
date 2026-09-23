@@ -57,7 +57,8 @@ def generate_launch_description():
 
     # The OpenVINS ROS subscriber does not own the internal simulator object,
     # so its built-in /ov_msckf/pathgt topic is empty. Publish Gazebo's exact
-    # wheel odometry path in odom; align_frames supplies global->odom for RViz.
+    # model path in world. ground_path also bridges world to odom so the
+    # robot_state_publisher tree is reachable from RViz's global fixed frame.
     ground_path = Node(package='ov_rover_sim', executable='ground_path.py',
                        parameters=[{'use_sim_time': True}],
                        output='screen')
