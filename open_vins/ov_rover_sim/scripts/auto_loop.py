@@ -109,8 +109,18 @@ class AutoLoop(Node):
 
 def main():
     rclpy.init()
-    rclpy.spin(AutoLoop())
-    rclpy.shutdown()
+    node = AutoLoop()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        # Do not leave Gazebo holding the last curved-motion command when a
+        # timed stereo initialization hands /cmd_vel over to teleop.
+        node.pub.publish(Twist())
+        rclpy.spin_once(node, timeout_sec=0.1)
+        node.destroy_node()
+        rclpy.shutdown()
 
 
 if __name__ == '__main__':

@@ -104,6 +104,31 @@ else
 fi
 
 if [[ "$auto" == false ]]; then
+  if [[ "$stereo" == true && "$vins" == true ]]; then
+    echo "Stereo initialization: the rover will drive a gentle arc before teleop starts."
+    echo "Keep the Gazebo window focused only after keyboard control is announced."
+    timeout --signal=INT 14s ros2 run ov_rover_sim auto_loop.py --ros-args \
+      -p enabled:=true -p mode:=circle -p use_sim_time:=true \
+      -p start_delay:=2.0 -p linear:=0.25 -p circle_angular:=0.25 \
+      > /tmp/ov_rover_stereo_init.log 2>&1 || true
+    sleep 1
+    if tr -d '\000' < /tmp/ov_msckf_vio.log | grep -q 'successful initialization'; then
+      echo "Stereo OpenVINS initialization succeeded. Keyboard control is now active."
+    else
+      echo "Stereo OpenVINS did not initialize during the first arc; extending initialization."
+      timeout --signal=INT 10s ros2 run ov_rover_sim auto_loop.py --ros-args \
+        -p enabled:=true -p mode:=circle -p use_sim_time:=true \
+        -p start_delay:=0.5 -p linear:=0.25 -p circle_angular:=0.25 \
+        >> /tmp/ov_rover_stereo_init.log 2>&1 || true
+      sleep 1
+      if ! tr -d '\000' < /tmp/ov_msckf_vio.log | grep -q 'successful initialization'; then
+        echo "Stereo initialization failed. Teleop was not started to prevent an invalid trajectory." >&2
+        echo "Inspect /tmp/ov_msckf_vio.log and /tmp/ov_rover_stereo_init.log." >&2
+        exit 1
+      fi
+      echo "Stereo OpenVINS initialization succeeded. Keyboard control is now active."
+    fi
+  fi
   ros2 run ov_rover_sim key_teleop.py
 else
   wait "$launch_pid"

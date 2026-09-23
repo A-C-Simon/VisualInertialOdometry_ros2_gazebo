@@ -48,6 +48,12 @@ Available modes are `--stereo`, `--mono`, `--teleop`, `--headless`, `--no-rviz`,
 `--no-vio`, and `--square`. Stereo uses both simulated cameras. Headless mode
 keeps Gazebo running without its window and disables RViz2.
 
+When `--stereo --teleop` is selected, the launcher first drives a short gentle
+arc and checks the OpenVINS log for successful initialization. Keyboard control
+starts only after that check passes. If the first arc is insufficient, a second
+short arc is attempted. Teleop is withheld if initialization still fails, which
+prevents an invalid VIO path from being treated as a usable trajectory.
+
 ## Topics and frames
 
 The rover publishes `/cam0/image_raw`, `/cam1/image_raw`, `/imu0`,
