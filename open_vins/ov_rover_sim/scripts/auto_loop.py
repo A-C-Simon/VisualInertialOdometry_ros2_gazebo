@@ -117,10 +117,12 @@ def main():
     finally:
         # Do not leave Gazebo holding the last curved-motion command when a
         # timed stereo initialization hands /cmd_vel over to teleop.
-        node.pub.publish(Twist())
-        rclpy.spin_once(node, timeout_sec=0.1)
+        if rclpy.ok():
+            node.pub.publish(Twist())
+            rclpy.spin_once(node, timeout_sec=0.1)
         node.destroy_node()
-        rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':

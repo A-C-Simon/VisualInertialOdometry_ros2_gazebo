@@ -9,6 +9,17 @@ set -u
 
 export ROS_DOMAIN_ID="${ROS_DOMAIN_ID:-42}"
 export ROS2CLI_NO_DAEMON=1
+# Keep this simulator independent from Gazebo instances on other ROS domains.
+# An explicitly supplied URI still takes precedence.
+export GAZEBO_MASTER_URI="${GAZEBO_MASTER_URI:-http://127.0.0.1:$((11345 + ROS_DOMAIN_ID))}"
+
+lock_file="/tmp/openvins_rover.lock"
+exec 9>"$lock_file"
+if ! flock -n 9; then
+  echo "Another OpenVINS rover launcher is already active." >&2
+  echo "Stop that run before starting another one." >&2
+  exit 1
+fi
 
 auto=true
 gui=true
@@ -54,6 +65,24 @@ done
 config="$repo_dir/ov_rover_sim/config/rover_stereo/estimator_config.yaml"
 [[ -f "$config" ]] || { echo "Missing OpenVINS config: $config" >&2; exit 1; }
 
+# A terminal closed during an earlier run can leave child processes alive even
+# though the launcher lock was released. Stop only processes whose command line
+# points into this OpenVINS simulator or uses this exact estimator config.
+mapfile -t stale_pids < <(
+  {
+    pgrep -f "$repo_dir/install_vio/ov_rover_sim" || true
+    pgrep -f "run_subscribe_msckf $config" || true
+  } | sort -u
+)
+if ((${#stale_pids[@]})); then
+  echo "Stopping ${#stale_pids[@]} orphaned OpenVINS rover process(es)."
+  kill -INT "${stale_pids[@]}" 2>/dev/null || true
+  sleep 2
+  for pid in "${stale_pids[@]}"; do
+    if kill -0 "$pid" 2>/dev/null; then kill -KILL "$pid" 2>/dev/null || true; fi
+  done
+fi
+
 echo "Starting camera plus IMU VIO simulation"
 max_cameras=1
 if [[ "$stereo" == true ]]; then max_cameras=2; fi
@@ -61,30 +90,48 @@ auto_launch="$auto"
 # Give stereo OpenVINS a stationary interval for inertial initialization, then
 # start automatic motion after both camera streams are being consumed.
 if [[ "$stereo" == true && "$auto" == true ]]; then auto_launch=false; fi
-echo "ROS_DOMAIN_ID=$ROS_DOMAIN_ID auto=$auto mode=$mode gui=$gui rviz=$rviz vio=$vins cameras=$max_cameras"
+echo "ROS_DOMAIN_ID=$ROS_DOMAIN_ID GAZEBO_MASTER_URI=$GAZEBO_MASTER_URI"
+echo "auto=$auto mode=$mode gui=$gui rviz=$rviz vio=$vins cameras=$max_cameras"
 
 ros2 launch ov_rover_sim rover_sim.launch.py \
   auto:="$auto_launch" mode:="$mode" gui:="$gui" rviz:="$rviz" > /tmp/vio_gazebo_launch.log 2>&1 &
 launch_pid=$!
 vio_pid=""
 
+stop_pid() {
+  local pid="${1:-}"
+  [[ -n "$pid" ]] || return 0
+  kill -INT "$pid" 2>/dev/null || true
+  for _ in {1..30}; do
+    if ! kill -0 "$pid" 2>/dev/null; then break; fi
+    sleep 0.1
+  done
+  if kill -0 "$pid" 2>/dev/null; then kill -KILL "$pid" 2>/dev/null || true; fi
+  wait "$pid" 2>/dev/null || true
+}
+
 cleanup() {
   trap - INT TERM EXIT
-  kill -INT "$launch_pid" 2>/dev/null || true
-  if [[ -n "$vio_pid" ]]; then
-    kill -INT "$vio_pid" 2>/dev/null || true
-    wait "$vio_pid" 2>/dev/null || true
-  fi
-  if [[ -n "$drive_pid" ]]; then
-    kill -INT "$drive_pid" 2>/dev/null || true
-    wait "$drive_pid" 2>/dev/null || true
-  fi
-  wait "$launch_pid" 2>/dev/null || true
+  stop_pid "$drive_pid"
+  stop_pid "$vio_pid"
+  stop_pid "$launch_pid"
 }
 trap cleanup INT TERM EXIT
 
+if ! kill -0 "$launch_pid" 2>/dev/null; then
+  echo "The Gazebo launch process exited during startup." >&2
+  tail -20 /tmp/vio_gazebo_launch.log >&2 || true
+  exit 1
+fi
+topic_wait_args=(--timeout 30)
+if [[ "$stereo" == true ]]; then topic_wait_args+=(--stereo); fi
+if ! python3 "$repo_dir/ov_rover_sim/scripts/wait_for_topics.py" "${topic_wait_args[@]}"; then
+  echo "Gazebo startup failed. Inspect /tmp/vio_gazebo_launch.log." >&2
+  exit 1
+fi
+
 if [[ "$vins" == true ]]; then
-  sleep 12
+  sleep 2
   ros2 run ov_msckf run_subscribe_msckf "$config" \
     --ros-args -r __ns:=/ov_msckf -p use_sim_time:=true \
     -p use_stereo:="$stereo" -p max_cameras:="$max_cameras" \

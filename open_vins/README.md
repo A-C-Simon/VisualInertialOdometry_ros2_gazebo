@@ -54,6 +54,13 @@ starts only after that check passes. If the first arc is insufficient, a second
 short arc is attempted. Teleop is withheld if initialization still fails, which
 prevents an invalid VIO path from being treated as a usable trajectory.
 
+The launcher permits one rover simulation at a time, removes orphaned processes
+from an interrupted run, and assigns Gazebo a master port based on
+`ROS_DOMAIN_ID`. Before OpenVINS starts, a direct ROS 2 subscriber verifies
+`/gazebo/model_states`, `/odom`, `/imu0`, and the required camera streams. A
+missing rover or sensor therefore stops the launch with a specific error instead
+of leaving RViz with an incomplete TF tree.
+
 ## Topics and frames
 
 The rover publishes `/cam0/image_raw`, `/cam1/image_raw`, `/imu0`,
