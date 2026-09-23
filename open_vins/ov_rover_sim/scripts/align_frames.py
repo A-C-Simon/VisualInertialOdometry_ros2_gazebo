@@ -16,7 +16,8 @@ This avoids the old displacement-window method, which became wrong when
 VIO scale or heading drifted during the 3 to 5 metre window. The resulting
 transform is only a rigid frame alignment. Any later separation is estimator
 error, not hidden by the alignment.
-Publishes once via a static broadcaster, logs it, and exits.
+    Publishes once via a static broadcaster and remains alive so the static
+    transform stays available to RViz and late-joining TF listeners.
 If VINS never shows up (e.g. --no-vins) it publishes identity after
 timeout_s so RViz still has a complete TF tree.
 """
@@ -128,12 +129,8 @@ class Aligner(Node):
 
     def finish(self):
         self.done = True
-        # latched static transform stays alive; give it a moment on the wire
-        import time
-        t0 = time.time()
-        while time.time() - t0 < 1.0:
-            rclpy.spin_once(self, timeout_sec=0.1)
-        raise SystemExit(0)
+        # Keep the StaticTransformBroadcaster alive for late-joining RViz and
+        # TF listeners. The timer returns immediately after this point.
 
 
 def main():
