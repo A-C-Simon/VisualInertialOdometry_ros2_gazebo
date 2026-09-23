@@ -99,10 +99,12 @@ The rover publishes:
 /cam1/camera_info
 /imu0
 /odom
+/gazebo/model_states
 ```
 
 The IMU runs at 200 Hz. The cameras run at 20 Hz and produce 640 by 400
-images. The estimator uses simulated time.
+images. Gazebo publishes true model states at `/gazebo/model_states`. The
+estimator and comparison nodes use simulated time.
 
 ## OpenVINS outputs
 
@@ -117,8 +119,11 @@ The node runs in the `/ov_msckf` namespace and publishes:
 ```
 
 `/ov_msckf/pathimu` is the estimated inertial trajectory. `/ov_msckf/pathgt`
-is the simulator ground truth path used for comparison. RViz2 displays these
-paths and the estimator diagnostics.
+is generated from Gazebo's true `ov_rover` model pose, not wheel odometry, and
+is used for comparison. The simulator publishes it in the `world` frame. The
+alignment node timestamp-matches VIO and truth poses, estimates the initial
+yaw and translation, and publishes `global` to `world`. RViz2 displays the
+aligned paths and the estimator diagnostics.
 
 ## Calibration
 

@@ -135,5 +135,10 @@
     <model name="poster3"><static>true</static><pose>-5 -9.88 1.6 0 0 0</pose>
       <link name="l"><visual name="v"><geometry><box><size>1.6 0.02 1.0</size></box></geometry>
         <material><script><name>Gazebo/Residential</name><uri>file://media/materials/scripts/gazebo.material</uri></script></material></visual></link></model>
+    <!-- Publish true simulated model poses for trajectory evaluation. -->
+    <plugin name="gazebo_ros_state" filename="libgazebo_ros_state.so">
+      <ros><namespace>/gazebo</namespace></ros>
+      <update_rate>50</update_rate>
+    </plugin>
   </world>
 </sdf>

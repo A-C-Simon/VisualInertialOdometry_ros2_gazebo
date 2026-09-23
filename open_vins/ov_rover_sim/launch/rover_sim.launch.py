@@ -46,24 +46,28 @@ def generate_launch_description():
                 condition=IfCondition(LaunchConfiguration('auto')),
                 output='screen')
 
-    # One-time global->odom alignment: wheel odometry lives in `odom`,
-    # OpenVINS in its own `global` frame, and VIO global yaw is
-    # unobservable, so the two differ by a fixed yaw. The node measures
-    # it from the first meters both travel and latches the corrected
-    # static transform (identity fallback if VINS never appears, e.g.
-    # --no-vins, so RViz still has a full TF tree). After that, any
-    # remaining separation between the paths is real estimator drift.
-    # Estimation itself never uses TF.
+    # One-time global->world alignment: Gazebo model truth lives in `world`,
+    # OpenVINS in its own `global` frame, and VIO global yaw is unobservable.
+    # The node measures the rigid transform from timestamp-matched poses.
+    # After that, any remaining separation between the paths is estimator
+    # error. Estimation itself never uses TF.
     align = Node(package='ov_rover_sim', executable='align_frames.py',
                  parameters=[{'use_sim_time': True}],
                  output='screen')
+
+    # The OpenVINS ROS subscriber does not own the internal simulator object,
+    # so its built-in /ov_msckf/pathgt topic is empty. Publish Gazebo's exact
+    # wheel odometry path in odom; align_frames supplies global->odom for RViz.
+    ground_path = Node(package='ov_rover_sim', executable='ground_path.py',
+                       parameters=[{'use_sim_time': True}],
+                       output='screen')
 
     return LaunchDescription([
         DeclareLaunchArgument('auto', default_value='true', description='drive automatically'),
         DeclareLaunchArgument('mode', default_value='circle', description='auto drive mode: circle or square'),
         DeclareLaunchArgument('rviz', default_value='false', description='open rviz'),
         DeclareLaunchArgument('gui', default_value='true', description='gazebo GUI (false=headless)'),
-        gazebo, spawn, rsp, auto, align,
+        gazebo, spawn, rsp, auto, ground_path, align,
         # manual drive: ros2 run ov_rover_sim key_teleop.py
         Node(package='rviz2', executable='rviz2',
              arguments=['-d', os.path.join(pkg, 'rviz', 'rover.rviz')],

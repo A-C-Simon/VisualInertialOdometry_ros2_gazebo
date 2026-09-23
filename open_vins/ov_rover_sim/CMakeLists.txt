@@ -4,11 +4,13 @@ project(ov_rover_sim)
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclpy REQUIRED)
+find_package(gazebo_msgs REQUIRED)
 
 install(DIRECTORY launch worlds models urdf config rviz
   DESTINATION share/${PROJECT_NAME})
 
 install(PROGRAMS scripts/auto_loop.py scripts/key_teleop.py scripts/align_frames.py
+                 scripts/ground_path.py
   DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
