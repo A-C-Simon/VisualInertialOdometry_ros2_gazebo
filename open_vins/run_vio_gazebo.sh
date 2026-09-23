@@ -50,7 +50,7 @@ while (($#)); do
   shift
 done
 
-config="$repo_dir/open_vins/ov_rover_sim/config/rover_stereo/estimator_config.yaml"
+config="$repo_dir/ov_rover_sim/config/rover_stereo/estimator_config.yaml"
 [[ -f "$config" ]] || { echo "Missing OpenVINS config: $config" >&2; exit 1; }
 
 echo "Starting camera plus IMU VIO simulation"

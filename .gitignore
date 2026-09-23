@@ -5,6 +5,9 @@ log/
 build_vio/
 install_vio/
 log_vio/
+open_vins/build_vio/
+open_vins/install_vio/
+open_vins/log_vio/
 __pycache__/
 *.py[cod]
 
