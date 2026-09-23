@@ -79,10 +79,12 @@ that Gazebo provides the true model state.
 ## Calibration and estimator settings
 
 The rover calibration files are in `ov_rover_sim/config/rover_stereo/`. The
-estimator configuration controls the bounded clone and feature state. Stereo
-mode remains an explicit diagnostic option because the initial stereo test
-received valid images and IMU data but had unstable initialization. Mono plus
-IMU completed initialization and kept the estimate bounded during the test.
+estimator configuration controls the bounded clone and feature state. The
+launcher gives stereo a stationary initialization interval, then starts the
+automatic drive after both cameras and the IMU are subscribed. This avoids the
+earlier startup race. The revised stereo run received both camera streams and
+completed initialization successfully. Mono plus IMU remains the lower-cost
+default.
 
 ## Trajectory comparison result
 
