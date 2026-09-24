@@ -21,6 +21,8 @@
 
 #include "VioManager.h"
 
+#include <cmath>
+
 #include "feat/Feature.h"
 #include "feat/FeatureDatabase.h"
 #include "feat/FeatureInitializer.h"
@@ -172,7 +174,10 @@ void VioManager::feed_measurement_imu(const ov_core::ImuData &message) {
     oldest_time = -1;
   }
   if (!is_initialized_vio) {
-    oldest_time = message.timestamp - params.init_options.init_window_time + state->_calib_dt_CAMtoIMU->value()(0) - 0.10;
+    // The static initializer needs a full IMU window measured in IMU time.
+    // A positive camera-to-IMU offset must not shorten that window.
+    oldest_time = message.timestamp - params.init_options.init_window_time -
+                  std::abs(state->_calib_dt_CAMtoIMU->value()(0)) - 0.10;
   }
   propagator->feed_imu(message, oldest_time);
 
