@@ -8,6 +8,8 @@ log_vio/
 open_vins/build_vio/
 open_vins/install_vio/
 open_vins/log_vio/
+open_vins/build_hw290/
+open_vins/log_hw290/
 __pycache__/
 *.py[cod]
 
