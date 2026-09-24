@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>ov_hw290</name>
+  <version>0.1.0</version>
+  <description>ROS 2 side by side camera splitter for the HW290 OpenVINS rig.</description>
+  <maintainer email="test@test.com">ac</maintainer>
+  <license>GPL-3.0-only</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>rclcpp</depend>
+  <depend>sensor_msgs</depend>
+  <depend>libopencv-dev</depend>
+  <export><build_type>ament_cmake</build_type></export>
+</package>
