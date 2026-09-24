@@ -1,0 +1,29 @@
+%YAML:1.0
+cam0:
+  T_imu_cam:
+    - [-0.91612506, 0.12585504, -0.38062112, 0.0]
+    - [0.38469910, 0.00891262, -0.92299904, 0.0]
+    - [-0.11276280, -0.99201242, -0.05657884, 0.0]
+    - [0.0, 0.0, 0.0, 1.0]
+  cam_overlaps: [1]
+  camera_model: pinhole
+  distortion_coeffs: [0.0,0.0,0.0,0.0]
+  distortion_model: radtan
+  intrinsics: [433.10635826,433.10635826,325.54584656,245.57666931]
+  resolution: [640,480]
+  rostopic: /cam0/image_raw
+  timeshift_cam_imu: 0.155
+cam1:
+  T_imu_cam:
+    - [-0.91612506, 0.12585504, -0.38062112, -0.05487194]
+    - [0.38469910, 0.00891262, -0.92299904, 0.02304182]
+    - [-0.11276280, -0.99201242, -0.05657884, -0.00675401]
+    - [0.0, 0.0, 0.0, 1.0]
+  cam_overlaps: [0]
+  camera_model: pinhole
+  distortion_coeffs: [0.0,0.0,0.0,0.0]
+  distortion_model: radtan
+  intrinsics: [433.10635826,433.10635826,325.54584656,245.57666931]
+  resolution: [640,480]
+  rostopic: /cam1/image_raw
+  timeshift_cam_imu: 0.155
