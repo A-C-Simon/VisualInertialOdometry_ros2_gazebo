@@ -16,4 +16,7 @@ __pycache__/
 # Runtime outputs
 *_trajectory.txt
 *_keyframes.txt
+vio_session.txt
+kf_vio_session.txt
+vio_timing.txt
 *.bag

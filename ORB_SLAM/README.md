@@ -209,6 +209,52 @@ grow in Map Viewer. Stop with Ctrl+C; trajectories are saved in this directory.
   Release build; optionally add `Camera.newWidth/newHeight` to downscale
   (scales fx/fy/cx/cy accordingly  -  see `src/Settings.cc`).
 
+## HW-290 stereo-inertial live test
+
+Fused VIO with the ELP camera and the HW-290 MPU6050 on the Arduino Nano.
+Pipeline: `usb_cam` (1280x480 side-by-side) to `ov_hw290/stereo_splitter`
+(rectified 640x480 `/cam0`, `/cam1`) plus `hw290_imu.py` (`/imu0`, 100 Hz) to
+`orb_slam_ros2/stereo_imu_node` (`IMU_STEREO`) with Pangolin viewer to
+RViz2 (`/orbslam_vio/path`, points, tracking image).
+
+Run it:
+
+```
+./orbslam3_hw290_vio.sh
+```
+
+Options: `--sensors-only` (camera and IMU, no SLAM), `--no-rviz`,
+`--no-viewer` (headless benchmark). The default ROS domain is 48 and
+`DISPLAY` defaults to `:1`. Logs go to `/tmp/orb_vio_*.log`. Shutdown
+with Ctrl-C writes `vio_session.txt`, `kf_vio_session.txt`, and
+`vio_timing.txt` here and prints a benchmark summary.
+
+Keep the rig still for about 2 s after start, then move it as one rigid
+body with slow rotation and translation facing textured static objects
+0.5-2 m away. Moving the IMU board alone cannot move the trajectory: the
+pose comes from the camera, and inertial initialization stays uninitialized
+while the camera is static. Inertial settings live in
+`orb_slam_ros2/config/ELP_640x480_inertial.yaml`: zero-distortion rectified
+640x480 (P1/P2 from `calibration_opencv.yaml` scaled by 0.4, fx 433.106,
+baseline 0.0598957 m), `T_b_c1` and IMU noise from
+`open_vins/hw290_stereo/kalibr_imu_chain.yaml` and
+`kalibr_imucam_chain.yaml` (provisional: rotation-only estimate, zero
+translation). The 0.155 s camera-to-IMU time offset is not compensated;
+ORB-SLAM3 has no time-shift parameter.
+
+Robustness: `PreintegrateIMU` needs at least 2 IMU samples spanning each
+frame interval and segfaults otherwise, so the node skips frames with fewer
+than 2 samples or with no sample older than the frame time minus 0.012 s.
+Skips are logged as warnings; the next frame reuses the kept samples.
+
+Measured on the Intel N100 desk machine (4 cores), rectified 640x480 with
+1000 ORB features: TrackStereo mean 19.8 ms, median 19.1 ms, p95 24.7 ms
+over 965 frames headless; 26-66 ms means with Pangolin and RViz2 running.
+Steady-state CPU/MEM: SLAM node 55-105% and 550-680 MB, splitter about 30%
+and 50-60 MB, usb_cam 17-22% and 110-220 MB, rviz2 about 25% and 190 MB.
+`/imu0` holds 99-100 Hz; `/cam0` delivers about 14 Hz headless and about
+6 Hz with both viewers, so keep desktop load low during a run.
+
 ## Provenance
 
 | Packaged copy | Original |

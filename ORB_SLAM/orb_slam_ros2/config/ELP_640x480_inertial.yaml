@@ -1,0 +1,101 @@
+%YAML:1.0
+
+# ELP 3DGS1200P01 + HW-290 MPU6050 - ORB-SLAM3 stereo-inertial settings
+# Images: rectified 640x480 pair from ov_hw290/stereo_splitter (usb_cam 1280x480
+# side-by-side MJPG). Intrinsics are P1/P2 from
+# calibration/elp_3dgs1200p01/calib/calibration_opencv.yaml scaled 1600x1200->640x480
+# (sx=sy=0.4): fx=433.10635826, cx=325.54584656, cy=245.57666931.
+# Distortion is zero because the splitter already undistorts/rectifies.
+# Baseline from P2 Tx: 64.853007/1082.765896 = 0.0598957 m (raw T gives 0.0598913 m).
+# IMU: HW-290 MPU6050 via Arduino Nano /imu0 at 100 Hz, +/-2g (16384 LSB/g),
+# +/-250 dps (131 LSB/dps). Noise values from
+# open_vins/hw290_stereo/kalibr_imu_chain.yaml (provisional, uncalibrated IMU).
+# T_b_c1 from open_vins/hw290_stereo/kalibr_imucam_chain.yaml cam0 T_imu_cam
+# (provisional rotation-only motion capture, 0.64 deg median residual, single
+# capture, translation assumed zero - see hw290_stereo/README.md).
+# Time offset timeshift_cam_imu=0.155 s is NOT compensated here; ORB-SLAM3 has no
+# time-shift parameter. Keep rig rigid, hold still ~2 s at start, then excite
+# with slow rotation+translation in a textured 0.5-2 m scene for IMU init.
+File.version: "1.0"
+
+Camera.type: "PinHole"
+
+Camera1.fx: 433.10635826
+Camera1.fy: 433.10635826
+Camera1.cx: 325.54584656
+Camera1.cy: 245.57666931
+
+Camera1.k1: 0.0
+Camera1.k2: 0.0
+Camera1.p1: 0.0
+Camera1.p2: 0.0
+Camera1.k3: 0.0
+
+Camera2.fx: 433.10635826
+Camera2.fy: 433.10635826
+Camera2.cx: 325.54584656
+Camera2.cy: 245.57666931
+
+Camera2.k1: 0.0
+Camera2.k2: 0.0
+Camera2.p1: 0.0
+Camera2.p2: 0.0
+Camera2.k3: 0.0
+
+Camera.width: 640
+Camera.height: 480
+
+Camera.fps: 30
+
+# Splitter publishes rgb8; ORB-SLAM3 treats 0=BGR 1=RGB for color conversion.
+Camera.RGB: 1
+
+# Rectified pair: identity rotation, -baseline on X.
+Stereo.T_c1_c2: !!opencv-matrix
+  rows: 4
+  cols: 4
+  dt: f
+  data: [1.0, 0.0, 0.0, -0.0598957,
+         0.0, 1.0, 0.0, 0.0,
+         0.0, 0.0, 1.0, 0.0,
+         0, 0, 0, 1.0]
+
+Stereo.ThDepth: 40.0
+
+# Body (IMU) -> left camera. Provisional - see header.
+IMU.T_b_c1: !!opencv-matrix
+  rows: 4
+  cols: 4
+  dt: f
+  data: [-0.91612506, 0.12585504, -0.38062112, 0.0,
+         0.38469910, 0.00891262, -0.92299904, 0.0,
+         -0.11276280, -0.99201242, -0.05657884, 0.0,
+         0.0, 0.0, 0.0, 1.0]
+
+IMU.InsertKFsWhenLost: 0
+
+# MPU6050 cheap-IMU values (kalibr_imu_chain.yaml).
+IMU.NoiseGyro: 0.005
+IMU.NoiseAcc: 0.02
+IMU.GyroWalk: 0.00002
+IMU.AccWalk: 0.003
+IMU.Frequency: 100.0
+
+# Lighter than the 1600x1200 / 2000-feature pure-stereo config: N100 has 4 cores.
+ORBextractor.nFeatures: 1000
+ORBextractor.scaleFactor: 1.2
+ORBextractor.nLevels: 8
+ORBextractor.iniThFAST: 20
+ORBextractor.minThFAST: 7
+
+Viewer.KeyFrameSize: 0.05
+Viewer.KeyFrameLineWidth: 1.0
+Viewer.GraphLineWidth: 0.9
+Viewer.PointSize: 2.0
+Viewer.CameraSize: 0.08
+Viewer.CameraLineWidth: 3.0
+Viewer.ViewpointX: 0.0
+Viewer.ViewpointY: -0.7
+Viewer.ViewpointZ: -1.8
+Viewer.ViewpointF: 500.0
+Viewer.imageViewScale: 1.0

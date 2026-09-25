@@ -47,6 +47,28 @@ ros2 launch orb_slam_ros2 stereo_topics.launch.py \
 The image headers must contain monotonic timestamps. Approximate-time
 synchronization defaults to a 20 ms maximum separation.
 
+## Stereo-inertial (HW-290 and ELP)
+
+`stereo_imu_node` runs `System::IMU_STEREO` on rectified `/cam0/image_raw`
+and `/cam1/image_raw` (for example from the `ov_hw290` splitter at 640x480)
+plus `/imu0` (HW-290 at 100 Hz). Images and IMU share ROS header time as
+the timestamp base.
+
+```bash
+ros2 launch orb_slam_ros2 stereo_inertial_topics.launch.py \
+  namespace:=orbslam_vio viewer:=true
+```
+
+Topics under the namespace are `pose`, `path`, `tracked_map_points`,
+`tracking_image`, and `tracking_state`, plus TF `map` to
+`camera_optical_frame` (published only while tracking is valid).
+Parameters are `vocabulary_path`, `settings_path` (default
+`config/ELP_640x480_inertial.yaml`), `left_topic`, `right_topic`,
+`imu_topic`, `use_viewer`, `publish_tf`, `trajectory_path`,
+`keyframe_trajectory_path`, and `timing_path` (per-frame TrackStereo
+timings). Frames without enough spanning IMU samples are skipped; see the
+parent README for the reason.
+
 The `config/rover_gazebo_stereo.yaml` settings are provided for the
 `ov_rover_sim` 640x400, 20 Hz, 0.11 m-baseline cameras. They select pure
 stereo SLAM (`System::STEREO`); no simulated IMU topic is consumed.

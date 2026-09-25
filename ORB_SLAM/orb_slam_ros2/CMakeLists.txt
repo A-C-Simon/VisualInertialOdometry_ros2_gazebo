@@ -81,13 +81,39 @@ target_link_libraries(stereo_node
   ${Pangolin_LIBRARIES}
   ${OpenCV_LIBS})
 
+add_executable(stereo_imu_node src/stereo_imu_node.cpp)
+target_include_directories(stereo_imu_node SYSTEM PRIVATE
+  "${ORB_SLAM3_ROOT}"
+  "${ORB_SLAM3_INCLUDE_DIR}"
+  "${ORB_SLAM3_ROOT}/include/CameraModels"
+  "${ORB_SLAM3_ROOT}/Thirdparty/Sophus"
+  ${EIGEN3_INCLUDE_DIRS}
+  ${Pangolin_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS})
+ament_target_dependencies(stereo_imu_node
+  cv_bridge
+  geometry_msgs
+  message_filters
+  nav_msgs
+  rclcpp
+  sensor_msgs
+  std_msgs
+  std_srvs
+  tf2_ros)
+target_link_libraries(stereo_imu_node
+  "${ORB_SLAM3_LIBRARY}"
+  "${DBOW2_LIBRARY}"
+  "${G2O_LIBRARY}"
+  ${Pangolin_LIBRARIES}
+  ${OpenCV_LIBS})
+
 # Keep the executable usable from both build/ and install/ without modifying
 # LD_LIBRARY_PATH. These libraries remain in the external ORB-SLAM3 tree.
-set_target_properties(stereo_node PROPERTIES
+set_target_properties(stereo_node stereo_imu_node PROPERTIES
   BUILD_RPATH "${ORB_SLAM3_ROOT}/lib;${ORB_SLAM3_ROOT}/Thirdparty/DBoW2/lib;${ORB_SLAM3_ROOT}/Thirdparty/g2o/lib"
   INSTALL_RPATH "${ORB_SLAM3_ROOT}/lib;${ORB_SLAM3_ROOT}/Thirdparty/DBoW2/lib;${ORB_SLAM3_ROOT}/Thirdparty/g2o/lib")
 
-install(TARGETS stereo_node
+install(TARGETS stereo_node stereo_imu_node
   DESTINATION lib/${PROJECT_NAME})
 install(DIRECTORY config launch
   DESTINATION share/${PROJECT_NAME})
