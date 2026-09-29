@@ -16,7 +16,7 @@ calib_imu_g_sensitivity: false # no measured gyro gravity sensitivity is availab
 max_clones: 11
 max_slam: 50
 max_slam_in_update: 25
-max_msckf_in_update: 10
+max_msckf_in_update: 40
 dt_slam_delay: 2
 
 gravity_mag: 9.81
@@ -82,7 +82,7 @@ grid_x: 8
 grid_y: 6
 min_px_dist: 10
 knn_ratio: 0.70
-track_frequency: 25.0
+track_frequency: 35.0
 downsample_cameras: false
 num_opencv_threads: 4 # -1: auto, 0-1: serial, >1: number of threads
 histogram_method: "HISTOGRAM" # NONE, HISTOGRAM, CLAHE

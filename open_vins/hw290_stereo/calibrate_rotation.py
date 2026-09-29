@@ -6,6 +6,7 @@ three axes in a textured scene. This estimates rotation only. Translation and
 noise still require a full camera-IMU calibration for accurate VIO.
 """
 import argparse
+import json
 import time
 from collections import deque
 
@@ -16,25 +17,25 @@ from cv_bridge import CvBridge
 from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data
 from scipy.spatial.transform import Rotation
-from sensor_msgs.msg import Image, Imu
+from sensor_msgs.msg import Image, Imu, CameraInfo
 
 
 class Calibrator(Node):
-    def __init__(self, offset_min=-0.4, offset_max=0.4):
+    def __init__(self, offset_min=-0.4, offset_max=0.4, stationary_seconds=5.0):
         super().__init__('hw290_rotation_calibrator')
         self.offset_min = offset_min
         self.offset_max = offset_max
+        self.stationary_seconds = stationary_seconds
+        cv2.setNumThreads(1)
         self.bridge = CvBridge()
         self.imu = deque(maxlen=12000)
         self.pairs = []
         self.last = None
         self.orb = cv2.ORB_create(nfeatures=900, fastThreshold=12)
         self.matcher = cv2.BFMatcher(cv2.NORM_HAMMING)
-        self.k = np.array([[423.9725148, 0, 318.7361917],
-                           [0, 424.0607865, 246.9560589],
-                           [0, 0, 1]], dtype=np.float64)
-        self.d = np.array([-0.4169720272, 0.2386866981,
-                           0.0001763182, -0.0001649462, -0.0935433880])
+        self.k = None
+        self.d = None
+        self.create_subscription(CameraInfo, '/cam0/camera_info', self.on_info, qos_profile_sensor_data)
         self.create_subscription(Imu, '/imu0', self.on_imu, qos_profile_sensor_data)
         self.create_subscription(Image, '/cam0/image_raw', self.on_image, qos_profile_sensor_data)
 
@@ -42,12 +43,18 @@ class Calibrator(Node):
     def stamp(msg):
         return msg.header.stamp.sec + msg.header.stamp.nanosec * 1e-9
 
+    def on_info(self, msg):
+        self.k = np.asarray(msg.k, dtype=float).reshape(3, 3)
+        self.d = np.asarray(msg.d, dtype=float)
+
     def on_imu(self, msg):
         self.imu.append((self.stamp(msg), np.array([
             msg.angular_velocity.x, msg.angular_velocity.y,
             msg.angular_velocity.z], dtype=np.float64)))
 
     def on_image(self, msg):
+        if self.k is None:
+            return
         t = self.stamp(msg)
         if self.last is not None and t - self.last[0] < 0.13:
             return
@@ -100,10 +107,19 @@ class Calibrator(Node):
         sample = list(self.imu)
         times = np.array([x[0] for x in sample])
         gyro = np.array([x[1] for x in sample])
+        stationary = times < times[0] + self.stationary_seconds
+        bias = gyro[stationary].mean(axis=0)
+        noise = gyro[stationary].std(axis=0)
+        if stationary.sum() < 100 or np.max(noise) > 0.015:
+            print('Initial stationary gyro segment is missing or contains motion; repeat capture.')
+            return
+        gyro -= bias
         best = None
         for offset in np.arange(self.offset_min, self.offset_max + 0.001, 0.005):
             camera, inertial = [], []
             for t0, t1, vector, _ in self.pairs:
+                if t0 < times[0] + self.stationary_seconds:
+                    continue
                 imu_vector = self.integrate(times, gyro, t0 + offset, t1 + offset)
                 if imu_vector is None or np.linalg.norm(imu_vector) < 0.01:
                     continue
@@ -113,14 +129,17 @@ class Calibrator(Node):
                 continue
             camera = np.array(camera)
             inertial = np.array(inertial)
-            for sign in (1, -1):
+            train = np.arange(len(camera)) % 3 != 0
+            # integrate() already accounts for scene vs sensor rotation.
+            # Negating all gyro axes would be a reflection, not a rigid mount.
+            for sign in (1,):
                 try:
-                    fit, _ = Rotation.align_vectors(camera, sign * inertial)
+                    fit, _ = Rotation.align_vectors(camera[train], sign * inertial[train])
                 except ValueError:
                     continue
                 residual = np.linalg.norm(
                     camera - fit.apply(sign * inertial), axis=1)
-                score = float(np.median(residual))
+                score = float(np.median(residual[train]))
                 if best is None or score < best[0]:
                     best = (score, offset, sign, fit, camera, inertial)
         if best is None:
@@ -128,10 +147,15 @@ class Calibrator(Node):
             return
         score, offset, sign, fit, camera, inertial = best
         singular = np.linalg.svd(inertial, compute_uv=False)
+        validation = np.arange(len(camera)) % 3 == 0
+        validation_deg = float(np.rad2deg(np.median(np.linalg.norm(
+            camera[validation] - fit.apply(inertial[validation]), axis=1))))
         print(f'Usable homography rotation pairs: {len(camera)}')
         print(f'Median rotational residual: {np.rad2deg(score):.2f} degrees')
         print(f'IMU motion axis spread: {singular[-1]/singular[0]:.3f}')
         print(f'Camera-to-IMU time shift: {offset:+.3f} seconds')
+        print(f'Held-out rotational residual: {validation_deg:.2f} degrees')
+        print(f'Stationary gyro bias (rad/s): {bias}')
         if offset - self.offset_min < 0.005 or self.offset_max - offset < 0.005:
             print('Time shift is at the search boundary; do not use it as a calibration.')
         print(f'Gyro sign used: {sign:+d}')
@@ -141,6 +165,12 @@ class Calibrator(Node):
         print(np.array2string(fit.as_matrix().T, precision=5))
         if np.rad2deg(score) > 5 or singular[-1]/singular[0] < 0.08:
             print('Calibration quality is insufficient for an automatic VIO update.')
+        return dict(rotation_cam_to_imu=fit.as_matrix().T.tolist(), time_offset_s=float(offset),
+                    gyro_bias_rad_s=bias.tolist(), training_residual_deg=float(np.rad2deg(score)),
+                    validation_residual_deg=validation_deg, axis_spread=float(singular[-1]/singular[0]),
+                    pairs=len(camera), translation_calibrated=False,
+                    rotation_candidate_valid=bool(validation_deg < 1.5 and singular[-1]/singular[0] > 0.15
+                        and offset-self.offset_min > 0.01 and self.offset_max-offset > 0.01))
 
 
 def main():
@@ -150,11 +180,13 @@ def main():
     parser.add_argument('--load')
     parser.add_argument('--offset-min', type=float, default=-0.4)
     parser.add_argument('--offset-max', type=float, default=0.4)
+    parser.add_argument('--stationary-seconds', type=float, default=5.0)
+    parser.add_argument('--result', help='Write a rotation/time candidate JSON; never overwrites calibration')
     args = parser.parse_args()
     if args.offset_min >= args.offset_max:
         parser.error('--offset-min must be below --offset-max')
     rclpy.init()
-    node = Calibrator(args.offset_min, args.offset_max)
+    node = Calibrator(args.offset_min, args.offset_max, args.stationary_seconds)
     if args.load:
         capture = np.load(args.load)
         node.pairs = [(float(t0), float(t1), vector, int(valid))
@@ -165,9 +197,14 @@ def main():
             capture['imu_time'], capture['imu_gyro']))
     else:
         start = time.monotonic()
+        move_announced = False
+        print('CAPTURE STARTED: hold still for the stationary bias segment.', flush=True)
         try:
             while rclpy.ok() and time.monotonic() - start < args.seconds:
                 rclpy.spin_once(node, timeout_sec=0.05)
+                if not move_announced and node.imu and node.imu[-1][0] - node.imu[0][0] > args.stationary_seconds + 1:
+                    print('MOVE NOW: gently rotate the rigid assembly about all three axes.', flush=True)
+                    move_announced = True
         except KeyboardInterrupt:
             pass
         if node.pairs and node.imu:
@@ -177,7 +214,10 @@ def main():
                      pair_vec=pair_vec, pair_valid=pair_valid,
                      imu_time=imu_time, imu_gyro=imu_gyro)
             print(f'Saved capture to {args.save}')
-    node.solve()
+    result = node.solve()
+    if args.result:
+        with open(args.result, 'w') as stream:
+            json.dump(result, stream, indent=2)
     node.destroy_node()
     rclpy.shutdown()
 
