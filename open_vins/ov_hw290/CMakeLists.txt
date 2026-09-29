@@ -13,5 +13,11 @@ target_link_libraries(stereo_splitter ${OpenCV_LIBS})
 target_compile_features(stereo_splitter PUBLIC cxx_std_17)
 target_compile_options(stereo_splitter PRIVATE -O2 -Wall -Wextra)
 
-install(TARGETS stereo_splitter DESTINATION lib/${PROJECT_NAME})
+add_executable(hw290_imu src/hw290_imu.cpp)
+ament_target_dependencies(hw290_imu rclcpp sensor_msgs)
+target_include_directories(hw290_imu PRIVATE include)
+target_compile_features(hw290_imu PUBLIC cxx_std_17)
+target_compile_options(hw290_imu PRIVATE -O2 -Wall -Wextra)
+
+install(TARGETS hw290_imu stereo_splitter DESTINATION lib/${PROJECT_NAME})
 ament_package()
