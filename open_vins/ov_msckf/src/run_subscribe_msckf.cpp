@@ -81,7 +81,10 @@ int main(int argc, char **argv) {
   executor.spin();
 
   // Final visualization
+  viz->stop_workers();
   viz->visualize_final();
+  viz.reset();
+  sys.reset();
   rclcpp::shutdown();
 
   // Done!

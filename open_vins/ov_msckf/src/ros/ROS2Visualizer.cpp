@@ -149,15 +149,23 @@ ROS2Visualizer::ROS2Visualizer(std::shared_ptr<rclcpp::Node> node, std::shared_p
 
   // Start thread for the image publishing
   if (_app->get_params().use_multi_threading_pubs) {
-    std::thread thread([&] {
-      rclcpp::Rate loop_rate(20);
-      while (rclcpp::ok()) {
+    image_thread = std::thread([this] {
+      while (rclcpp::ok() && !stop_requested) {
         publish_images();
-        loop_rate.sleep();
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
       }
     });
-    thread.detach();
   }
+}
+
+ROS2Visualizer::~ROS2Visualizer() { stop_workers(); }
+
+void ROS2Visualizer::stop_workers() {
+  stop_requested = true;
+  if (update_thread.joinable())
+    update_thread.join();
+  if (image_thread.joinable())
+    image_thread.join();
 }
 
 void ROS2Visualizer::setup_subscribers(std::shared_ptr<ov_core::YamlParser> parser) {
@@ -450,10 +458,13 @@ void ROS2Visualizer::callback_inertial(const sensor_msgs::msg::Imu::SharedPtr ms
   // If the processing queue is currently active / running just return so we can keep getting measurements
   // Otherwise create a second thread to do our update in an async manor
   // The visualization of the state, images, and features will be synchronous with the update!
-  if (thread_update_running)
+  if (stop_requested || thread_update_running.exchange(true))
     return;
-  thread_update_running = true;
-  std::thread thread([&] {
+  if (update_thread.joinable())
+    update_thread.join();
+  // The callback's local measurement is destroyed on return. Its timestamp
+  // must be owned by the worker, not captured by reference.
+  update_thread = std::thread([this, timestamp = message.timestamp] {
     // Lock on the queue (prevents new images from appending)
     std::lock_guard<std::mutex> lck(camera_queue_mtx);
 
@@ -471,7 +482,7 @@ void ROS2Visualizer::callback_inertial(const sensor_msgs::msg::Imu::SharedPtr ms
 
       // Loop through our queue and see if we are able to process any of our camera measurements
       // We are able to process if we have at least one IMU measurement greater than the camera time
-      double timestamp_imu_inC = message.timestamp - _app->get_state()->_calib_dt_CAMtoIMU->value()(0);
+      double timestamp_imu_inC = timestamp - _app->get_state()->_calib_dt_CAMtoIMU->value()(0);
       while (!camera_queue.empty() && camera_queue.at(0).timestamp < timestamp_imu_inC) {
         auto rT0_1 = boost::posix_time::microsec_clock::local_time();
         double update_dt = 100.0 * (timestamp_imu_inC - camera_queue.at(0).timestamp);
@@ -487,11 +498,9 @@ void ROS2Visualizer::callback_inertial(const sensor_msgs::msg::Imu::SharedPtr ms
   });
 
   // If we are single threaded, then run single threaded
-  // Otherwise detach this thread so it runs in the background!
+  // Otherwise retain ownership and join before reuse or destruction.
   if (!_app->get_params().use_multi_threading_subs) {
-    thread.join();
-  } else {
-    thread.detach();
+    update_thread.join();
   }
 }
 

@@ -49,6 +49,7 @@
 #include <fstream>
 #include <memory>
 #include <mutex>
+#include <thread>
 
 #include <Eigen/Eigen>
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -85,6 +86,10 @@ public:
    * @param sim Simulator if we are simulating
    */
   ROS2Visualizer(std::shared_ptr<rclcpp::Node> node, std::shared_ptr<VioManager> app, std::shared_ptr<Simulator> sim = nullptr);
+  ~ROS2Visualizer();
+
+  // Call after stopping subscriber callbacks, before finalizing the estimator.
+  void stop_workers();
 
   /**
    * @brief Will setup ROS subscribers and callbacks
@@ -180,6 +185,9 @@ protected:
 
   // Thread atomics
   std::atomic<bool> thread_update_running;
+  std::atomic<bool> stop_requested{false};
+  std::thread update_thread;
+  std::thread image_thread;
 
   /// Queue up camera measurements sorted by time and trigger once we have
   /// exactly one IMU measurement with timestamp newer than the camera measurement
