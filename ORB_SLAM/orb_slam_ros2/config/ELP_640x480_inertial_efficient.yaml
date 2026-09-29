@@ -76,7 +76,7 @@ IMU.AccWalk: 0.003
 IMU.Frequency: 100.0
 
 # Lighter than the 1600x1200 / 2000-feature pure-stereo config: N100 has 4 cores.
-ORBextractor.nFeatures: 800
+ORBextractor.nFeatures: 600
 ORBextractor.scaleFactor: 1.2
 ORBextractor.nLevels: 8
 ORBextractor.iniThFAST: 20

@@ -42,9 +42,9 @@ Visualization Manager:
     Frame Rate: 30
   Name: root
   Tools:
-    - Class: rviz_common/Interact
-    - Class: rviz_common/MoveCamera
-    - Class: rviz_common/Select
+    - Class: rviz_default_plugins/Interact
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Select
   Views:
     Current:
       Class: rviz_default_plugins/Orbit

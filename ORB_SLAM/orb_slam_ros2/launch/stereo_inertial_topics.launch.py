@@ -23,8 +23,11 @@ def generate_launch_description():
         DeclareLaunchArgument("left_topic", default_value="/cam0/image_raw"),
         DeclareLaunchArgument("right_topic", default_value="/cam1/image_raw"),
         DeclareLaunchArgument("imu_topic", default_value="/imu0"),
-        DeclareLaunchArgument("viewer", default_value="true"),
+        DeclareLaunchArgument("viewer", default_value="false"),
         DeclareLaunchArgument("publish_tf", default_value="true"),
+        DeclareLaunchArgument("opencv_threads", default_value="1"),
+        DeclareLaunchArgument("visualization_hz", default_value="5.0"),
+        DeclareLaunchArgument("camera_imu_offset", default_value="0.0"),
         DeclareLaunchArgument("trajectory_path", default_value="vio_session.txt"),
         DeclareLaunchArgument(
             "keyframe_trajectory_path", default_value="kf_vio_session.txt"
@@ -49,6 +52,9 @@ def generate_launch_description():
                 "imu_topic": LaunchConfiguration("imu_topic"),
                 "use_viewer": LaunchConfiguration("viewer"),
                 "publish_tf": LaunchConfiguration("publish_tf"),
+                "opencv_threads": LaunchConfiguration("opencv_threads"),
+                "visualization_hz": LaunchConfiguration("visualization_hz"),
+                "camera_imu_offset": LaunchConfiguration("camera_imu_offset"),
                 "trajectory_path": LaunchConfiguration("trajectory_path"),
                 "keyframe_trajectory_path": LaunchConfiguration(
                     "keyframe_trajectory_path"

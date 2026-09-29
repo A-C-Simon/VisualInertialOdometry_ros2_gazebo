@@ -6,14 +6,13 @@
 // hw290_imu.py). Runs ORB-SLAM3 System::IMU_STEREO and publishes the same
 // pose/path/points/tracking-image/state topics as stereo_node.cpp.
 //
-// Timestamp base: ROS header time (seconds) for both images and IMU, so the
-// IMU buffer and stereo frames share one clock. IMU messages use arrival-time
-// stamps from hw290_imu.py; the splitter forwards usb_cam stamps (with optional
-// auto timestamp correction). The provisional 0.155 s cam-vs-imu offset from
-// kalibr_imucam_chain.yaml is NOT compensated here - ORB-SLAM3 has no
-// time-shift parameter.
+// Sensor timestamps: camera_imu_offset shifts camera capture time into the
+// IMU acquisition clock. Use the current rigid-mount calibration. pose_imu
+// exposes online body poses for comparison with OpenVINS; retrospective map
+// exports can differ after inertial initialization or map optimization.
 
 #include <algorithm>
+#include <atomic>
 #include <chrono>
 #include <cmath>
 #include <cstdint>
@@ -53,6 +52,7 @@
 #include <ImuTypes.h>
 #include <MapPoint.h>
 #include <System.h>
+#include <Settings.h>
 
 namespace orb_slam_ros2
 {
@@ -70,8 +70,10 @@ public:
     declare_parameters();
     read_parameters();
     validate_files();
+    if (opencv_threads_ >= 0) cv::setNumThreads(opencv_threads_);
 
     pose_pub_ = create_publisher<geometry_msgs::msg::PoseStamped>("pose", 10);
+    imu_pose_pub_ = create_publisher<geometry_msgs::msg::PoseStamped>("pose_imu", 10);
     path_pub_ = create_publisher<nav_msgs::msg::Path>("path", 10);
     points_pub_ = create_publisher<sensor_msgs::msg::PointCloud2>("tracked_map_points", 10);
     tracking_image_pub_ = create_publisher<Image>("tracking_image", 10);
@@ -84,6 +86,8 @@ public:
     slam_ = std::make_unique<ORB_SLAM3::System>(
       vocabulary_path_, settings_path_, ORB_SLAM3::System::IMU_STEREO, use_viewer_);
     image_scale_ = slam_->GetImageScale();
+    ORB_SLAM3::Settings imu_settings(settings_path_, ORB_SLAM3::System::IMU_STEREO);
+    t_camera_imu_ = imu_settings.Tbc().inverse();
 
     reset_service_ = create_service<std_srvs::srv::Trigger>(
       "reset",
@@ -93,14 +97,31 @@ public:
         slam_->Reset();
         path_.poses.clear();
         imu_buffer_.clear();
+        pending_stereo_.clear();
+        last_input_timestamp_ = -1.0;
         last_stereo_t_ = -1.0;
         response->success = true;
         response->message = "ORB-SLAM3 atlas reset";
       });
 
+    imu_group_ = create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+    rclcpp::SubscriptionOptions imu_options;
+    imu_options.callback_group = imu_group_;
     imu_sub_ = create_subscription<Imu>(
-      imu_topic_, rclcpp::SensorDataQoS(),
-      std::bind(&StereoImuNode::imu_callback, this, std::placeholders::_1));
+      imu_topic_, rclcpp::SensorDataQoS().keep_last(500),
+      std::bind(&StereoImuNode::imu_callback, this, std::placeholders::_1), imu_options);
+    pending_timer_ = create_wall_timer(std::chrono::milliseconds(2), [this] {
+      if (pending_stereo_.empty()) return;
+      const auto & pair = pending_stereo_.front();
+      const double t = rclcpp::Time(pair.first->header.stamp).seconds() + camera_imu_offset_;
+      {
+        std::lock_guard<std::mutex> lock(imu_mutex_);
+        if (imu_buffer_.empty() || imu_buffer_.back().t < t) return;
+      }
+      auto ready = pair;
+      pending_stereo_.pop_front();
+      track_stereo(ready.first, ready.second);
+    });
 
     left_sub_.subscribe(this, left_topic_, rmw_qos_profile_sensor_data);
     right_sub_.subscribe(this, right_topic_, rmw_qos_profile_sensor_data);
@@ -135,9 +156,12 @@ private:
     declare_parameter<std::string>("imu_topic", "/imu0");
     declare_parameter<int>("sync_queue_size", 10);
     declare_parameter<double>("max_sync_interval", 0.02);
-    declare_parameter<bool>("use_viewer", true);
+    declare_parameter<bool>("use_viewer", false);
     declare_parameter<bool>("publish_tf", true);
     declare_parameter<bool>("publish_tracking_image", true);
+    declare_parameter<int>("opencv_threads", 1);
+    declare_parameter<double>("visualization_hz", 5.0);
+    declare_parameter<double>("camera_imu_offset", 0.0);
     declare_parameter<std::string>("map_frame", "map");
     declare_parameter<std::string>("camera_frame", "camera_optical_frame");
     declare_parameter<int>("max_path_length", 10000);
@@ -158,6 +182,9 @@ private:
     use_viewer_ = get_parameter("use_viewer").as_bool();
     publish_tf_ = get_parameter("publish_tf").as_bool();
     publish_tracking_image_ = get_parameter("publish_tracking_image").as_bool();
+    opencv_threads_ = get_parameter("opencv_threads").as_int();
+    visualization_hz_ = get_parameter("visualization_hz").as_double();
+    camera_imu_offset_ = get_parameter("camera_imu_offset").as_double();
     map_frame_ = get_parameter("map_frame").as_string();
     camera_frame_ = get_parameter("camera_frame").as_string();
     max_path_length_ = static_cast<std::size_t>(
@@ -209,19 +236,32 @@ private:
 
   void stereo_callback(const Image::ConstSharedPtr & left_msg, const Image::ConstSharedPtr & right_msg)
   {
+    pending_stereo_.emplace_back(left_msg, right_msg);
+    if (pending_stereo_.size() > static_cast<std::size_t>(sync_queue_size_)) {
+      pending_stereo_.pop_front();
+      RCLCPP_WARN_THROTTLE(get_logger(), *get_clock(), 2000,
+        "Stereo queue overflow: processing too slow or IMU clock is behind camera");
+    }
+  }
+
+  void track_stereo(const Image::ConstSharedPtr & left_msg, const Image::ConstSharedPtr & right_msg)
+  {
     if (stop_if_slam_shutdown()) {
       return;
     }
     cv::Mat left_mono, right_mono;
+    cv_bridge::CvImageConstPtr left_owner, right_owner;
     try {
-      left_mono = cv_bridge::toCvCopy(left_msg, "mono8")->image;
-      right_mono = cv_bridge::toCvCopy(right_msg, "mono8")->image;
+      left_owner = cv_bridge::toCvShare(left_msg, "mono8");
+      left_mono = left_owner->image;
+      right_owner = cv_bridge::toCvShare(right_msg, "mono8");
+      right_mono = right_owner->image;
     } catch (const cv_bridge::Exception & error) {
       RCLCPP_ERROR_THROTTLE(
         get_logger(), *get_clock(), 2000, "Image conversion failed: %s", error.what());
       return;
     }
-    const double timestamp = rclcpp::Time(left_msg->header.stamp).seconds();
+    const double timestamp = rclcpp::Time(left_msg->header.stamp).seconds() + camera_imu_offset_;
     if (!std::isfinite(timestamp)) {
       return;
     }
@@ -273,7 +313,7 @@ private:
         get_logger(), *get_clock(), 2000,
         "Skipping stereo frame %.3f: %zu IMU samples in (%.3f, %.3f], oldest %.3f (imu received: %zu)",
         timestamp, vImuMeas.size(), last_stereo_t_, timestamp,
-        vImuMeas.empty() ? -1.0 : vImuMeas.front().t, imu_count_);
+        vImuMeas.empty() ? -1.0 : vImuMeas.front().t, imu_count_.load());
       return;
     }
     {
@@ -281,7 +321,7 @@ private:
       last_stereo_t_ = timestamp;
     }
 
-    const rclcpp::Time stamp(left_msg->header.stamp);
+    const rclcpp::Time stamp(static_cast<int64_t>(timestamp * 1e9), RCL_ROS_TIME);
     process_stereo(left_mono, right_mono, timestamp, stamp, vImuMeas);
   }
 
@@ -331,10 +371,18 @@ private:
     tracking_state_pub_->publish(state_msg);
     log_state_transition(state);
 
-    const auto tracked_points = slam_->GetTrackedMapPoints();
-    publish_points(tracked_points, stamp);
-    if (publish_tracking_image_) {
-      publish_tracking_image(left, tracked_points, stamp);
+    const auto now = std::chrono::steady_clock::now();
+    visualization_due_ = visualization_hz_ > 0 &&
+      std::chrono::duration<double>(now - last_visualization_).count() >= 1.0 / visualization_hz_;
+    if (visualization_due_) {
+      last_visualization_ = now;
+      const bool points_needed = points_pub_->get_subscription_count() > 0;
+      const bool image_needed = publish_tracking_image_ && tracking_image_pub_->get_subscription_count() > 0;
+      if (points_needed || image_needed) {
+        const auto tracked_points = slam_->GetTrackedMapPoints();
+        if (points_needed) publish_points(tracked_points, stamp);
+        if (image_needed) publish_tracking_image(left, tracked_points, stamp);
+      }
     }
 
     if (state == 2 || state == 5) {
@@ -358,13 +406,23 @@ private:
     pose.pose.orientation.z = rotation.z();
     pose.pose.orientation.w = rotation.w();
     pose_pub_->publish(pose);
+    if (imu_pose_pub_->get_subscription_count() > 0) {
+      const Sophus::SE3f t_world_imu = t_world_camera * t_camera_imu_;
+      auto imu_pose = pose;
+      const auto p = t_world_imu.translation();
+      const auto q = t_world_imu.unit_quaternion();
+      imu_pose.pose.position.x = p.x(); imu_pose.pose.position.y = p.y(); imu_pose.pose.position.z = p.z();
+      imu_pose.pose.orientation.x = q.x(); imu_pose.pose.orientation.y = q.y();
+      imu_pose.pose.orientation.z = q.z(); imu_pose.pose.orientation.w = q.w();
+      imu_pose_pub_->publish(imu_pose);
+    }
 
     path_.header = pose.header;
     path_.poses.push_back(pose);
     if (path_.poses.size() > max_path_length_) {
       path_.poses.erase(path_.poses.begin());
     }
-    path_pub_->publish(path_);
+    if (visualization_due_ && path_pub_->get_subscription_count() > 0) path_pub_->publish(path_);
 
     if (tf_broadcaster_) {
       geometry_msgs::msg::TransformStamped transform;
@@ -508,7 +566,15 @@ private:
   std::string imu_topic_;
   int sync_queue_size_{10};
   double max_sync_interval_{0.02};
-  bool use_viewer_{true};
+  int opencv_threads_{1};
+  double visualization_hz_{5.0};
+  double camera_imu_offset_{0.0};
+  bool visualization_due_{false};
+  std::chrono::steady_clock::time_point last_visualization_{};
+  bool use_viewer_{false};
+  rclcpp::CallbackGroup::SharedPtr imu_group_;
+  rclcpp::TimerBase::SharedPtr pending_timer_;
+  std::deque<std::pair<Image::ConstSharedPtr, Image::ConstSharedPtr>> pending_stereo_;
   bool publish_tf_{true};
   bool publish_tracking_image_{true};
   std::string map_frame_;
@@ -518,6 +584,8 @@ private:
   std::string keyframe_trajectory_path_;
   std::string timing_path_;
 
+  Sophus::SE3f t_camera_imu_;
+  rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr imu_pose_pub_;
   std::unique_ptr<ORB_SLAM3::System> slam_;
   float image_scale_{1.0F};
   bool shutdown_{false};
@@ -527,7 +595,7 @@ private:
   double last_stereo_t_{-1.0};
   std::size_t successful_pose_count_{0};
   std::size_t frame_count_{0};
-  std::size_t imu_count_{0};
+  std::atomic<std::size_t> imu_count_{0};
   std::vector<float> track_times_ms_;
 
   std::mutex imu_mutex_;
@@ -562,7 +630,9 @@ int main(int argc, char ** argv)
   rclcpp::init(argc, argv);
   try {
     auto node = std::make_shared<orb_slam_ros2::StereoImuNode>();
-    rclcpp::spin(node);
+    rclcpp::executors::MultiThreadedExecutor executor(rclcpp::ExecutorOptions(), 2);
+    executor.add_node(node);
+    executor.spin();
   } catch (const std::exception & error) {
     RCLCPP_FATAL(rclcpp::get_logger("orb_slam3_stereo_imu"), "%s", error.what());
     rclcpp::shutdown();
