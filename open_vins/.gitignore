@@ -12,3 +12,9 @@ doc
 ov_rover_sim/install/
 ov_rover_sim/log/
 __pycache__/
+
+# Local builds and large benchmark artifacts
+install_camera/
+benchmark/results/
+symlink_install_manifest.txt
+benchmark/build_orb_core/

@@ -10,7 +10,7 @@ from pathlib import Path
 import cv2
 import rclpy
 from cv_bridge import CvBridge
-from geometry_msgs.msg import PoseWithCovarianceStamped
+from geometry_msgs.msg import PoseWithCovarianceStamped, PoseStamped
 from rclpy.node import Node
 from rclpy.qos import HistoryPolicy, QoSProfile, ReliabilityPolicy
 from sensor_msgs.msg import Image, Imu
@@ -28,7 +28,7 @@ def stamp_message(message, timestamp_ns: int, frame_id: str):
 
 
 class EurocPlayer(Node):
-    def __init__(self, trajectory_path: Path):
+    def __init__(self, trajectory_path: Path, orb=False):
         super().__init__("euroc_player")
         reliable = QoSProfile(
             reliability=ReliabilityPolicy.RELIABLE,
@@ -43,9 +43,10 @@ class EurocPlayer(Node):
         self.cam0 = self.create_publisher(Image, "/cam0/image_raw", reliable)
         self.cam1 = self.create_publisher(Image, "/cam1/image_raw", reliable)
         self.imu = self.create_publisher(Imu, "/imu0", sensor)
-        self.create_subscription(
-            PoseWithCovarianceStamped, "/ov_msckf/poseimu", self.pose_callback, reliable
-        )
+        self.orb = orb
+        self.create_subscription(PoseStamped if orb else PoseWithCovarianceStamped,
+                                 "/orbslam_vio/pose_imu" if orb else "/ov_msckf/poseimu",
+                                 self.pose_callback, reliable)
         trajectory_path.parent.mkdir(parents=True, exist_ok=True)
         self.trajectory = trajectory_path.open("w")
         self.trajectory.write("# timestamp x y z q_x q_y q_z q_w\n")
@@ -54,7 +55,7 @@ class EurocPlayer(Node):
 
     def pose_callback(self, message):
         stamp = message.header.stamp.sec + message.header.stamp.nanosec * 1e-9
-        pose = message.pose.pose
+        pose = message.pose if self.orb else message.pose.pose
         self.trajectory.write(
             f"{stamp:.9f} {pose.position.x:.9f} {pose.position.y:.9f} "
             f"{pose.position.z:.9f} {pose.orientation.x:.9f} "
@@ -92,8 +93,13 @@ class EurocPlayer(Node):
 
 
 def wait_until(node: Node, deadline: float):
-    while rclpy.ok() and time.monotonic() < deadline:
-        rclpy.spin_once(node, timeout_sec=min(0.005, deadline - time.monotonic()))
+    while rclpy.ok():
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            return
+        # rclpy treats a negative timeout as an INFINITE wait. Compute the
+        # remainder once so crossing the deadline cannot hang the replay.
+        rclpy.spin_once(node, timeout_sec=min(0.005, remaining))
 
 
 def main():
@@ -103,6 +109,7 @@ def main():
     parser.add_argument("--trajectory", type=Path, default=Path("/tmp/openvins_euroc.txt"))
     parser.add_argument("--startup-delay", type=float, default=2.0)
     parser.add_argument("--post-roll", type=float, default=2.0)
+    parser.add_argument("--orb", action="store_true", help="Record ORB online IMU poses")
     args = parser.parse_args()
     if args.speed <= 0:
         parser.error("--speed must be positive")
@@ -124,10 +131,15 @@ def main():
     events.sort(key=lambda event: (event[0], event[1]))
 
     rclpy.init()
-    node = EurocPlayer(args.trajectory)
+    node = EurocPlayer(args.trajectory, args.orb)
     signal.signal(signal.SIGTERM, lambda *_: rclpy.shutdown())
     signal.signal(signal.SIGINT, lambda *_: rclpy.shutdown())
     try:
+        ready_deadline = time.monotonic() + 30.0
+        while rclpy.ok() and not all(p.get_subscription_count() for p in (node.cam0, node.cam1, node.imu)):
+            if time.monotonic() >= ready_deadline:
+                raise RuntimeError("Estimator camera/IMU subscriptions did not become ready")
+            rclpy.spin_once(node, timeout_sec=0.05)
         wait_until(node, time.monotonic() + args.startup_delay)
         first_stamp = events[0][0]
         start = time.monotonic()
@@ -138,6 +150,8 @@ def main():
                 break
             target = start + (timestamp_ns - first_stamp) * 1e-9 / args.speed
             wait_until(node, target)
+            if not rclpy.ok():
+                break
             if kind == 0:
                 node.publish_imu(row)
                 imu_count += 1
@@ -150,7 +164,7 @@ def main():
         wait_until(node, time.monotonic() + args.post_roll)
         print(
             f"Published {imu_count} IMU samples and {stereo_count} stereo pairs; "
-            f"recorded {node.pose_count} OpenVINS poses"
+            f"recorded {node.pose_count} online IMU poses"
         )
     finally:
         node.close()

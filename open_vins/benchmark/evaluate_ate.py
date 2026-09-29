@@ -11,7 +11,12 @@ import numpy as np
 
 def load_estimate(path: Path):
     rows = np.loadtxt(path, comments="#")
-    return np.atleast_2d(rows)[:, :4]
+    rows = np.atleast_2d(rows)[:, :4]
+    # TUM uses seconds. Some EuRoC exporters write integer nanoseconds while
+    # retaining the same remaining columns, so normalize those automatically.
+    if np.median(rows[:, 0]) > 1e12:
+        rows[:, 0] *= 1e-9
+    return rows
 
 
 def load_ground_truth(path: Path):
