@@ -12,6 +12,7 @@ global map, or Pangolin.
 | `ov_msckf/` | ROS 2 OpenVINS estimator node |
 | `ov_rover_sim/` | Gazebo rover, sensors, motion, truth, and RViz2 setup |
 | `ov_rover_sim/config/rover_stereo/` | Camera, IMU, and estimator calibration |
+| `benchmark/` | EuRoC replay, resource measurement, ATE tools, and comparison report |
 | `run_vio_gazebo.sh` | Full simulation launcher |
 | `build_vio/` | Isolated colcon build output |
 | `install_vio/` | Isolated ROS 2 install space |
@@ -112,6 +113,10 @@ The alignment correction removes the artificial origin and heading mismatch.
 The remaining residual is VIO drift and should be evaluated separately from
 frame alignment.
 
+The common EuRoC stereo-inertial comparison with ORB-SLAM3, including accuracy
+and estimator-only CPU and memory results, is documented in
+`benchmark/2026-09-25_VIO_Benchmark_Report.md`.
+
 ## Diagnostics
 
 ```bash
@@ -126,3 +131,9 @@ ros2 topic echo /ov_msckf/pathgt
 
 The launcher writes `/tmp/ov_msckf_vio.log` and
 `/tmp/vio_gazebo_launch.log`. Press Ctrl+C to stop the test.
+
+## Hardware VIO
+
+The HW290 stereo launch instructions and current status are in
+[hw290_stereo](hw290_stereo/README.md). The hardware report links there cover
+sensor calibration, the IMU bridge and benchmark results.

@@ -1,0 +1,352 @@
+28 September 2026
+Last updated: 2026-09-29 12:02:14 MSK
+HW290/OpenVINS hardware repair and ORB-SLAM3 computational optimization
+
+Introduction
+
+The work addressed two objectives: make the rigidly mounted HW290 IMU and ELP
+stereo camera produce a realistic OpenVINS trajectory, and reduce ORB-SLAM3
+computation while retaining useful visual-inertial trajectory accuracy. The
+requested longer-term targets are ORB-SLAM3 using less computation than
+OpenVINS and OpenVINS producing the more accurate trajectory. These rankings
+must be established by measurements; they have not yet been achieved.
+
+This report records the completed repair and validation work from the ongoing
+session, including work begun on 25 September. The dataset trials below have
+now completed. Physical movement testing ended with the user's 20 cm test.
+
+Camera and IMU diagnosis
+
+The installed usb_cam 0.8.1 timestamp conversion divided a microsecond field
+by 1000 before adding it to a microsecond epoch. This produced a camera/IMU
+timing mismatch that changed between camera process starts. The conversion
+was corrected in a locally built camera driver. The hardware launchers now
+use this driver, with the splitter's arrival-time correction disabled.
+
+The HW290 returned WHO_AM_I 0x98, matching the ICM-20689 register identity,
+rather than the MPU6050 previously assumed. This is a register identification,
+not independent verification of the chip. Firmware now configures the relevant
+accelerometer low-pass filter as well as the gyro filter and sample rate.
+After clipping appeared during calibration, the measurement ranges were
+changed to +/-4 g and +/-500 degrees/s. Versioned IMU packets select the
+correct conversion to acceleration in m/s^2 and angular velocity in rad/s.
+
+Serial-arrival timing was replaced with reconstructed MCU acquisition timing.
+Packets include sample sequence numbers and checksums. The bridge retains
+partial serial records, handles micros counter wrap, reports dropped packets,
+rejects saturation and stops on a clock reset. USB latency uncertainty remains;
+this is not a hardware-triggered camera/IMU synchronization system.
+
+An intermittent restart failure was traced to an unsuccessful I2C identity
+read. Firmware now clears an interrupted bus transaction, uses 100 kHz I2C,
+retries initialization and verifies rate/range registers. Three successive
+reconnect checks each produced 235 valid packets without checksum errors.
+The subsequent physical movement test also started successfully.
+
+Mount calibration and OpenVINS repair
+
+The user confirmed that the rigid IMU mount had shifted and rotated slightly.
+A fresh motion capture was used to estimate rotation and camera/IMU timing.
+The calibration helper was corrected to use rectified-camera intrinsics,
+rather than applying raw-image distortion to already rectified images.
+It also accounts for measured stationary gyro bias and reports a held-out
+rotation residual. The capture supplied 247 usable rotation pairs, with a
+0.399 degree training median and 0.386 degree held-out median residual.
+
+The updated camera-to-IMU time offset is +0.020 seconds. The earlier +0.155
+second value belonged to the old timing setup and is obsolete. The user
+measured the IMU approximately 4 cm from both lens centres and supplied
+photographs. These were used to replace the zero lever arm with an approximate
+nonzero translation. The depth component is estimated from the photos, so
+this is not a full translational calibration. Static transforms now come from
+the same calibration YAML used by OpenVINS.
+
+An OpenVINS worker callback captured a local timestamp by reference after its
+lifetime ended. It now owns the timestamp value, retains its worker threads
+and joins them before reuse or destruction. Full EuRoC replays subsequently
+completed and shut down normally. Hardware feature-update capacity and camera
+tracking frequency were adjusted to avoid unnecessarily discarding available
+visual measurements.
+
+Controlled 20 cm hardware test
+
+With the same rigid mount, the user moved between marks 20 cm apart, held the
+position, returned to the starting position and rested the rig. The 45-second
+recording contains 1,348 online poses and 4,496 IMU messages.
+
+Maximum estimated displacement:             0.21118 m (21.12 cm)
+Nominal manually measured displacement:     0.20000 m (20.00 cm)
+Final position residual after returning:    0.02462 m (2.46 cm)
+Initial stationary jitter about median:     0.00108 m (1.08 mm)
+Largest pose timestamp interval:            0.03615 s
+
+No checksum errors, sequence gaps or saturated IMU samples were reported in
+this run. The former centimetres-to-metres/kilometres behaviour did not occur.
+The reference was a manually measured displacement, not a time-resolved
+ground-truth trajectory. This establishes a successful short movement check,
+not universal hardware accuracy or a hardware OpenVINS-versus-ORB ranking.
+No further physical movement is required for the current work.
+
+Public dataset comparison method
+
+The complete EuRoC V1_01_easy sequence was replayed at normal speed: 2,912
+stereo pairs at 20 Hz and 29,120 IMU samples at 200 Hz. Trials ran sequentially
+on the Intel N100 four-core host with GUI disabled. Estimator CPU time is user
+plus system time from /usr/bin/time -v, including startup and shutdown. Peak
+resident memory is reported separately. Replay and sensor-driver costs are
+excluded for both systems; these are not whole-hardware-pipeline power tests.
+The host was not isolated from every background application, so the numbers
+are local process measurements rather than a controlled multi-host study.
+
+Both estimators are compared using online IMU-frame poses against dataset
+ground truth. Evaluation uses rigid SE(3) alignment without scale fitting.
+The table below uses a common interval beginning 30 seconds after the dataset
+camera start, after initial inertial optimization. Whole-interval results are
+also saved. One-second relative-pose translation error and pose coverage are
+checked alongside absolute trajectory error (ATE).
+
+The ORB baseline uses 1,200 features, default OpenCV threading and loop closure
+enabled, with the same repaired ROS wrapper as the candidate trials. Its raw
+online trajectory had a large coordinate change during inertial initialization;
+whole-interval ATE was about 6.72 m, although post-initialization ATE was about
+4 cm. A retrospectively corrected map trajectory does not have the same history.
+Consequently, retrospective ORB poses are not mixed with online OpenVINS poses.
+
+ORB uses a best-effort image subscription and delivered fewer poses than
+OpenVINS's reliable subscription. Coverage is therefore reported explicitly.
+CPU comparisons concern these actual ROS pipelines, not exactly equal numbers
+of processed frames. Trial-to-trial variation and additional datasets remain
+necessary before claiming a general algorithm ranking.
+
+Completed measurements
+
+Profile                         CPU seconds  Peak MiB  ATE cm  Pose coverage
+OpenVINS baseline                   84.85        133.2    5.92      100.0%
+OpenVINS fixed calibration           78.70       135.9    4.09      100.0%
+OpenVINS fixed, larger window       119.43       128.3    4.48      100.0%
+ORB baseline                        235.46       830.2    3.99       92.2%
+ORB 600 features, one CV thread     154.63       717.5    3.89       92.4%
+ORB 600 features, local BA cap 12   133.96       709.7    3.44       93.9%
+ORB same cap, resized 640x408       121.91       731.8    3.11       93.7%
+ORB resized profile repeat          120.49       737.0    3.18       96.4%
+
+The full-resolution capped ORB run used 43.1% less CPU than the baseline.
+Internal resizing to 640x408 reduced CPU by 48.2-48.8% in two runs, with
+3.11-3.18 cm measured post-initialization ATE. The repeat confirms similar
+results on this sequence; it is not cross-dataset validation. All ORB profiles
+still used more CPU and memory than the selected
+OpenVINS profile. Holding EuRoC's supplied calibration fixed improved OpenVINS
+ATE from 5.92 cm to 4.09 cm while reducing CPU time from 84.85 to 78.70 seconds.
+EuRoC calibration is not substituted into the separate physical HW290 setup.
+
+Including initialization in the common available interval gives different
+ATE values: OpenVINS fixed calibration 5.44 cm; ORB baseline 671.84 cm; ORB
+600/cap 12 at full resolution 4.38 cm; and its resized trials 35.59 and 17.71 cm. The
+resized trial's 3.11 cm result must therefore be described as post-initialization
+accuracy. Startup map-coordinate changes remain a limitation of the current
+ORB online output and accumulated RViz path.
+
+Implemented ORB changes and rejected settings
+
+The ROS wrapper uses one OpenCV thread by default, shares image storage where
+possible, handles IMU callbacks separately, and waits for appropriate IMU
+coverage before processing buffered stereo images. Expensive visualization
+work is performed only when subscribed and at a reduced publication rate.
+The full-rate online IMU pose remains available for trajectory evaluation.
+RViz and Pangolin are opt-in rather than default benchmark overhead.
+
+An isolated ORB core variant optionally caps the locally optimized keyframe
+window. The 12-keyframe candidate preserves local mapping and global inertial
+initialization. The original ORB core library is unchanged, and the isolated
+build records source/library hashes and compile/link arguments for reproduction.
+Disabling mapping altogether was not used as a shortcut to a misleadingly
+cheap result without the required inertial initialization and map refinement.
+
+The installed hardware launcher defaults to 800 features with loop closure off.
+Its --efficient option selects 600 features and the isolated core's local BA
+cap. These computational settings have dataset evidence; their trajectory
+accuracy on the physical HW290 rig has not yet been measured.
+
+A 400-feature ORB trial did not initialize because the upstream stereo
+initializer requires more than 500 detected features. It is rejected, not
+reported as a low-cost success. Enlarging the OpenVINS tracking/state window
+also increased CPU without improving the selected profile's trajectory error.
+The smaller fixed-calibration OpenVINS configuration is retained.
+
+Current status and conclusion
+
+The resized ORB trial and its repeat both completed normally. CPU time was
+121.91 and 120.49 seconds; post-initialization ATE was 3.11 and 3.18 cm.
+One-second relative-pose translation error was 4.55 and 4.60 cm. The selected
+OpenVINS profile used 78.70 CPU seconds with 4.09 cm post-initialization ATE
+and 4.53 cm relative-pose translation error. The efficient ORB profile remains
+about 1.53-1.55 times as expensive in CPU time and over five times as large in
+peak resident memory as this OpenVINS profile.
+
+The hardware displacement problem improved substantially in the controlled
+20 cm check, and the ORB compute reduction was reproduced on one public
+sequence. The requested combination of cheaper ORB and more accurate OpenVINS
+is not established by the post-initialization comparison. ORB initialization
+coordinate changes and the approximate HW290 translation calibration remain
+known limitations. Hardware launch uses native 640x480 rectified camera images;
+the EuRoC resize setting is dataset-specific. No additional physical movement
+is requested, and the benchmark processes launched for these trials have ended.
+
+Saved work and reproduction
+
+Main workspace:
+/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins
+
+Detailed repair notes:
+hw290_stereo/REPAIR_NOTES.md
+Detailed comparison and run commands:
+benchmark/2026-09-28_HW290_ORB_Optimization.md
+Physical capture, summary and displacement plot:
+benchmark/results/hw290_motion_2/
+Dataset configurations, logs, resource measurements and online trajectories:
+benchmark/configs/ and benchmark/results/
+Final aggregate comparison:
+benchmark/results/final_comparison.json
+Reproduction tools:
+benchmark/run_public_benchmark.py and benchmark/summarize_trials.py
+
+From the open_vins directory, the hardware commands are:
+./hw290_stereo/run_hw290_openvins.sh
+../ORB_SLAM/orbslam3_hw290_vio.sh --efficient --rviz
+
+Run one hardware pipeline at a time. Protocol tests, Python syntax checks,
+shell syntax checks and git diff whitespace checks have passed. Camera driver,
+OpenVINS and the ORB wrapper/core variant have been built. No repository changes
+have been committed or published as part of this work.
+
+Evening follow-up: live CPU comparison, missing ORB frame and run summaries
+
+The user's shell reported 84.9% CPU for an ORB launch and approximately
+138-172% for several OpenVINS launches. Taken literally, these particular
+whole-launch sessions used more CPU for OpenVINS. They differ in duration,
+input/initialization behaviour and included processes. ORB's former sampled
+ps lifetime averages and inverse tracking time were different measurements,
+so they must not be combined into an estimator-only comparison. The earlier
+EuRoC results remain measurements of a different, controlled input sequence.
+
+The latest ORB log showed no initialized map frame because IMU input never
+started. The Nano repeatedly reported WHO_AM_I=0x0 read_ok=0 and eventually
+ERROR IMU setup failed. ORB then waited for IMU coverage and overflowed its
+stereo queue. A stationary recheck reproduced the I2C communication failure.
+Movement cannot fix missing sensor communication. The user was asked to
+reconnect Nano USB and check IMU power/GND/SDA/SCL without changing the mount.
+The current hardware startup remains blocked until valid IMU data resumes.
+The earlier successful 20 cm result is retained, but startup reliability must
+not be described as fully resolved.
+
+Both hardware launchers now use the same per-process resource accounting.
+They print CPU seconds, average CPU as a percentage of one core, peak resident
+memory, current-run tracking/update timing statistics and IMU counters.
+OpenVINS additionally reports displacement from its rounded log positions;
+this is a diagnostic, not ground-truth error. Each run has a unique results
+directory with logs, resources, summary.txt and summary.json. ORB trajectory
+and timing filenames are now unique per run, preventing reuse of stale files.
+The inverse tracking time is no longer labelled an achieved output rate.
+
+Both launchers wait for valid IMU output before starting VIO/RViz and stop
+when a child exits. Shutdown forwards signals to owned process groups and
+collects resource usage. The IMU bridge also fails if a previously active
+stream stops. No artificial map/global transform was added to hide missing
+odometry. A missing frame before successful initialization remains expected.
+
+Verification: Python/shell syntax and git whitespace checks passed. A child
+process test verified CPU accounting and signal forwarding. Recorded valid
+OpenVINS logs exercised timing/displacement summaries. The live failed-sensor
+check stopped promptly, printed the sensor fault and saved a complete run
+summary; successful current hardware VIO cannot yet be claimed.
+
+Reconnection check and remaining initialization issue
+
+After the user reconnected the setup, the IMU identified successfully as
+0x98 and produced valid 100 Hz measurements. ORB reached tracking state OK
+and its map-to-camera transform was observed. It repeatedly reported
+insufficient motion for inertial initialization while stationary. The stream
+later stopped for over three seconds and the new watchdog correctly ended
+the run. The user confirmed that the hardware remained connected. An intermittent
+contact, power interruption or I2C bus fault is consistent with the stream
+loss, but the exact component is not identified. Check and secure connections
+before the next stationary check. Stable completed inertial initialization
+is not yet demonstrated.
+
+This run's new accounting measured 79.89 CPU seconds for the estimator/launch
+process group (52.6% of one core), and 223.07 CPU seconds across the measured
+children over 164.20 seconds (135.9% of one core). It included RViz and an
+IMU bridge averaging 27.6% CPU. The former ps summary did not include Python
+IMU processes, so that table understated the full pipeline workload. These
+figures come from an initialization/reset run and are not a valid trajectory
+quality benchmark. Artifacts: benchmark/results/hw290_orb_20260928_182946_QCTHPH/.
+
+Corrected three invalid RViz tool plugin names and added the inverse rigid
+camera/IMU calibration to connect ORB's camera pose frame to the existing
+IMU/camera TF tree. The calibration transform was checked against its inverse.
+No fixed world pose was fabricated; map still requires an estimator pose.
+The display changes take effect on the next launch.
+
+Latest launcher behaviour requested by user
+
+RViz now launches even if the IMU fails its startup check. When startup fails,
+it opens the sensor-view configuration (fixed frame cam0) so images and rigid
+sensor transforms can be inspected. VIO is skipped until the connection is
+restored and the launcher restarted. If a sensor fails during operation, VIO
+stops but RViz remains open. Ctrl-C or closing RViz ends the run and prints the
+resource summary. --no-rviz retains automatic shutdown on a process failure.
+Both OpenVINS and ORB launchers use this behaviour. Shell syntax and a process
+lifecycle check verified that the viewer survives an early sensor-process exit.
+This supersedes the earlier description that a sensor failure closes all nodes.
+
+29 September follow-up: C++ IMU bridge
+
+Implemented and built an event-driven C++ IMU bridge in ov_hw290. Both hardware
+launchers now select it by default; HW290_IMU_BACKEND=python retains a fallback.
+Packet checks, acquisition timestamps, unit conversion and device failure
+reporting are preserved. No firmware or mount-calibration change was made.
+A protocol probe matched the Python version on 653 cases. Serial ownership,
+disconnection, saturation, startup/silence timeout and clock-reset checks passed.
+
+In a controlled 15-second simulated serial comparison, Python used 4.355 CPU
+seconds (25.51% of one core) and 60.27 MiB peak memory. C++ used 0.188 CPU seconds
+(1.13%) and 21.63 MiB. Both delivered all 1,400 expected post-warmup ROS messages
+with correct units and timestamp intervals. This is about 96% less bridge CPU,
+not a measured 96% reduction in whole-pipeline cost. The real sensor check received 1,528 messages in 18 seconds including startup,
+with 0.300 CPU seconds (1.66% of one core), 21.63 MiB peak memory and no
+nonpositive timestamp intervals. No whole-pipeline trajectory test was rerun.
+Details: benchmark/2026-09-29_CPP_IMU_Bridge.md.
+
+
+29 September follow-up: IMU rate collapse and trajectory divergence
+
+Reviewed the latest failing hardware runs. The IMU was delivering about 14.3 Hz,
+although the configuration requires 100 Hz. ORB skipped frames with insufficient
+IMU coverage and reset; OpenVINS diverged. An earlier run fell from about 100 Hz
+to about 4 Hz after saturation and sequence gaps. These are sensor-stream faults;
+the precise electrical or register-state cause is not yet isolated. A direct
+serial check also reproduced failed I2C identity reads without the ROS bridge.
+
+After USB reconnection, flashed firmware that fully resets the IMU, explicitly
+sets continuous operation, verifies power/range/filter/rate registers and reports
+source rate and I2C errors each second. It halts on a bad configuration or source
+rate instead of feeding invalid data into VIO. Added independent C++ and Python
+bridge checks for host/source rate and large sample gaps. Both launchers require
+a verified 80-120 Hz stream before starting VIO. RViz still opens on sensor faults.
+Firmware compilation/upload and the C++ package build completed successfully.
+
+The first full camera/OpenVINS run after the change has exceeded three minutes
+at about 100 Hz with zero corrupt packets, sequence gaps, saturation or reported
+I2C read errors. OpenVINS initialized and accepted stationary updates. A further movement capture was attempted, but its recorder did not receive
+initialized pose messages and aborted before a movement cue. The hardware run
+was stopped without a post-update motion test. Stationary operation does not prove
+after-motion stability; trajectory quality and ORB reset behaviour remain to be
+validated. The approximate mount calibration and accelerometer scale/bias have
+not been replaced by a full calibration.
+
+Summary for supervisor (Telegram)
+
+Identified an IMU rate collapse to about 14 Hz in the failing VIO runs; the required rate is 100 Hz.
+Added and flashed explicit sensor reset/configuration checks, plus source and host rate guards shared by both pipelines.
+Following USB reconnection, OpenVINS ran for over three minutes at about 100 Hz without detected IMU packet or I2C errors.
+Movement stability and ORB reset recovery remain unverified; no final accuracy improvement is claimed yet.

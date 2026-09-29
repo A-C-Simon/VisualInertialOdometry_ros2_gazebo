@@ -18,6 +18,12 @@ Artifacts: [summary](results/hw290_motion_2/summary.json),
 [displacement plot](results/hw290_motion_2/displacement.png),
 [repair details](../hw290_stereo/REPAIR_NOTES.md).
 
+Follow-up on 29 September: subsequent failures showed the IMU rate falling to
+about 14 Hz, followed by OpenVINS divergence and ORB tracking resets. Updated
+firmware and rate guards now hold the pipelines until the sensor reports a
+valid rate. A post-update movement test has not completed, so the 20 cm result
+above does not establish long duration stability after the rate repair.
+
 ## Changes installed
 
 - Corrected the usb_cam microsecond conversion; built a local camera driver.

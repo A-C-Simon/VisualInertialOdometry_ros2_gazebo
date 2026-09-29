@@ -1,97 +1,55 @@
-# HW-290 and ELP stereo OpenVINS test
+# HW290 and ELP stereo VIO
 
-This directory runs the ELP side-by-side stereo camera and an HW-290 MPU6050
-through an Arduino Nano. The ROS2 camera stream is split by the compiled
-`ov_hw290/stereo_splitter` node. The older `stereo_splitter.py` is not used by
-the launcher.
+The hardware pipeline uses a side by side ELP stereo camera, an HW290 IMU
+connected through an Arduino Nano, the OpenVINS estimator and an optional
+ORB-SLAM3 estimator. The IMU reports identity 0x98, consistent with an
+ICM-20689. The current camera and IMU mount calibration is provisional.
 
-## Current status
+## Run
 
-The camera and IMU streams work. On the connected hardware, `/image_raw` ran
-at about 26 Hz, `/cam0/image_raw` at about 25 Hz, and `/imu0` at about 100 Hz.
-The splitter was not the main cause of the low frame rate. The ROS2 estimator
-initializes and publishes `/ov_msckf/pathimu` and `global -> imu`, but its
-trajectory is **not accurate** in the current desk test. The first run
-accumulated about 15 metres on a desk less than one metre wide. A later run
-diverged beyond 70 metres. Do not use this path as odometry yet.
-
-The camera and HW-290 were rigidly attached on 2026-09-24. A rotation-only
-motion capture gave a provisional camera-to-IMU rotation and a 0.155 second
-time shift. The estimate came from one usable homography-based capture with a
-0.64 degree median rotational residual. A second independent validation
-capture did not contain usable motion, so repeatability is not established.
-The camera-to-IMU translation remains an assumed zero at cam0. The static TF
-and `T_imu_cam` values use this provisional estimate. Both image streams are
-now rectified with the measured five-coefficient stereo calibration before
-OpenVINS receives them. The input calibration is from 1600x1200 per eye and is
-scaled to the 640x480 runtime mode. Online camera extrinsic calibration is
-disabled for this test because it moved the known 59.9 mm stereo baseline to
-an implausible value during a failed run.
-`ov_msckf/src/core/VioManager.cpp` was changed to retain a full initialization
-window of IMU data with positive camera-to-IMU time offsets. Without that
-change, the 0.155 second offset caused the static initializer to discard too
-many samples and report that its IMU window was too short indefinitely.
-The live stereo rectification check found 247 to 376 descriptor matches with
-about 1.0 to 1.2 pixels median vertical mismatch. An earlier short run
-produced 0.68 metres accumulated travel and ended roughly 0.13 metres from
-its start, but a larger motion still diverged. DEBUG logs showed many frames
-with zero MSCKF feature updates and only about 15 to 21 retained SLAM
-features. A captured left image showed a nearby moving person and hands across
-much of the view while most fixed texture was distant. That is unsuitable for
-evaluating VIO: moving foreground objects violate the static-scene model and
-the distant background gives weak depth with this stereo baseline. Repeat the
-test with both lenses pointed at fixed, textured objects around 0.5 to 2 m
-away and with people and hands outside the images.
-After aiming away from the moving foreground, a stationary test kept the
-estimated position within about 2 cm of its start. The cumulative distance
-counter still rose because it sums millimetre-scale pose jitter at each
-update; it is not a measure of physical travel while the rig is at rest.
-Controlled translation across the desk has not yet been measured in this
-static-scene view.
-
-## Run sensor diagnostics
+From `open_vins`:
 
 ```bash
-cd /home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/hw290_stereo
-ROS_DOMAIN_ID=48 ./run_hw290_openvins.sh --sensors-only
+./hw290_stereo/run_hw290_openvins.sh
+../ORB_SLAM/orbslam3_hw290_vio.sh --efficient --rviz
 ```
 
-Use `--no-rviz` for command-line measurements. In another terminal, use the
-same `ROS_DOMAIN_ID` for each command:
+RViz opens by default for OpenVINS and when requested with `--rviz` for ORB.
+Both launchers keep a per-run CPU, memory and estimator summary under
+`benchmark/results/`. OpenVINS selects the C++ IMU reader by default;
+`HW290_IMU_BACKEND=python` selects the fallback. Build the ROS package with
+the following command if the executable is missing:
 
 ```bash
-ROS_DOMAIN_ID=48 ros2 topic hz /image_raw
-ROS_DOMAIN_ID=48 ros2 topic hz /cam0/image_raw
-ROS_DOMAIN_ID=48 ros2 topic hz /imu0
-ROS_DOMAIN_ID=48 ros2 run tf2_ros tf2_echo imu cam0
+source /opt/ros/humble/setup.bash
+colcon build --packages-select ov_hw290 --build-base build_vio \
+  --install-base install_vio --cmake-args -DCMAKE_BUILD_TYPE=Release
 ```
 
-The shell prints the effective ROS domain. If an existing `ROS_DOMAIN_ID` is
-exported, it overrides the default of 48. The IMU message frame is `imu`,
-matching the TF tree. Sensor-only RViz uses `cam0` as its fixed frame. The
-OpenVINS RViz configuration uses `global` so the trajectory is not drawn in
-the moving camera frame. `global` appears only when OpenVINS initializes.
+Keep the camera and IMU rigidly attached. Hold the rig still for initialization,
+then move slowly through a static, textured scene with objects about 0.5 to 2 m
+away. Do not assess accuracy from a stationary cumulative path length. Use a
+measured motion and return test, and compare against ground truth when available.
 
-## Required before evaluating VIO
+## Current hardware status, 2026-09-29
 
-1. Keep the camera and HW-290 rigidly attached. Do not change their relative
-   position while running or calibrating.
-2. Calibrate both camera intrinsics at the selected 1280x480 side-by-side
-   video mode, the stereo baseline, camera-to-IMU rotation and translation,
-   and camera-to-IMU time offset. The current camera intrinsics were scaled
-   from a higher-resolution calibration and should be checked at this mode.
-3. Update `kalibr_imucam_chain.yaml` and `kalibr_imu_chain.yaml` with the
-   measured values. Replace the launcher static TF placeholders with the
-   calibrated transforms.
-4. Hold the fixed rig still during initialization, then move it through a
-   textured, well-lit scene. Check that the path remains still when the rig
-   is still and that a short out-and-back motion returns near its start.
+Earlier, a 20 cm out and back test reached 21.1 cm estimated displacement and
+returned within 2.46 cm. Later failures showed the IMU rate dropping to about
+14 Hz instead of 100 Hz. OpenVINS then diverged and ORB-SLAM3 lost tracking and
+reset. The firmware and both IMU readers now verify the acquisition and
+delivery rates and stop VIO on a rate fault. After reconnecting USB, the source
+reported about 100 Hz for more than three minutes with no packet gaps, checksum
+errors, saturation or I2C read errors. A movement test after this change is
+still required, so long duration trajectory stability is unconfirmed.
 
-`calibrate_rotation.py` is an experimental rotation-only check for a rigid
-assembly, not a substitute for the full calibration in step 2. The plain
-`./run_hw290_openvins.sh` command starts OpenVINS and prints a provisional
-calibration warning until that work is complete.
+## Diagnostics and calibration
 
-`check_rectified_stereo.py` measures left-right epipolar mismatch from a live
-pair. To inspect tracker update counts, temporarily set `verbosity: "DEBUG"`
-in `estimator_config.yaml`; return it to `INFO` for normal runs.
+See [repair notes](REPAIR_NOTES.md) for the single source of calibration,
+firmware and camera timestamp details, known limitations and reproduction
+commands. See [the C++ bridge report](../benchmark/2026-09-29_CPP_IMU_Bridge.md)
+for protocol and CPU measurements, and [the optimization report](../benchmark/2026-09-28_HW290_ORB_Optimization.md)
+for the EuRoC comparison and ORB settings.
+
+When the IMU fails startup, the launchers keep RViz available in sensor view
+and skip VIO until the sensor is restored. During a run, a detected IMU rate or
+connection failure stops the estimator and saves the summary.
