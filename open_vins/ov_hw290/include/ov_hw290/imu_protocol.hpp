@@ -38,7 +38,7 @@ inline Sample parse_sample(std::string_view line) {
       fields.push_back(payload.substr(start,i-start)); start=i+1;
     }
   }
-  if (fields.size()!=10 || (fields[0]!="IMU1" && fields[0]!="IMU2"))
+  if (fields.size()!=10 || (fields[0]!="IMU1" && fields[0]!="IMU2" && fields[0]!="IMU3"))
     throw std::invalid_argument("unsupported record");
   std::array<int64_t,9> values{};
   for (size_t i=0; i<values.size(); ++i) {
@@ -46,9 +46,10 @@ inline Sample parse_sample(std::string_view line) {
     if (i<2 ? (values[i]<0 || values[i]>UINT32_MAX) : (values[i]<-32768 || values[i]>32767))
       throw std::invalid_argument("measurement out of range");
   }
+  const double accel_scale = fields[0]=="IMU3" ? 4096.0 : fields[0]=="IMU2" ? 8192.0 : 16384.0;
+  const double gyro_scale = fields[0]=="IMU3" ? 32.8 : fields[0]=="IMU2" ? 65.5 : 131.0;
   Sample s{static_cast<uint32_t>(values[0]), static_cast<uint32_t>(values[1]), {}, {},
-           static_cast<int>(values[8]), fields[0]=="IMU2" ? 8192.0 : 16384.0,
-           fields[0]=="IMU2" ? 65.5 : 131.0};
+           static_cast<int>(values[8]), accel_scale, gyro_scale};
   for (int i=0;i<3;++i) { s.accel[i]=values[i+2]; s.gyro[i]=values[i+5]; }
   return s;
 }

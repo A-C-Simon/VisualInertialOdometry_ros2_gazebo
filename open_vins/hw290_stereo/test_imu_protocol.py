@@ -4,13 +4,16 @@ from imu_protocol import DeviceClock, Sample, parse_sample
 class ProtocolTests(unittest.TestCase):
     def test_packet_version_preserves_physical_units(self):
         # Each packet represents 1 g and 2 degrees/s with its firmware range.
-        for version, accel, gyro in [('IMU1', 16384, 262), ('IMU2', 8192, 131)]:
+        for version, accel, gyro, expected_dps in [
+                ('IMU1', 16384, 262, 2.0),
+                ('IMU2', 8192, 131, 2.0),
+                ('IMU3', 4096, 328, 10.0)]:
             data = f'{version},7,10000,0,0,{accel},{gyro},0,0,42'.encode()
             checksum = 0
             for byte in data: checksum ^= byte
             sample = parse_sample(data + f'*{checksum:02X}'.encode())
             self.assertEqual(sample.accel[2] / sample.accel_lsb_per_g, 1.0)
-            self.assertEqual(sample.gyro[0] / sample.gyro_lsb_per_dps, 2.0)
+            self.assertEqual(sample.gyro[0] / sample.gyro_lsb_per_dps, expected_dps)
 
     def test_checksum_and_ranges(self):
         data = b'IMU1,7,4294967290,0,-16384,32767,-32768,2,3,42'

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Publish SI measurements using acquisition timestamps from IMU1/IMU2 firmware."""
+"""Publish SI measurements using acquisition timestamps from HW290 firmware."""
 import math
 import time
 import rclpy
@@ -13,7 +13,7 @@ from imu_protocol import DeviceClock, parse_sample
 class Hw290Imu(Node):
     def __init__(self):
         super().__init__('hw290_imu')
-        for name, value in (('port', '/dev/ttyUSB0'), ('baud', 115200), ('frame_id', 'imu')):
+        for name, value in (('port', '/dev/ttyUSB0'), ('baud', 115200), ('frame_id', 'imu'), ('raw_log_path', '')):
             self.declare_parameter(name, value)
         self.frame = self.get_parameter('frame_id').value
         self.baud = int(self.get_parameter('baud').value)
@@ -22,6 +22,10 @@ class Hw290Imu(Node):
         self.buffer = bytearray()
         self.clock = DeviceClock()
         self.realtime_offset = self.get_clock().now().nanoseconds - time.monotonic_ns()
+        raw_path = self.get_parameter('raw_log_path').value
+        self.raw_log = open(raw_path, 'w') if raw_path else None
+        if self.raw_log:
+            self.raw_log.write('# host_receipt_unix_ns serial_record (includes sequence, MCU clock and raw temperature)\n')
         self.bad = self.saturated = self.published = 0
         self.started = time.monotonic()
         self.last_valid = None
@@ -29,9 +33,10 @@ class Hw290Imu(Node):
         self.rate_start = None
         self.rate_device_start = self.rate_count = 0
         self.rate_ready = False
+        self.slow_delivery_windows = 0
         self.timer = self.create_timer(0.002, self.poll)
         self.create_timer(5.0, self.diagnostics)
-        self.get_logger().info('Awaiting IMU1/IMU2 records; one-second device-clock warmup')
+        self.get_logger().info('Awaiting IMU1/IMU2/IMU3 records; one-second device-clock warmup')
 
     def poll(self):
         chunk = self.rx.read(min(self.rx.in_waiting, 8192))
@@ -44,7 +49,9 @@ class Hw290Imu(Node):
         while b'\n' in self.buffer:
             line, _, remaining = self.buffer.partition(b'\n')
             self.buffer = bytearray(remaining)
-            if not line.startswith((b'IMU1,', b'IMU2,')):
+            if self.raw_log:
+                self.raw_log.write(f'{receipt+self.realtime_offset} {line.decode("ascii", errors="replace")}\n')
+            if not line.startswith((b'IMU1,', b'IMU2,', b'IMU3,')):
                 if line.startswith(b'MPU a/g:'):
                     raise RuntimeError('Legacy firmware: flash firmware/hw290_openvins for acquisition timestamps')
                 self.get_logger().info('Firmware: ' + line.decode('ascii', errors='replace'))
@@ -68,8 +75,15 @@ class Hw290Imu(Node):
                 host_rate = (self.rate_count-1)*1e9/(receipt-self.rate_start)
                 device_elapsed = (sample.micros-self.rate_device_start) & 0xffffffff
                 source_rate = (self.rate_count-1)*1e6/device_elapsed if device_elapsed else 0
-                if not (80 <= host_rate <= 120 and 80 <= source_rate <= 120):
+                source_bad = not (80 <= source_rate <= 120)
+                host_bad = not (80 <= host_rate <= 120)
+                if source_bad or (not self.rate_ready and host_bad):
                     raise RuntimeError(f'IMU unhealthy: host/source rate outside 80-120 Hz ({host_rate:.1f}/{source_rate:.1f})')
+                self.slow_delivery_windows = self.slow_delivery_windows+1 if host_rate < 80 else 0
+                if self.slow_delivery_windows >= 3:
+                    raise RuntimeError('IMU unhealthy: delivery below 80 Hz for three consecutive windows')
+                if self.rate_ready and host_bad:
+                    self.get_logger().warning(f'IMU delivery jitter: host {host_rate:.1f} Hz, verified source {source_rate:.1f} Hz')
                 if not self.rate_ready:
                     self.get_logger().info(f'IMU_READY: verified host/source rate {host_rate:.1f}/{source_rate:.1f} Hz')
                     self.rate_ready = True
@@ -107,6 +121,8 @@ class Hw290Imu(Node):
                                f'sequence_gaps={self.clock.dropped} saturated={self.saturated}')
 
     def destroy_node(self):
+        if self.raw_log:
+            self.raw_log.close()
         self.rx.close()
         super().destroy_node()
 

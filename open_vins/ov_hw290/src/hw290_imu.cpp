@@ -6,6 +6,7 @@
 #include <cmath>
 #include <cstring>
 #include <fcntl.h>
+#include <fstream>
 #include <poll.h>
 #include <sys/file.h>
 #include <sys/ioctl.h>
@@ -46,13 +47,19 @@ class Hw290Imu : public rclcpp::Node {
     auto path=declare_parameter<std::string>("port","/dev/ttyUSB0");
     baud_=declare_parameter<int>("baud",115200);
     frame_=declare_parameter<std::string>("frame_id","imu");
+    const auto raw_path=declare_parameter<std::string>("raw_log_path","");
+    if (!raw_path.empty()) {
+      raw_log_.open(raw_path,std::ios::out|std::ios::trunc);
+      if (!raw_log_) throw std::runtime_error("Cannot open IMU raw log: "+raw_path);
+      raw_log_ << "# host_receipt_unix_ns serial_record (includes sequence, MCU clock and raw temperature)\n";
+    }
     if (get_parameter("use_sim_time").as_bool())
       throw std::runtime_error("Live HW290 acquisition requires use_sim_time=false");
     pub_=create_publisher<sensor_msgs::msg::Imu>("/imu0",100);
     serial_.open_port(path,baud_);
     offset_=now().nanoseconds()-steady_ns();
     started_=steady_ns();
-    RCLCPP_INFO(get_logger(),"Awaiting IMU1/IMU2 records; one-second device-clock warmup (C++ event-driven serial)");
+    RCLCPP_INFO(get_logger(),"Awaiting IMU1/IMU2/IMU3 records; one-second device-clock warmup (C++ event-driven serial)");
   }
   void run(rclcpp::executors::SingleThreadedExecutor& executor) {
     int64_t next_diagnostics=started_+5000000000LL, next_spin=started_;
@@ -99,10 +106,14 @@ class Hw290Imu : public rclcpp::Node {
     size_t end;
     while ((end=buffer_.find('\n'))!=std::string::npos) {
       const std::string line=buffer_.substr(0,end);
+      if (raw_log_.is_open()) {
+        raw_log_ << receipt+offset_ << ' ' << line << '\n';
+        if (!raw_log_) throw std::runtime_error("IMU raw log write failed");
+      }
       const auto remaining=buffer_.size()-end-1;
       buffer_.erase(0,end+1);
-      if (line.rfind("IMU1,",0)!=0 && line.rfind("IMU2,",0)!=0) {
-        if (line.rfind("MPU a/g:",0)==0) throw std::runtime_error("Legacy firmware: flash timestamped IMU2 firmware");
+      if (line.rfind("IMU1,",0)!=0 && line.rfind("IMU2,",0)!=0 && line.rfind("IMU3,",0)!=0) {
+        if (line.rfind("MPU a/g:",0)==0) throw std::runtime_error("Legacy firmware: flash timestamped IMU firmware");
         RCLCPP_INFO(get_logger(),"Firmware: %s",line.c_str());
         if (line.find("ERROR IMU")!=std::string::npos)
           throw std::runtime_error("IMU firmware reported failure: "+line);
@@ -123,9 +134,19 @@ class Hw290Imu : public rclcpp::Node {
         const double host_rate=(rate_count_-1)*1e9/(receipt-*rate_start_);
         const uint32_t device_elapsed=s.micros-rate_device_start_;
         const double source_rate=device_elapsed ? (rate_count_-1)*1e6/device_elapsed : 0;
-        if (host_rate<80 || host_rate>120 || source_rate<80 || source_rate>120)
+        const bool source_bad=source_rate<80 || source_rate>120;
+        const bool host_bad=host_rate<80 || host_rate>120;
+        if (source_bad || (!rate_ready_ && host_bad))
           throw std::runtime_error("IMU unhealthy: host/source rate outside 80-120 Hz (host="+
             std::to_string(host_rate)+", source="+std::to_string(source_rate)+")");
+        // Acquisition intervals remain authoritative during serial catch-up.
+        // A short host stall can be followed by >120 packets/s without the
+        // sensor changing its 100 Hz rate. Require sustained slow delivery.
+        slow_delivery_windows_=host_rate<80 ? slow_delivery_windows_+1 : 0;
+        if (slow_delivery_windows_>=3)
+          throw std::runtime_error("IMU unhealthy: delivery below 80 Hz for three consecutive windows");
+        if (rate_ready_ && host_bad)
+          RCLCPP_WARN(get_logger(),"IMU delivery jitter: host %.1f Hz, verified source %.1f Hz",host_rate,source_rate);
         if (!rate_ready_) {
           RCLCPP_INFO(get_logger(),"IMU_READY: verified host/source rate %.1f/%.1f Hz",host_rate,source_rate);
           rate_ready_=true;
@@ -152,6 +173,7 @@ class Hw290Imu : public rclcpp::Node {
     }
   }
   SerialPort serial_;
+  std::ofstream raw_log_;
   hw290::DeviceClock clock_;
   rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr pub_;
   std::string frame_,buffer_;
@@ -164,6 +186,7 @@ class Hw290Imu : public rclcpp::Node {
   uint64_t rate_count_=0,diagnostic_count_=0;
   int64_t diagnostic_time_=0;
   bool rate_ready_=false;
+  unsigned slow_delivery_windows_=0;
   uint64_t published_=0,bad_=0,saturated_=0;
 };
 int main(int argc,char** argv) {

@@ -21,16 +21,17 @@ def parse_sample(line: bytes) -> Sample:
     if len(checksum) != 2 or actual != int(checksum, 16):
         raise ValueError("checksum mismatch")
     fields = payload.decode("ascii").split(",")
-    if len(fields) != 10 or fields[0] not in ("IMU1", "IMU2"):
+    if len(fields) != 10 or fields[0] not in ("IMU1", "IMU2", "IMU3"):
         raise ValueError("unsupported record")
     values = [int(x) for x in fields[1:]]
     if not all(0 <= v <= 0xffffffff for v in values[:2]):
         raise ValueError("invalid clock or sequence")
     if not all(-32768 <= v <= 32767 for v in values[2:]):
         raise ValueError("invalid raw measurement")
+    accel_scale = 4096.0 if fields[0] == "IMU3" else 8192.0 if fields[0] == "IMU2" else 16384.0
+    gyro_scale = 32.8 if fields[0] == "IMU3" else 65.5 if fields[0] == "IMU2" else 131.0
     return Sample(values[0], values[1], tuple(values[2:5]), tuple(values[5:8]), values[8],
-                  8192.0 if fields[0] == "IMU2" else 16384.0,
-                  65.5 if fields[0] == "IMU2" else 131.0)
+                  accel_scale, gyro_scale)
 
 
 class DeviceClock:

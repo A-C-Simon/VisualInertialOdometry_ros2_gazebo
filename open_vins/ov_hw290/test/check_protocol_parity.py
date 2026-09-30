@@ -16,13 +16,13 @@ for i in range(650):
     if i==350: continue
     seq=(0xffffff00+i)&0xffffffff
     us=(0xffffff00+i*10000)&0xffffffff
-    version='IMU1' if i<200 else 'IMU2'
+    version='IMU1' if i<200 else 'IMU2' if i<450 else 'IMU3'
     values=f'{version},{seq},{us},0,8192,-12,131,0,-10,42'
     records.append((10**12+i*10**7+(i%4)*2000000,packet(values)))
     if i==250: records.append((10**12+i*10**7,packet(values))) # duplicate
     if i==400: records.append((10**12+i*10**7,packet(values)[:-2]+b'XX'))
-records += [(10**13,packet('IMU2,1,0,0,0,0,0,0,0,0')),
-            (10**13,packet('IMU2,1,1,0,32768,0,0,0,0,0'))]
+records += [(10**13,packet('IMU3,1,0,0,0,0,0,0,0,0')),
+            (10**13,packet('IMU3,1,1,0,32768,0,0,0,0,0'))]
 clock=DeviceClock();expected=[]
 for receipt, raw in records:
     try:
