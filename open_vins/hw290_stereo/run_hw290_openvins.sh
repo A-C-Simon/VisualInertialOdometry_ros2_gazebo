@@ -2,12 +2,15 @@
 set -Eeo pipefail
 SENSORS_ONLY=false
 SHOW_RVIZ=true
+DIAGNOSTICS=false
 for arg in "$@"; do
   case "$arg" in
     --sensors-only) SENSORS_ONLY=true ;;
     --no-rviz) SHOW_RVIZ=false ;;
+    --diagnostics) DIAGNOSTICS=true ;;
     --help|-h)
-      echo "Usage: $0 [--sensors-only] [--no-rviz]"
+      echo "Usage: $0 [--sensors-only] [--no-rviz] [--diagnostics]"
+      echo "Diagnostics records a sensor bag, raw IMU records and estimator state/debug logs."
       echo "A valid VIO trajectory requires a rigid camera-IMU mount and measured extrinsics."
       exit 0 ;;
     *) echo "Unknown argument: $arg" >&2; exit 2 ;;
@@ -37,6 +40,12 @@ sleep 3
 # The local usb_cam fixes the clock-unit bug. Do not apply arrival-time
 # correction to properly converted V4L2 capture timestamps.
 start_node splitter /tmp/hw290_splitter.log "$SPLITTER" --ros-args -p calibration_file:="$CALIBRATION" -p auto_timestamp_correction:=false
+if [[ "$DIAGNOSTICS" == true ]]; then
+  echo 'Diagnostic recording enabled; recording/debug CPU costs are included in this run.'
+  touch "$RUN_DIR/diagnostics_enabled"
+  start_node recorder /tmp/hw290_recorder.log ros2 bag record -o "$RUN_DIR/sensors_bag" /cam0/image_raw /cam1/image_raw /cam0/camera_info /cam1/camera_info /imu0 /ov_msckf/poseimu
+  sleep 2
+fi
 start_hw290_imu /tmp/hw290_imu.log
 IMU_READY=true
 if ! wait_for_imu /tmp/hw290_imu.log; then
@@ -50,7 +59,11 @@ done
 if [[ "$SENSORS_ONLY" == false && "$IMU_READY" == true ]]; then
   echo "WARNING: camera-to-IMU calibration is provisional. Validate the trajectory before using it as a measurement." >&2
   sleep 2
-  start_node estimator /tmp/hw290_openvins.log "$ESTIMATOR" "${ROOT}/estimator_config.yaml" --ros-args -r __ns:=/ov_msckf -p use_sim_time:=false -p publish_calibration_tf:=false
+  ESTIMATOR_ARGS=()
+  if [[ "$DIAGNOSTICS" == true ]]; then
+    ESTIMATOR_ARGS=(-p verbosity:=DEBUG -p save_total_state:=true -p filepath_est:="$RUN_DIR/state_estimate.txt" -p filepath_std:="$RUN_DIR/state_deviation.txt" -p filepath_gt:="$RUN_DIR/state_groundtruth.txt")
+  fi
+  start_node estimator /tmp/hw290_openvins.log "$ESTIMATOR" "${ROOT}/estimator_config.yaml" --ros-args -r __ns:=/ov_msckf -p use_sim_time:=false -p publish_calibration_tf:=false "${ESTIMATOR_ARGS[@]}"
 fi
 if [[ "$SHOW_RVIZ" == true ]]; then
   RVIZ_CONFIG="${ROOT}/rviz_hw290.rviz"

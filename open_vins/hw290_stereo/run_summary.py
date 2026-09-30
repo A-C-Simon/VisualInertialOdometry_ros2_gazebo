@@ -46,6 +46,11 @@ counts = re.findall(r'published=(\d+) corrupt=(\d+) sequence_gaps=(\d+) saturate
 if counts: print('Last periodic IMU counters: published={} corrupt={} gaps={} saturated={}'.format(*counts[-1]))
 rates = [float(v) for v in re.findall(r'IMU delivery rate=([0-9.]+) Hz', imu)]
 if rates: print(f'Periodic IMU delivery rate: min={min(rates):.1f}, max={max(rates):.1f} Hz')
+health_errors = [int(v) for v in re.findall(r'HEALTH samples=\d+ elapsed_ms=\d+ read_errors=(\d+)',imu)]
+if health_errors and sum(health_errors):
+    print(f'SENSOR WARNING: firmware reported {sum(health_errors)} I2C read errors across {sum(v>0 for v in health_errors)} health windows (maximum {max(health_errors)}). Average rate does not establish measurement integrity.')
+if (root/'diagnostics_enabled').exists():
+    print('Diagnostic run: sensor recording and debug logging costs are included. Close the bag writer before inspecting its database.')
 if 'IMU unhealthy' in imu or 'ERROR IMU source' in imu or 'ERROR IMU configuration' in imu:
     print('SENSOR FAILURE: IMU rate/configuration failed validation. VIO stopped; this run cannot establish trajectory quality.')
 if 'ERROR IMU setup failed' in imu or 'IMU startup timed out' in imu:
@@ -56,6 +61,6 @@ if any(message in imu for message in ('IMU serial disconnected', 'IMU serial EOF
     print('SENSOR FAILURE: serial connection failed. VIO stopped; inspect the IMU connection.')
 if 'Not enough motion for initializing' in log:
     print('ORB reported insufficient initialization motion; tracking time alone does not establish valid VIO.')
-(root/'summary.json').write_text(json.dumps(dict(processes=rows,child_cpu_seconds=cpu,launch_wall_seconds=wall,logged_updates=len(timing)),indent=2)+'\n')
+(root/'summary.json').write_text(json.dumps(dict(processes=rows,child_cpu_seconds=cpu,launch_wall_seconds=wall,logged_updates=len(timing),reported_i2c_read_errors=sum(health_errors),diagnostics_enabled=(root/'diagnostics_enabled').exists()),indent=2)+'\n')
 print('Saved run:',root)
 print('=============================================')

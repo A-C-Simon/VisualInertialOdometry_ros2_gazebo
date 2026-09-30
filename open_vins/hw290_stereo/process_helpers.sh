@@ -13,9 +13,11 @@ start_node() {
 }
 start_hw290_imu() {
   local log=$1
+  local raw_args=()
+  [[ "${DIAGNOSTICS:-false}" == true ]] && raw_args=(--ros-args -p raw_log_path:="$RUN_DIR/imu_raw.txt")
   case "${HW290_IMU_BACKEND:-cpp}" in
-    cpp) start_node imu "$log" "$HW290_DIR/../install_vio/ov_hw290/lib/ov_hw290/hw290_imu" ;;
-    python) start_node imu "$log" python3 "$HW290_DIR/hw290_imu.py" ;;
+    cpp) start_node imu "$log" "$HW290_DIR/../install_vio/ov_hw290/lib/ov_hw290/hw290_imu" "${raw_args[@]}" ;;
+    python) start_node imu "$log" python3 "$HW290_DIR/hw290_imu.py" "${raw_args[@]}" ;;
     *) echo "HW290_IMU_BACKEND must be cpp or python" >&2; return 2 ;;
   esac
 }

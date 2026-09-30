@@ -7,37 +7,41 @@ import time
 import numpy as np
 import rclpy
 from rclpy.node import Node
-from rclpy.qos import qos_profile_sensor_data
-from sensor_msgs.msg import Image, Imu
+from rclpy.qos import qos_profile_sensor_data, QoSProfile, ReliabilityPolicy
+from sensor_msgs.msg import CameraInfo, Image, Imu
 
 p=argparse.ArgumentParser()
 p.add_argument('--seconds',type=float,default=20)
 p.add_argument('--output',type=Path,required=True)
+p.add_argument('--reliable-images',action='store_true',help='Request reliable image delivery for comparison with best effort')
 a=p.parse_args()
 rclpy.init(); node=Node('hw290_sensor_inspector')
-imu=[]; camera=[]
+imu=[]; camera=[]; camera_info=[]
 def stamp(m): return m.header.stamp.sec+m.header.stamp.nanosec*1e-9
 def on_imu(m):
     imu.append([stamp(m),node.get_clock().now().nanoseconds*1e-9,
         m.linear_acceleration.x,m.linear_acceleration.y,m.linear_acceleration.z,
         m.angular_velocity.x,m.angular_velocity.y,m.angular_velocity.z])
 def on_image(m): camera.append([stamp(m),node.get_clock().now().nanoseconds*1e-9])
+def on_info(m): camera_info.append([stamp(m),node.get_clock().now().nanoseconds*1e-9])
 node.create_subscription(Imu,'/imu0',on_imu,qos_profile_sensor_data)
-node.create_subscription(Image,'/cam0/image_raw',on_image,qos_profile_sensor_data)
+image_qos=QoSProfile(depth=5,reliability=ReliabilityPolicy.RELIABLE) if a.reliable_images else qos_profile_sensor_data
+node.create_subscription(Image,'/cam0/image_raw',on_image,image_qos)
+node.create_subscription(CameraInfo,'/cam0/camera_info',on_info,qos_profile_sensor_data)
 start=time.monotonic()
 try:
     while rclpy.ok() and time.monotonic()-start<a.seconds: rclpy.spin_once(node,timeout_sec=.05)
 finally:
     node.destroy_node();rclpy.shutdown()
 a.output.parent.mkdir(parents=True,exist_ok=True)
-np.savez(str(a.output)+'.npz',imu=np.asarray(imu),camera=np.asarray(camera))
-result={}
-for name,rows in [('imu',imu),('camera',camera)]:
+np.savez(str(a.output)+'.npz',imu=np.asarray(imu),camera=np.asarray(camera),camera_info=np.asarray(camera_info))
+result={'image_reliability':'reliable' if a.reliable_images else 'best_effort'}
+for name,rows in [('imu',imu),('camera',camera),('camera_info',camera_info)]:
     x=np.asarray(rows)
     result[name]={'samples':len(rows)}
     if len(x)>2:
         dt=np.diff(x[:,0]);age=x[:,1]-x[:,0]
-        result[name].update(rate_hz=float(1/np.median(dt)),
+        result[name].update(rate_hz=float(1/np.median(dt)),mean_rate_hz=float((len(x)-1)/(x[-1,0]-x[0,0])),
             dt_ms_percentiles=np.percentile(dt*1000,[0,5,50,95,100]).tolist(),
             age_ms_percentiles=np.percentile(age*1000,[0,5,50,95,100]).tolist(),
             nonpositive_intervals=int(np.count_nonzero(dt<=0)))

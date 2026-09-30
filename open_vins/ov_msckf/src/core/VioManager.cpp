@@ -527,6 +527,9 @@ void VioManager::do_feature_propagate_update(const ov_core::CameraData &message)
   // NOTE: this should only really be used if you want to track a lot of features, or have limited computational resources
   if ((int)featsup_MSCKF.size() > state->_options.max_msckf_in_update)
     featsup_MSCKF.erase(featsup_MSCKF.begin(), featsup_MSCKF.end() - state->_options.max_msckf_in_update);
+  const size_t msckf_candidates = featsup_MSCKF.size();
+  const size_t slam_candidates = feats_slam_UPDATE.size();
+  const size_t slam_init_candidates = feats_slam_DELAYED.size();
   updaterMSCKF->update(state, featsup_MSCKF);
   propagator->invalidate_cache();
   rT4 = boost::posix_time::microsec_clock::local_time();
@@ -551,6 +554,10 @@ void VioManager::do_feature_propagate_update(const ov_core::CameraData &message)
   rT5 = boost::posix_time::microsec_clock::local_time();
   updaterSLAM->delayed_init(state, feats_slam_DELAYED);
   rT6 = boost::posix_time::microsec_clock::local_time();
+  PRINT_DEBUG("[VIO_UPDATE]: t=%.9f msckf_candidates=%zu msckf_retained=%zu slam_candidates=%zu "
+              "slam_retained=%zu init_candidates=%zu init_retained=%zu landmarks=%zu\n",
+              message.timestamp, msckf_candidates, featsup_MSCKF.size(), slam_candidates,
+              feats_slam_UPDATE.size(), slam_init_candidates, feats_slam_DELAYED.size(), state->_features_SLAM.size());
 
   //===================================================================================
   // Update our visualization feature set, and clean up the old features
