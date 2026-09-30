@@ -18,6 +18,7 @@ public:
     const auto calibration_file = declare_parameter<std::string>("calibration_file", "");
     auto_timestamp_correction_ = declare_parameter<bool>("auto_timestamp_correction", true);
     stamp_offset_sec_ = declare_parameter<double>("timestamp_offset_sec", 0.0);
+    monochrome_ = declare_parameter<bool>("monochrome", true);
     if (calibration_file.empty()) {
       throw std::runtime_error("calibration_file parameter is required");
     }
@@ -62,6 +63,7 @@ public:
         "/image_raw", qos,
         [this](sensor_msgs::msg::Image::ConstSharedPtr image) { split(image); });
     RCLCPP_INFO(get_logger(), "Rectifying 640x480 stereo views from /image_raw using %s", calibration_file.c_str());
+    RCLCPP_INFO(get_logger(), "Publishing %s stereo images", monochrome_ ? "mono8" : "rgb8");
   }
 
 private:
@@ -126,9 +128,9 @@ private:
     r.header.frame_id = "cam1";
     l.height = r.height = 480;
     l.width = r.width = 640;
-    l.encoding = r.encoding = "rgb8";
+    l.encoding = r.encoding = monochrome_ ? "mono8" : "rgb8";
     l.is_bigendian = r.is_bigendian = source->is_bigendian;
-    l.step = r.step = 640 * 3;
+    l.step = r.step = monochrome_ ? 640 : 640 * 3;
     l.data.resize(static_cast<size_t>(l.step) * l.height);
     r.data.resize(static_cast<size_t>(r.step) * r.height);
     cv::Mat raw_left(480, 640, CV_8UC3,
@@ -138,6 +140,12 @@ private:
     cv::Mat rect_left, rect_right;
     cv::remap(raw_left, rect_left, left_map_x_, left_map_y_, cv::INTER_LINEAR);
     cv::remap(raw_right, rect_right, right_map_x_, right_map_y_, cv::INTER_LINEAR);
+    // Match cv_bridge's RGB8 -> MONO8 conversion after rectification exactly.
+    // Converting before remap would change pixels through rounding.
+    if (monochrome_) {
+      cv::cvtColor(rect_left, rect_left, cv::COLOR_RGB2GRAY);
+      cv::cvtColor(rect_right, rect_right, cv::COLOR_RGB2GRAY);
+    }
     std::memcpy(l.data.data(), rect_left.data, l.data.size());
     std::memcpy(r.data.data(), rect_right.data, r.data.size());
     left_->publish(l);
@@ -152,6 +160,7 @@ private:
   cv::Mat left_map_x_, left_map_y_, right_map_x_, right_map_y_;
   cv::Mat projection_[2];
   bool auto_timestamp_correction_ = true;
+  bool monochrome_ = true;
   bool timestamp_calibrated_ = false;
   double stamp_offset_sec_ = 0.0;
   std::vector<double> timestamp_ages_;
