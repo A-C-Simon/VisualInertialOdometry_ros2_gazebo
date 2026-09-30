@@ -98,9 +98,12 @@ downsize_aruco: true
 
 # camera noises and chi-squared threshold multipliers
 up_msckf_sigma_px: 1
-up_msckf_chi2_multipler: 1
+# The provisional camera-to-IMU calibration makes the nominal innovation gate
+# reject otherwise consistent tracks after short exposure/blur events. A 5x
+# gate kept the recorded desk trajectory bounded while retaining visual updates.
+up_msckf_chi2_multipler: 5
 up_slam_sigma_px: 1
-up_slam_chi2_multipler: 1
+up_slam_chi2_multipler: 5
 up_aruco_sigma_px: 1
 up_aruco_chi2_multipler: 1
 

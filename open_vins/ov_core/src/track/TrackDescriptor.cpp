@@ -480,6 +480,15 @@ void TrackDescriptor::perform_detection_stereo(const cv::Mat &img0, const cv::Ma
 void TrackDescriptor::robust_match(const std::vector<cv::KeyPoint> &pts0, const std::vector<cv::KeyPoint> &pts1, const cv::Mat &desc0,
                                    const cv::Mat &desc1, size_t id0, size_t id1, std::vector<cv::DMatch> &matches) {
 
+  // A blurred or overexposed frame can produce no ORB descriptors. OpenCV's
+  // matcher asserts when either matrix is empty or the descriptor layouts do
+  // not agree. Treat that frame as having no matches so the next frame can
+  // seed fresh tracks instead of terminating the estimator.
+  if (desc0.empty() || desc1.empty() || desc0.rows < 2 || desc1.rows < 2 || desc0.type() != desc1.type() ||
+      desc0.cols != desc1.cols || desc0.rows != (int)pts0.size() || desc1.rows != (int)pts1.size()) {
+    return;
+  }
+
   // Our 1to2 and 2to1 match vectors
   std::vector<std::vector<cv::DMatch>> matches0to1, matches1to0;
 

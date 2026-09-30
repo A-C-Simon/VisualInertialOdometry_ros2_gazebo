@@ -10,5 +10,10 @@
     camera_name: "hw290_side_by_side"
     camera_info_url: ""
     autofocus: false
-    autoexposure: true
+    # A fixed 5 ms exposure prevents the automatic 15.6 ms setting from
+    # washing out and blurring feature tracks during hand motion.
+    autoexposure: false
+    exposure: 50
+    brightness: 0
+    gain: 120
     auto_white_balance: true
