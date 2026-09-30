@@ -123,8 +123,11 @@ public:
       track_stereo(ready.first, ready.second);
     });
 
-    left_sub_.subscribe(this, left_topic_, rmw_qos_profile_sensor_data);
-    right_sub_.subscribe(this, right_topic_, rmw_qos_profile_sensor_data);
+    auto image_qos = reliable_images_ ? rmw_qos_profile_default : rmw_qos_profile_sensor_data;
+    image_qos.depth = static_cast<size_t>(sync_queue_size_);
+    left_sub_.subscribe(this, left_topic_, image_qos);
+    right_sub_.subscribe(this, right_topic_, image_qos);
+    RCLCPP_INFO(get_logger(), "Stereo image delivery: %s", reliable_images_ ? "reliable" : "best effort");
     synchronizer_ = std::make_unique<message_filters::Synchronizer<StereoPolicy>>(
       StereoPolicy(sync_queue_size_), left_sub_, right_sub_);
     synchronizer_->setMaxIntervalDuration(rclcpp::Duration::from_seconds(max_sync_interval_));
@@ -157,6 +160,7 @@ private:
     declare_parameter<int>("sync_queue_size", 10);
     declare_parameter<double>("max_sync_interval", 0.02);
     declare_parameter<bool>("use_viewer", false);
+    declare_parameter<bool>("reliable_images", false);
     declare_parameter<bool>("publish_tf", true);
     declare_parameter<bool>("publish_tracking_image", true);
     declare_parameter<int>("opencv_threads", 1);
@@ -180,6 +184,7 @@ private:
     sync_queue_size_ = static_cast<int>(get_parameter("sync_queue_size").as_int());
     max_sync_interval_ = get_parameter("max_sync_interval").as_double();
     use_viewer_ = get_parameter("use_viewer").as_bool();
+    reliable_images_ = get_parameter("reliable_images").as_bool();
     publish_tf_ = get_parameter("publish_tf").as_bool();
     publish_tracking_image_ = get_parameter("publish_tracking_image").as_bool();
     opencv_threads_ = get_parameter("opencv_threads").as_int();
@@ -572,6 +577,7 @@ private:
   bool visualization_due_{false};
   std::chrono::steady_clock::time_point last_visualization_{};
   bool use_viewer_{false};
+  bool reliable_images_{false};
   rclcpp::CallbackGroup::SharedPtr imu_group_;
   rclcpp::TimerBase::SharedPtr pending_timer_;
   std::deque<std::pair<Image::ConstSharedPtr, Image::ConstSharedPtr>> pending_stereo_;

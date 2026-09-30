@@ -101,7 +101,7 @@ if [[ "$SENSORS_ONLY" == false && "$IMU_READY" == true ]]; then
   start_node tf_orb_imu /tmp/orb_vio_tf_orb_imu.log /opt/ros/humble/lib/tf2_ros/static_transform_publisher "${ORB_IMU_TF[@]}"
   sleep 2
   start_node estimator /tmp/orb_vio_slam.log ros2 launch orb_slam_ros2 stereo_inertial_topics.launch.py \
-    namespace:=orbslam_vio viewer:="$USE_VIEWER" settings_path:="$SETTINGS_PATH" camera_imu_offset:="${CAMERA_IMU_OFFSET:-$CALIBRATED_OFFSET}" \
+    namespace:=orbslam_vio viewer:="$USE_VIEWER" reliable_images:="${ORB_RELIABLE_IMAGES:-true}" settings_path:="$SETTINGS_PATH" camera_imu_offset:="${CAMERA_IMU_OFFSET:-$CALIBRATED_OFFSET}" \
     trajectory_path:="$RUN_DIR/vio_session.txt" keyframe_trajectory_path:="$RUN_DIR/kf_vio_session.txt" timing_path:="$RUN_DIR/vio_timing.txt"
 fi
 if [[ "$SHOW_RVIZ" == true ]]; then
