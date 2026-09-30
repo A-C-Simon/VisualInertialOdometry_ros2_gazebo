@@ -94,6 +94,51 @@ the long-term trajectory drift is fixed; repeat the measured movement test and
 check ORB reset recovery before claiming a trajectory improvement.
 
 
+### Repeated communication failure, 2026-09-30
+
+A desk motion recording reached 319 m within a permitted 1.72 m displacement
+bound. I2C read errors occurred near both excursion onsets despite a 100 Hz
+average. A repeat after reseating the connections stopped with a 105.608 ms
+MCU acquisition gap. Its maximum displacement before stopping was 0.668 m;
+this incomplete repeat does not validate long-motion stability.
+
+The updated firmware records an immediate `I2C_FAULT` and separate status,
+sample and timeout counters. An IMU-only check confirmed `fault_trace=1` and
+100.1 Hz startup, followed by a sample read returning zero bytes and failed
+configuration reads. This is a sensor communication failure, not evidence
+that a calibration or estimator setting is its cause. The module is connected
+to Nano 5V at VCC_IN. Photos show a separate 3.3V pin and an apparent regulator;
+initially the regulator output and idle bus voltage were unverified.
+With a temporary firmware build that stops I2C polling, measured VCC_IN was
+4.65 V, the 3.3V rail was 3.32 V, and both header SDA/SCL pins were 4.65 V.
+A reference GY-87 schematic includes level translation; this is not proof
+of the exact HW-290 revision or its sensor-side voltage. The earlier SDA
+2.25 V and SCL 2.6 V readings had unspecified bus activity.
+
+The normal diagnostic firmware was restored after measurement. Its short
+20-second IMU-only check started at 100 Hz with no reported I2C errors,
+sequence gaps or saturation. This confirms restoration and current delivery,
+not long-motion stability or a repair of the intermittent communication fault.
+
+Artifacts: `benchmark/results/firmware_diagnostics_20260930/probe/` and
+`benchmark/results/hw290_openvins_20260930_122500_npx7go/`.
+
+The rebuilt estimator emits DEBUG `[VIO_UPDATE]` timestamps and candidate and
+retained feature counts. A replay verified 141 update lines and count bounds.
+These are diagnostic counts, not guaranteed accepted EKF measurement rows.
+
+The next desk test reproduced two partial sample reads: 8 bytes returned from
+14 requested, followed by an 84.032 ms acquisition gap. The bridge stopped,
+and the launcher terminated the estimator. Its live TF and pose updates then
+disappeared. A fixed-frame change cannot restore valid VIO after that failure.
+The capture ended at 29.85 seconds, with maximum displacement 0.106 m; the
+planned two-minute movement interval was incomplete. The raw stream averaged
+100.09 Hz over 553.09 seconds but contained two missing sequence numbers.
+Replacing suspect leads or securing reliable contacts and strain relief is
+the next physical check; a specific wiring or module cause is still unproven.
+Artifacts: `benchmark/results/hw290_openvins_20260930_134122_p84GeF/` and
+`benchmark/results/hw290_20260930_openvins_desk_3/`.
+
 ## Reproduction
 
 ```bash
