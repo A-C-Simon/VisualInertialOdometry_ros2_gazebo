@@ -11,6 +11,7 @@ This restored about 1,400 features and 81 stereo matches.
 I ran a lighter continuous desk test. The IMU stayed near 99 Hz without packet,
 I2C or saturation faults, but the path crossed the 1.72 m desk bound after
 about 64 seconds and reached 7.46 m. About 1,480 features remained visible.
+Another run logged 44.75 m with clean IMU delivery; I did not measure its motion.
 
 Finding
 
