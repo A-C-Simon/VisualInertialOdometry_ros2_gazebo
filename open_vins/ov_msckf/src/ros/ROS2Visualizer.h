@@ -199,6 +199,11 @@ protected:
   // Last camera message timestamps we have received (mapped by cam id)
   std::map<int, double> camera_last_timestamp;
 
+  // Count estimator input separately from the sensor driver's publication
+  // counters. Transport loss can occur between those two points.
+  size_t imu_received_count = 0, imu_large_gap_count = 0, imu_nonpositive_dt_count = 0;
+  double last_received_imu_timestamp = 0.0, max_received_imu_dt = 0.0;
+
   // Last timestamp we visualized at
   double last_visualization_timestamp = 0;
   double last_visualization_timestamp_image = 0;

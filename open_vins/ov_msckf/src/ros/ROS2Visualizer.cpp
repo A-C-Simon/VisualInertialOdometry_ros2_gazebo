@@ -158,7 +158,11 @@ ROS2Visualizer::ROS2Visualizer(std::shared_ptr<rclcpp::Node> node, std::shared_p
   }
 }
 
-ROS2Visualizer::~ROS2Visualizer() { stop_workers(); }
+ROS2Visualizer::~ROS2Visualizer() {
+  stop_workers();
+  PRINT_INFO("[IMU_INPUT]: received=%zu gaps_over_50ms=%zu nonpositive_intervals=%zu max_dt_ms=%.3f\n",
+             imu_received_count, imu_large_gap_count, imu_nonpositive_dt_count, 1000.0 * max_received_imu_dt);
+}
 
 void ROS2Visualizer::stop_workers() {
   stop_requested = true;
@@ -450,6 +454,23 @@ void ROS2Visualizer::callback_inertial(const sensor_msgs::msg::Imu::SharedPtr ms
   message.timestamp = msg->header.stamp.sec + msg->header.stamp.nanosec * 1e-9;
   message.wm << msg->angular_velocity.x, msg->angular_velocity.y, msg->angular_velocity.z;
   message.am << msg->linear_acceleration.x, msg->linear_acceleration.y, msg->linear_acceleration.z;
+
+  if (imu_received_count != 0) {
+    const double dt = message.timestamp - last_received_imu_timestamp;
+    max_received_imu_dt = std::max(max_received_imu_dt, dt);
+    if (dt <= 0.0)
+      ++imu_nonpositive_dt_count;
+    if (dt > 0.05) {
+      ++imu_large_gap_count;
+      PRINT_WARNING("[IMU_INPUT]: timestamp gap %.3f ms at %.9f; inspect source and subscription delivery\n",
+                    1000.0 * dt, message.timestamp);
+    }
+  }
+  last_received_imu_timestamp = message.timestamp;
+  ++imu_received_count;
+  if (imu_received_count % 500 == 0)
+    PRINT_DEBUG("[IMU_INPUT]: received=%zu timestamp=%.9f gaps_over_50ms=%zu\n",
+                imu_received_count, message.timestamp, imu_large_gap_count);
 
   // send it to our VIO system
   _app->feed_measurement_imu(message);
