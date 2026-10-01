@@ -3,19 +3,26 @@ set -Eeo pipefail
 SENSORS_ONLY=false
 SHOW_RVIZ=true
 DIAGNOSTICS=false
+RAW_STEREO=false
 for arg in "$@"; do
   case "$arg" in
     --sensors-only) SENSORS_ONLY=true ;;
     --no-rviz) SHOW_RVIZ=false ;;
     --diagnostics) DIAGNOSTICS=true ;;
+    --raw-stereo) RAW_STEREO=true ;;
     --help|-h)
-      echo "Usage: $0 [--sensors-only] [--no-rviz] [--diagnostics]"
+      echo "Usage: $0 [--sensors-only] [--no-rviz] [--diagnostics] [--raw-stereo]"
       echo "Diagnostics records a sensor bag, raw IMU records and estimator state/debug logs."
+      echo "Raw stereo disables rectification for offline camera calibration."
       echo "A valid VIO trajectory requires a rigid camera-IMU mount and measured extrinsics."
       exit 0 ;;
     *) echo "Unknown argument: $arg" >&2; exit 2 ;;
   esac
 done
+if [[ "$RAW_STEREO" == true && "$SENSORS_ONLY" == false ]]; then
+  echo "--raw-stereo requires --sensors-only because the VIO configuration expects rectified images." >&2
+  exit 2
+fi
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source /opt/ros/humble/setup.bash
 source "${ROOT}/../install_vio/setup.bash"
@@ -53,7 +60,12 @@ grep -Eq '^gain: 255([[:space:]]|$)' /tmp/hw290_v4l2_controls.log || {
 sleep 2
 # The local usb_cam fixes the clock-unit bug. Do not apply arrival-time
 # correction to properly converted V4L2 capture timestamps.
-start_node splitter /tmp/hw290_splitter.log "$SPLITTER" --ros-args -p calibration_file:="$CALIBRATION" -p auto_timestamp_correction:=false
+SPLITTER_RECTIFY=true
+if [[ "$RAW_STEREO" == true ]]; then
+  SPLITTER_RECTIFY=false
+  echo "Raw unrectified stereo output enabled for offline calibration."
+fi
+start_node splitter /tmp/hw290_splitter.log "$SPLITTER" --ros-args -p calibration_file:="$CALIBRATION" -p auto_timestamp_correction:=false -p rectify_images:="$SPLITTER_RECTIFY"
 if [[ "$DIAGNOSTICS" == true ]]; then
   echo 'Diagnostic recording enabled; recording/debug CPU costs are included in this run.'
   touch "$RUN_DIR/diagnostics_enabled"

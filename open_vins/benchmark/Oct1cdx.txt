@@ -44,9 +44,15 @@ stopped changing gates and exposure. The required correction is a full Kalibr
 stereo and camera-IMU calibration using raw images, plus measured Allan-variance
 IMU noise values.
 
+I added a protected raw-stereo calibration mode. It records the two lens images
+before rectification and refuses to start OpenVINS in that mode. A live check
+confirmed 640x480 images at about 30 Hz with the real lens distortion model,
+while the IMU stayed near 99 Hz without gaps, corruption or saturation. I also
+started building the official Kalibr ROS 1 Docker environment.
+
 Summary for supervisor (Telegram)
 
 I verified low-blur camera settings, clean 99 Hz IMU delivery and strong live feature counts.
 The continuous desk test still escaped its 1.72 m bound and reached 7.46 m after about 64 seconds.
 The failure matches rejected MSCKF visual updates caused by inconsistent camera-IMU calibration.
-I will replace the provisional transform, timing and noise values with full Kalibr and Allan results.
+I prepared raw Kalibr capture so I can replace the provisional transform, timing and IMU noise values.

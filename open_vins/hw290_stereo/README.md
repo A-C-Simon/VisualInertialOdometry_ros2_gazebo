@@ -168,3 +168,16 @@ noise and random walk from a long stationary dataset, then record a smooth
 dynamic AprilGrid sequence that excites every rotation and acceleration axis.
 Accept the result only when Kalibr's reprojection and predicted IMU plots fit
 and a continuous desk-motion test remains inside the measured workspace.
+
+Record a Kalibr input bag with the raw lens images and standard ROS IMU message:
+
+```bash
+./hw290_stereo/run_hw290_openvins.sh \
+  --sensors-only --no-rviz --diagnostics --raw-stereo
+```
+
+The `--raw-stereo` option is restricted to sensor-only runs because the active
+OpenVINS camera model expects rectified images. The resulting `sensors_bag`
+inside the saved run directory can be converted from ROS 2 to a ROS 1 bag with
+`rosbags-convert`, as described by the official Kalibr ROS 2 guide. Record the
+static stereo target sequence and dynamic camera-IMU sequence as separate runs.

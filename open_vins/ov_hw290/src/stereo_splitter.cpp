@@ -19,6 +19,7 @@ public:
     auto_timestamp_correction_ = declare_parameter<bool>("auto_timestamp_correction", true);
     stamp_offset_sec_ = declare_parameter<double>("timestamp_offset_sec", 0.0);
     monochrome_ = declare_parameter<bool>("monochrome", true);
+    rectify_images_ = declare_parameter<bool>("rectify_images", true);
     if (calibration_file.empty()) {
       throw std::runtime_error("calibration_file parameter is required");
     }
@@ -52,6 +53,10 @@ public:
                                 cv::Size(640, 480), CV_32FC1, left_map_x_, left_map_y_);
     cv::initUndistortRectifyMap(k1, d1, r1, p1(cv::Rect(0, 0, 3, 3)),
                                 cv::Size(640, 480), CV_32FC1, right_map_x_, right_map_y_);
+    intrinsic_[0] = k0;
+    intrinsic_[1] = k1;
+    distortion_[0] = d0;
+    distortion_[1] = d1;
     projection_[0] = p0;
     projection_[1] = p1;
     const auto qos = rclcpp::QoS(rclcpp::KeepLast(5)).reliable();
@@ -62,7 +67,8 @@ public:
     sub_ = create_subscription<sensor_msgs::msg::Image>(
         "/image_raw", qos,
         [this](sensor_msgs::msg::Image::ConstSharedPtr image) { split(image); });
-    RCLCPP_INFO(get_logger(), "Rectifying 640x480 stereo views from /image_raw using %s", calibration_file.c_str());
+    RCLCPP_INFO(get_logger(), "%s 640x480 stereo views from /image_raw using %s",
+                rectify_images_ ? "Rectifying" : "Publishing raw", calibration_file.c_str());
     RCLCPP_INFO(get_logger(), "Publishing %s stereo images", monochrome_ ? "mono8" : "rgb8");
   }
 
@@ -73,15 +79,27 @@ private:
     out.width = 640;
     out.height = 480;
     out.distortion_model = "plumb_bob";
-    out.d = {0, 0, 0, 0, 0};
-    const cv::Mat &p = projection_[right ? 1 : 0];
-    out.k = {p.at<double>(0, 0), p.at<double>(0, 1), p.at<double>(0, 2),
-             p.at<double>(1, 0), p.at<double>(1, 1), p.at<double>(1, 2),
-             p.at<double>(2, 0), p.at<double>(2, 1), p.at<double>(2, 2)};
-    out.r = {1,0,0,0,1,0,0,0,1};
+    const size_t index = right ? 1 : 0;
+    const cv::Mat &p = projection_[index];
+    const cv::Mat &k = rectify_images_ ? p(cv::Rect(0, 0, 3, 3)) : intrinsic_[index];
+    out.k = {k.at<double>(0, 0), k.at<double>(0, 1), k.at<double>(0, 2),
+             k.at<double>(1, 0), k.at<double>(1, 1), k.at<double>(1, 2),
+             k.at<double>(2, 0), k.at<double>(2, 1), k.at<double>(2, 2)};
+    out.r = {1, 0, 0, 0, 1, 0, 0, 0, 1};
+    if (rectify_images_) {
+      out.d = {0, 0, 0, 0, 0};
+    } else {
+      const cv::Mat flattened = distortion_[index].reshape(1, 1);
+      out.d.resize(flattened.cols);
+      for (int col = 0; col < flattened.cols; ++col) {
+        out.d[col] = flattened.at<double>(0, col);
+      }
+    }
     for (int row = 0; row < 3; ++row) {
       for (int col = 0; col < 4; ++col) {
-        out.p[row * 4 + col] = p.at<double>(row, col);
+        out.p[row * 4 + col] =
+            rectify_images_ ? p.at<double>(row, col)
+                            : (col < 3 ? k.at<double>(row, col) : 0.0);
       }
     }
     return out;
@@ -137,17 +155,24 @@ private:
                      const_cast<uint8_t *>(source->data.data()), source->step);
     cv::Mat raw_right(480, 640, CV_8UC3,
                       const_cast<uint8_t *>(source->data.data() + 640 * 3), source->step);
-    cv::Mat rect_left, rect_right;
-    cv::remap(raw_left, rect_left, left_map_x_, left_map_y_, cv::INTER_LINEAR);
-    cv::remap(raw_right, rect_right, right_map_x_, right_map_y_, cv::INTER_LINEAR);
+    cv::Mat output_left, output_right;
+    if (rectify_images_) {
+      cv::remap(raw_left, output_left, left_map_x_, left_map_y_, cv::INTER_LINEAR);
+      cv::remap(raw_right, output_right, right_map_x_, right_map_y_, cv::INTER_LINEAR);
+    } else {
+      // Cropped side-by-side views retain the source stride, so clone them
+      // before copying their pixels into independent ROS image messages.
+      output_left = raw_left.clone();
+      output_right = raw_right.clone();
+    }
     // Match cv_bridge's RGB8 -> MONO8 conversion after rectification exactly.
     // Converting before remap would change pixels through rounding.
     if (monochrome_) {
-      cv::cvtColor(rect_left, rect_left, cv::COLOR_RGB2GRAY);
-      cv::cvtColor(rect_right, rect_right, cv::COLOR_RGB2GRAY);
+      cv::cvtColor(output_left, output_left, cv::COLOR_RGB2GRAY);
+      cv::cvtColor(output_right, output_right, cv::COLOR_RGB2GRAY);
     }
-    std::memcpy(l.data.data(), rect_left.data, l.data.size());
-    std::memcpy(r.data.data(), rect_right.data, r.data.size());
+    std::memcpy(l.data.data(), output_left.data, l.data.size());
+    std::memcpy(r.data.data(), output_right.data, r.data.size());
     left_->publish(l);
     right_->publish(r);
     left_info_->publish(info(l.header, false));
@@ -158,9 +183,11 @@ private:
   rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr left_, right_;
   rclcpp::Publisher<sensor_msgs::msg::CameraInfo>::SharedPtr left_info_, right_info_;
   cv::Mat left_map_x_, left_map_y_, right_map_x_, right_map_y_;
+  cv::Mat intrinsic_[2], distortion_[2];
   cv::Mat projection_[2];
   bool auto_timestamp_correction_ = true;
   bool monochrome_ = true;
+  bool rectify_images_ = true;
   bool timestamp_calibrated_ = false;
   double stamp_offset_sec_ = 0.0;
   std::vector<double> timestamp_ages_;
