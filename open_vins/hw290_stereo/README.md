@@ -145,6 +145,7 @@ IMU communication failure.
 On this camera, `usb_cam` 0.8.1 leaves the UVC device in manual exposure mode
 even when its Boolean `autoexposure` parameter is true. The launcher now sets
 UVC auto-exposure mode 3 after the camera starts, with neutral brightness and
-backlight compensation. A clean launcher test confirmed mode 3 and 1,500 ORB
-keypoints per sampled stereo half with negligible highlight clipping. A full
-continuous-motion desk test is still required before accepting the repair.
+backlight compensation, then reads the controls back and aborts if mode 3 was
+not accepted. A clean launcher test confirmed mode 3 and 1,500 ORB keypoints
+per sampled stereo half with negligible highlight clipping. A full continuous
+motion desk test is still required before accepting the repair.
