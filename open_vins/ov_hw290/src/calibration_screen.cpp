@@ -38,6 +38,7 @@ class CalibrationScreen : public QWidget {
     output_root_ = QString::fromStdString(node_->declare_parameter<std::string>("output_root", "/tmp"));
     seconds_ = node_->declare_parameter<int>("record_seconds", 90);
     tag_size_ = node_->declare_parameter<double>("tag_size_m", 0.040);
+    armed_ = node_->declare_parameter<bool>("auto_prepare", true);
     if (seconds_ < 1 || seconds_ > 600 || tag_size_ <= 0)
       throw std::runtime_error("Invalid recording duration or measured tag size");
     setWindowTitle("HW290 screen calibration");
@@ -56,10 +57,11 @@ class CalibrationScreen : public QWidget {
     status_ = new QLabel(panel_);
     status_->setWordWrap(true);
     layout->addWidget(status_);
-    auto help = new QLabel("Measure a complete black tag edge at this display size. Keep the grid visible in both previews. Esc returns to the chat and stops an active recording.", panel_);
+    auto help = new QLabel(QString("The saved tag edge is %1 mm unless changed below. Keep the grid visible in both previews. Hold still during the red countdown, then move when green. Capture starts automatically after the checks. Esc cancels.").arg(tag_size_ * 1000.0, 0, 'f', 1), panel_);
     help->setWordWrap(true);
     layout->addWidget(help);
     auto measured = new QDoubleSpinBox(panel_);
+    measured_ = measured;
     measured->setRange(1.0, 200.0);
     measured->setDecimals(1);
     measured->setSingleStep(0.1);
@@ -69,12 +71,13 @@ class CalibrationScreen : public QWidget {
     layout->addWidget(measured);
     connect(measured, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this,
             [this](double mm) { tag_size_ = mm / 1000.0; });
-    prepare_ = new QPushButton(QString("Prepare %1 second recording").arg(seconds_), panel_);
+    prepare_ = new QPushButton(armed_ ? "Cancel capture" : QString("Prepare %1 second recording").arg(seconds_), panel_);
     layout->addWidget(prepare_);
     connect(prepare_, &QPushButton::clicked, this, [this, measured] {
+      if (armed_) { close(); return; }
       armed_ = true;
       stable_since_ = -1;
-      prepare_->setEnabled(false);
+      prepare_->setText("Cancel capture");
       measured->setEnabled(false);
     });
     recorder_.setProcessChannelMode(QProcess::MergedChannels);
@@ -159,6 +162,7 @@ class CalibrationScreen : public QWidget {
     writeLog();
   }
   void startRecorder() {
+    measured_->setEnabled(false);
     run_dir_ = output_root_ + "/screen_calibration_" + QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss_zzz");
     if (!QDir().mkpath(run_dir_)) {
       failed_ = true;
@@ -293,6 +297,7 @@ class CalibrationScreen : public QWidget {
   std::array<QLabel*, 2> views_;
   QLabel *status_;
   QPushButton *prepare_;
+  QDoubleSpinBox *measured_;
   QPixmap target_;
   QString image_path_, output_root_, run_dir_;
   QByteArray recorder_log_;

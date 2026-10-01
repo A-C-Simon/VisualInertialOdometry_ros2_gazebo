@@ -87,13 +87,15 @@ For a screen target, use the C++ calibration window:
 
 It shows the target at full screen with two small camera previews in the top
 right, without covering the grid. Measure the tag edge at this display size
-before clicking **Prepare**, and enter it in the measured tag edge field.
+and enter it in the measured tag edge field if it differs from the default.
 The field defaults to 40 mm; `CALIBRATION_TAG_SIZE_M` changes that default.
 The border stays
 red while the window checks fresh stereo frames, at least seven tags per camera
 and four matching tags between the cameras,
 and 80 to 120 Hz IMU delivery. After the recorder subscribes to both cameras
-and IMU, a five second countdown appears. Green means start moving.
+and IMU, a five second countdown appears. Capture starts automatically when
+the checks pass; there is no terminal prompt or Prepare click. Green means
+start moving. The Cancel button or Esc stops the capture.
 The timer stops recording after 90 seconds and returns to a normal window.
 Use `CALIBRATION_SECONDS=60` for the dynamic camera to IMU recording.
 Esc stops the recorder and closes the window; the launcher then stops sensors.
