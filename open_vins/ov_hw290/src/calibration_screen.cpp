@@ -39,6 +39,7 @@ class CalibrationScreen : public QWidget {
     seconds_ = node_->declare_parameter<int>("record_seconds", 90);
     tag_size_ = node_->declare_parameter<double>("tag_size_m", 0.040);
     armed_ = node_->declare_parameter<bool>("auto_prepare", true);
+    measurement_only_ = node_->declare_parameter<bool>("measurement_only", false);
     if (seconds_ < 1 || seconds_ > 600 || tag_size_ <= 0)
       throw std::runtime_error("Invalid recording duration or measured tag size");
     setWindowTitle("HW290 screen calibration");
@@ -57,7 +58,9 @@ class CalibrationScreen : public QWidget {
     status_ = new QLabel(panel_);
     status_->setWordWrap(true);
     layout->addWidget(status_);
-    auto help = new QLabel(QString("The saved tag edge is %1 mm unless changed below. Keep the grid visible in both previews. Hold still during the red countdown, then move when green. Capture starts automatically after the checks. Esc cancels.").arg(tag_size_ * 1000.0, 0, 'f', 1), panel_);
+    auto help = new QLabel(measurement_only_ ?
+        "Measure one complete black tag edge on this fullscreen grid with a ruler. Enter millimetres below and click Save. Measure the black edge, not the white gap. No recording or movement is needed. Esc cancels." :
+        QString("The saved tag edge is %1 mm unless changed below. Keep the grid visible in both previews. Hold still during the red countdown, then move when green. Capture starts automatically after the checks. Esc cancels.").arg(tag_size_ * 1000.0, 0, 'f', 1), panel_);
     help->setWordWrap(true);
     layout->addWidget(help);
     auto measured = new QDoubleSpinBox(panel_);
@@ -71,9 +74,11 @@ class CalibrationScreen : public QWidget {
     layout->addWidget(measured);
     connect(measured, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this,
             [this](double mm) { tag_size_ = mm / 1000.0; });
-    prepare_ = new QPushButton(armed_ ? "Cancel capture" : QString("Prepare %1 second recording").arg(seconds_), panel_);
+    prepare_ = new QPushButton(measurement_only_ ? "Save fullscreen tag size" :
+        (armed_ ? "Cancel capture" : QString("Prepare %1 second recording").arg(seconds_)), panel_);
     layout->addWidget(prepare_);
     connect(prepare_, &QPushButton::clicked, this, [this, measured] {
+      if (measurement_only_) { saveMeasurement(); return; }
       if (armed_) { close(); return; }
       armed_ = true;
       stable_since_ = -1;
@@ -116,6 +121,10 @@ class CalibrationScreen : public QWidget {
     connect(&timer_, &QTimer::timeout, this, [this] { tick(); });
     timer_.start(50);
     border(false, "RED: hold the rig steady. Waiting for camera and IMU.");
+    if (measurement_only_) {
+      for (auto view : views_) view->setText("Measurement only");
+      border(false, "MEASUREMENT ONLY: use a ruler on this fullscreen grid, enter the black tag edge below and click Save. Nothing is being recorded.");
+    }
   }
 
   ~CalibrationScreen() override { stopRecorder(); }
@@ -145,6 +154,40 @@ class CalibrationScreen : public QWidget {
     if (run_dir_.isEmpty()) return;
     QFile file(run_dir_ + "/recorder.log");
     if (file.open(QIODevice::WriteOnly)) file.write(recorder_log_);
+  }
+  void saveMeasurement() {
+    if (finishing_) { close(); return; }
+    run_dir_ = output_root_ + "/screen_target_measurement_" + QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss_zzz");
+    if (!QDir().mkpath(run_dir_)) {
+      border(false, "Cannot create the measurement directory.");
+      return;
+    }
+    QFile file(run_dir_ + "/target.yaml");
+    if (!file.open(QIODevice::WriteOnly)) {
+      border(false, "Cannot save the measurement. Esc cancels.");
+      return;
+    }
+    const auto yaml = QString("target_type: aprilgrid\ntagCols: 6\ntagRows: 6\ntagSize: %1\ntagSpacing: 0.3\n")
+        .arg(tag_size_, 0, 'g', 10).toUtf8();
+    if (file.write(yaml) != yaml.size()) {
+      border(false, "Measurement write failed. Esc cancels.");
+      return;
+    }
+    file.close();
+    QFile display(run_dir_ + "/display_geometry.txt");
+    if (display.open(QIODevice::WriteOnly)) {
+      display.write(QString("fullscreen_width_px=%1\nfullscreen_height_px=%2\ntarget_side_px=%3\n")
+          .arg(width()).arg(height()).arg(std::min(height(), width() - 460)).toUtf8());
+    }
+    timer_.stop();
+    finishing_ = true;
+    measured_->setEnabled(false);
+    prepare_->setText("Close");
+    border(false, "SAVED: fullscreen tag size recorded in " + run_dir_ + ". Return to chat.");
+    showNormal();
+    resize(1100, 800);
+    raise();
+    activateWindow();
   }
   void stopRecorder() {
     finishing_ = true;
@@ -196,6 +239,7 @@ class CalibrationScreen : public QWidget {
   }
   void tick() {
     if (!rclcpp::ok()) { close(); return; }
+    if (measurement_only_) return;
     // Drain all queued callbacks. One spin_some call per 50 ms GUI tick can
     // process only one sample per subscription and falsely report a 20 Hz IMU.
     executor_.spin_all(std::chrono::milliseconds(5));
@@ -343,7 +387,7 @@ class CalibrationScreen : public QWidget {
          countdown_since_ = -1, countdown_bad_since_ = -1, recording_since_ = -1;
   int seconds_ = 90, common_tags_ = 0;
   double tag_size_ = 0.040;
-  bool armed_ = false, finishing_ = false, failed_ = false;
+  bool armed_ = false, finishing_ = false, failed_ = false, measurement_only_ = false;
 };
 
 int main(int argc, char **argv) {

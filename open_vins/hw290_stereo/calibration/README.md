@@ -89,6 +89,23 @@ It shows the target at full screen with two small camera previews in the top
 right, without covering the grid. Measure the tag edge at this display size
 and enter it in the measured tag edge field if it differs from the default.
 The field defaults to 40 mm; `CALIBRATION_TAG_SIZE_M` changes that default.
+The browser and fullscreen grid can have different physical scales. A browser
+ruler measurement must not be reused without checking the fullscreen black edge.
+To measure the fullscreen grid without sensors or starting a recording:
+
+```bash
+source /opt/ros/humble/setup.bash
+./install_vio/ov_hw290/lib/ov_hw290/calibration_screen --ros-args \
+  -p measurement_only:=true \
+  -p target_image:="$PWD/hw290_stereo/calibration/aprilgrid_6x6.png" \
+  -p output_root:="$PWD/benchmark/results"
+```
+
+Use the ruler, enter millimetres in the window and click Save fullscreen tag
+size. The window saves a separate `screen_target_measurement_*/target.yaml`
+and display geometry, then returns to a normal window. No terminal response
+is needed while it is fullscreen. Use the measured value for capture and fit
+only when the fullscreen layout matches the recording.
 The border stays
 red while the window checks fresh stereo frames, at least seven tags per camera
 and four matching tags between the cameras,
