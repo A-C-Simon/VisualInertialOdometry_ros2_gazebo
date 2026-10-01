@@ -1,0 +1,5 @@
+/imu0:
+  history: keep_last
+  depth: 1000
+  reliability: reliable
+  durability: volatile

@@ -77,7 +77,8 @@ RUN_LABEL=hw290_openvins
 [[ "$IMU_ALLAN" == true ]] && RUN_LABEL=hw290_imu_allan
 source "$ROOT/process_helpers.sh"
 if [[ "$IMU_ALLAN" == true ]]; then
-  start_node recorder /tmp/hw290_recorder.log ros2 bag record -o "$RUN_DIR/imu_bag" /imu0
+  cp "$ROOT/record_qos.yaml" "$RUN_DIR/record_qos.yaml"
+  start_node recorder /tmp/hw290_recorder.log ros2 bag record --qos-profile-overrides-path "$RUN_DIR/record_qos.yaml" -o "$RUN_DIR/imu_bag" /imu0
   sleep 1
   start_hw290_imu /tmp/hw290_imu.log
   wait_for_imu /tmp/hw290_imu.log
@@ -112,7 +113,8 @@ start_node splitter /tmp/hw290_splitter.log "$SPLITTER" --ros-args -p calibratio
 if [[ "$DIAGNOSTICS" == true ]]; then
   echo 'Diagnostic recording enabled; recording/debug CPU costs are included in this run.'
   touch "$RUN_DIR/diagnostics_enabled"
-  start_node recorder /tmp/hw290_recorder.log ros2 bag record -o "$RUN_DIR/sensors_bag" /cam0/image_raw /cam1/image_raw /cam0/camera_info /cam1/camera_info /imu0 /ov_msckf/poseimu
+  cp "$ROOT/record_qos.yaml" "$RUN_DIR/record_qos.yaml"
+  start_node recorder /tmp/hw290_recorder.log ros2 bag record --qos-profile-overrides-path "$RUN_DIR/record_qos.yaml" -o "$RUN_DIR/sensors_bag" /cam0/image_raw /cam1/image_raw /cam0/camera_info /cam1/camera_info /imu0 /ov_msckf/poseimu
   sleep 2
 fi
 start_hw290_imu /tmp/hw290_imu.log
