@@ -30,8 +30,18 @@ and checked its curves on the short IMU bag; the three-hour measurement is pendi
 
 I built a C++ screen recorder with stereo previews, red and green cues and a
 countdown. I fixed the 20 Hz preview rate error and camera-resolution tag
-detection. A separate test verified the green cue and saved bag; I checked the
-live camera preview. Physical calibration and the final desk test remain pending.
+detection. Kalibr accepted 126 left and 105 right corners in images that the
+preview rejected, so I replaced its detector with Kalibr's native C++ detector.
+Automatic capture passed a separate green-cue and saved-bag check. A physical
+bag saved 19,134 IMU messages and about 5,759 frames per camera. Calibration
+fitting and the final desk test remain pending.
+
+I saved high level and comprehensive pipeline models in
+OpenVINS_Pipeline_Model_Oct1_2026.txt, including the observed failure point.
+I found that brief readiness fluctuations restarted the five-second countdown.
+I changed it to tolerate short fluctuations while checking sustained target
+loss, IMU rate and missing streams. Simulated callback fluctuations reached
+green; a separate missing-IMU check stopped before green.
 
 Summary for supervisor (Telegram)
 
