@@ -4,48 +4,36 @@ HW290 OpenVINS drift investigation
 
 Work completed
 
-I traced the 39.90 m failure to dark frames and visual-update loss. Automatic
-exposure was unreliable, so I set and verified 5 ms exposure with gain 255.
-This restored about 1,400 features and 81 stereo matches.
+I restored camera texture with 5 ms exposure and gain 255, but my first desk
+test still reached 7.46 m. I completed the screen calibration capture, checked
+40 mm tag edges and 12 mm gaps, and fitted the stereo cameras and IMU alignment.
+I fixed the capture countdown and IMU recording queue, added estimator input
+counters, and made image rectification and static TF follow the selected profile.
 
-I ran a lighter continuous desk test. The IMU stayed near 99 Hz without packet,
-I2C or saturation faults, but the path crossed the 1.72 m desk bound after
-about 64 seconds and reached 7.46 m. About 1,480 features remained visible.
-Another run logged 44.75 m with clean IMU delivery; I did not measure its motion.
+Results
 
-Finding
+The fitted stereo baseline is 5.945 cm. Camera residual spread is about
+0.26-0.32 pixels; IMU alignment changed about 26.5 degrees and timing is 13.04 ms.
+On the same recorded movement, the old model reached 18.92 km and the new model
+stayed below 0.47 m. Comparison against the camera-derived board reference gave
+2.67 cm RMSE after the fitting interval; this is not independent ground truth.
 
-The logs match reported OpenVINS failures where MSCKF rejects visual updates
-and IMU propagation then drives the position away. Online extrinsic and timing
-calibration estimated an 8.4 to 10.5 ms offset but still diverged. The current
-photo-estimated transform, assumed timing and guessed IMU noise need measurement;
-the exact cause of visual rejection is still unconfirmed.
+My fresh two-minute continuous desk test stayed within the limits with no
+flights. Across 868 seconds of saved poses, maximum displacement was 0.852 m,
+below the 1.72 m desk diagonal. I made this tested profile the OpenVINS default.
+The estimator averaged 14.82 ms per tracking/update cycle, 56.5% of one CPU core,
+and 185.1 MiB peak memory. Recording and RViz costs are reported separately.
 
-Next step
+Remaining work
 
-I prepared Kalibr, raw 640x480 stereo capture at 30 Hz and an IMU-only Allan
-recording mode. ROS bag conversion passed on 8,870 IMU messages. My screen
-target measured about 40 mm tags with 12 mm gaps. I built the C++ Allan tool
-and checked its curves on the short IMU bag; the three-hour measurement is pending.
-
-I built a C++ screen recorder with stereo previews, red and green cues and a
-countdown. I fixed the 20 Hz preview rate error and camera-resolution tag
-detection. Kalibr accepted 126 left and 105 right corners in images that the
-preview rejected, so I replaced its detector with Kalibr's native C++ detector.
-Automatic capture passed a separate green-cue and saved-bag check. A physical
-bag saved 19,134 IMU messages and about 5,759 frames per camera. Calibration
-fitting and the final desk test remain pending.
-
-I saved high level and comprehensive pipeline models in
-OpenVINS_Pipeline_Model_Oct1_2026.txt, including the observed failure point.
-I found that brief readiness fluctuations restarted the five-second countdown.
-I changed it to tolerate short fluctuations while checking sustained target
-loss, IMU rate and missing streams. Simulated callback fluctuations reached
-green; a separate missing-IMU check stopped before green.
+IMU noise needs long stationary measurement; the fitted 6.7 cm lever arm needs
+a better physical check. The bag had no IMU gaps above 25 ms, but OpenVINS
+logged 46 input gaps above 50 ms. ORB calibration and a matched compute/accuracy
+comparison are still pending. I updated the overview and comprehensive model.
 
 Summary for supervisor (Telegram)
 
-I verified low-blur camera settings, clean 99 Hz IMU delivery and strong feature counts.
-The desk test still escaped its 1.72 m bound and reached 7.46 m after about 64 seconds.
-Visual updates are rejected; calibration remains a suspected cause needing measurement.
-I prepared Kalibr and a screen recorder with camera preview to measure the calibration.
+I calibrated the stereo camera and IMU and made the tested profile the OpenVINS default.
+The old replay reached 18.92 km; the new replay stayed below 0.47 m.
+My continuous desk test showed no flights, with maximum displacement of 0.852 m.
+OpenVINS averaged 14.82 ms per update; IMU noise and ORB comparison remain pending.
