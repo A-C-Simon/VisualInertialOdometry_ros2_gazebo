@@ -70,9 +70,10 @@ measured reduction in total pipeline CPU or an accuracy improvement.
 
 See [repair notes](REPAIR_NOTES.md) for the single source of calibration,
 firmware and camera timestamp details, known limitations and reproduction
-commands. See [the C++ bridge report](../benchmark/2026-09-29_CPP_IMU_Bridge.md)
-for protocol and CPU measurements, and [the optimization report](../benchmark/2026-09-28_HW290_ORB_Optimization.md)
-for the EuRoC comparison and ORB settings.
+commands. The C++ bridge and optimization reports are stored locally in
+`/home/ac/Work_Reports/` as `2026-09-29_CPP_IMU_Bridge.md` and
+`2026-09-28_HW290_ORB_Optimization.md`. Work reports are kept outside the
+repository; the calibration profile and operating guides remain here.
 
 When the IMU fails startup, the launchers keep RViz available in sensor view
 and skip VIO until the sensor is restored. During a run, a detected IMU rate or

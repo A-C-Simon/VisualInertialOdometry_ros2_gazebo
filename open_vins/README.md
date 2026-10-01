@@ -132,9 +132,10 @@ The alignment correction removes the artificial origin and heading mismatch.
 The remaining residual is VIO drift and should be evaluated separately from
 frame alignment.
 
-The common EuRoC stereo-inertial comparison with ORB-SLAM3, including accuracy
-and estimator-only CPU and memory results, is documented in
-`benchmark/2026-09-25_VIO_Benchmark_Report.md`.
+The common EuRoC stereo-inertial comparison report, including accuracy and
+estimator CPU and memory results, is kept locally at
+`/home/ac/Work_Reports/2026-09-25_VIO_Benchmark_Report.md`.
+Work reports are stored outside this repository.
 
 ## Diagnostics
 

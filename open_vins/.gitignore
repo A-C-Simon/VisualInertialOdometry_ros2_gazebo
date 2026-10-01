@@ -18,3 +18,8 @@ install_camera/
 benchmark/results/
 symlink_install_manifest.txt
 benchmark/build_orb_core/
+
+# Work reports belong in /home/ac/Work_Reports, outside the VIO repository.
+benchmark/*cdx.txt
+benchmark/20??-??-??_*.md
+benchmark/OpenVINS_Pipeline_Model_*.txt

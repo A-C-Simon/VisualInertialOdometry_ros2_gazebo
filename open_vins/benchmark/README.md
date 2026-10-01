@@ -33,7 +33,7 @@ truth over their shared time interval. It reports rigid SE(3) ATE, one second
 relative translation error, pose coverage and the largest pose gap. Alignment
 does not fit scale. `summarize_trials.py` collects these metrics with CPU and
 memory measurements from completed runs and reports both the full interval and
-the post-initialization interval. The included reports state dataset, host,
+the post-initialization interval. Reports in `/home/ac/Work_Reports/` state dataset, host,
 configuration and limits for each recorded comparison.
 
 ## Hardware runs
@@ -41,5 +41,5 @@ configuration and limits for each recorded comparison.
 The HW290 launchers save individual run summaries under `results/`. These
 include sensor faults, logged estimator timings, process CPU and peak memory.
 Manual out and back distances are diagnostic checks, not time resolved ATE.
-See [the HW290 repair notes](../hw290_stereo/REPAIR_NOTES.md) and the dated
-reports linked from [the OpenVINS README](../README.md).
+See [the HW290 repair notes](../hw290_stereo/REPAIR_NOTES.md) for operating
+details. Dated work reports are kept separately in `/home/ac/Work_Reports/`.
