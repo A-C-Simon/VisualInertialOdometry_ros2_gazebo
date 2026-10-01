@@ -3,7 +3,8 @@
 The hardware pipeline uses a side by side ELP stereo camera, an HW290 IMU
 connected through an Arduino Nano, the OpenVINS estimator and an optional
 ORB-SLAM3 estimator. The IMU reports identity 0x98, consistent with an
-ICM-20689. The current camera and IMU mount calibration is provisional.
+ICM-20689. OpenVINS now uses the measured October 1 camera and IMU mount profile.
+IMU noise remains provisional; ORB-SLAM3 still uses the earlier calibration.
 
 ## Run
 
@@ -162,12 +163,30 @@ online camera extrinsic and time-offset calibration moved the offset estimate
 from 20 ms to about 8.4 to 10.5 ms, but still diverged. Online calibration did
 not repair the provisional starting calibration.
 
-The next correction is a complete offline calibration. Record raw, unrectified
-left and right images for stereo intrinsics and extrinsics, measure IMU white
-noise and random walk from a long stationary dataset, then record a smooth
-dynamic AprilGrid sequence that excites every rotation and acceleration axis.
-Accept the result only when Kalibr's reprojection and predicted IMU plots fit
-and a continuous desk-motion test remains inside the measured workspace.
+I completed the raw stereo and camera/IMU fits using the measured 40 mm screen
+target. The fitted rotation differs from the previous transform by about
+26.5 degrees, and the cam0 time offset is 13.04 ms. Stereo baseline is 5.945 cm.
+The new profile applies the rectification rotations to both camera/IMU transforms
+and uses matching rectified intrinsics. It is now the normal OpenVINS default.
+
+On the same recorded movement, the old model reached 18.92 km displacement;
+the new model stayed below 0.47 m. Both used dynamic initialization for that
+offline comparison because the recording starts in motion. The fresh physical
+test used normal stationary initialization and continuous desk motion for
+about two minutes. I stayed inside the stated workspace and saw no flights.
+Across 868 seconds of saved poses, maximum displacement was 0.852 m, below
+the 1.72 m desk diagonal. No trajectory clipping or origin resets were added.
+
+The diagnostic run averaged 14.82 ms per logged tracking/update cycle. Estimator
+CPU averaged 56.5% of one core, with 185.1 MiB peak RSS; recording and RViz add
+their own costs. This is not a matched ORB compute comparison. The recording
+has 92,748 IMU samples at 99.02 Hz, with no interval above 25 ms. The estimator
+logged 46 input gaps above 50 ms, so subscriber delivery still needs work.
+
+See the [October 1 profile and evidence](calibration/20261001/README.md).
+Long stationary Allan calibration and independent trajectory ground truth are
+still pending. The estimated 6.7 cm lever arm also needs a better physical
+measurement than the approximate 4 cm camera/IMU separation.
 
 Follow the [HW290 offline calibration procedure](calibration/README.md) for the
 printable target, raw recordings, Allan dataset and Kalibr commands.

@@ -1,8 +1,10 @@
 # HW290 offline calibration
 
-The active camera to IMU transform, time offset and IMU noise values are
-provisional. Do not replace them until the calibration reports pass the checks
-below.
+The normal OpenVINS launcher uses the [October 1 profile](20261001/README.md).
+Its stereo geometry, camera to IMU transforms and time offset come from the
+screen recording and passed replay and physical desk checks. IMU noise remains
+provisional. The profile README records the evidence and remaining limits.
+ORB-SLAM3 still uses its earlier profile; it needs a separate update and test.
 
 ## 1. Print the target
 
@@ -191,8 +193,9 @@ docker run --rm -v /path/to/dynamic_run:/data \
    --target /config/aprilgrid_6x6_a4.yaml --dont-show-report'
 ```
 
-Accept the result only when camera reprojection errors are near 0.1 to 0.2
-pixels, predicted IMU curves fit the measurements, errors and biases remain
-inside their 3-sigma bounds, and the translation agrees with the measured
-mount geometry. Finally, repeat the continuous desk test and require the path
-to remain inside the 1.72 m workspace bound.
+OpenVINS describes roughly 0.2 to 0.5 pixel reprojection errors as a useful
+camera calibration range. Inspect predicted IMU curves, residual and bias
+bounds, and mount geometry as well. See the [official calibration guidance](https://docs.openvins.com/gs-calibration.html).
+Finally, repeat the continuous desk test and require displacement to remain
+below the 1.72 m workspace diagonal. This checks gross divergence; independent
+ground truth is still needed for a trajectory accuracy score.

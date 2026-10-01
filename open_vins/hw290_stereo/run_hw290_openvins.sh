@@ -57,7 +57,7 @@ export ROS_DOMAIN_ID="${ROS_DOMAIN_ID:-48}"
 export DISPLAY="${DISPLAY:-:1}"
 SPLITTER="${ROOT}/../install_vio/ov_hw290/lib/ov_hw290/stereo_splitter"
 ESTIMATOR="${ROOT}/../install_vio/ov_msckf/lib/ov_msckf/run_subscribe_msckf"
-CALIBRATION="${HW290_STEREO_CALIBRATION:-${ROOT}/../../calibration/elp_3dgs1200p01/calib/calibration_opencv.yaml}"
+CALIBRATION="${HW290_STEREO_CALIBRATION:-${ROOT}/calibration/20261001/stereo_opencv.yaml}"
 ESTIMATOR_CONFIG="${HW290_VIO_CONFIG:-${ROOT}/estimator_config.yaml}"
 if [[ "$IMU_ALLAN" == false ]]; then
   [[ -x "$CAMERA_NODE" ]] || { echo "Build the corrected camera driver: hw290_stereo/build_camera_driver.sh" >&2; exit 1; }
@@ -131,7 +131,7 @@ for camera in cam0 cam1; do
   start_node "tf_$camera" "/tmp/hw290_tf_${camera}.log" /opt/ros/humble/lib/tf2_ros/static_transform_publisher "${TF_ARGS[@]}"
 done
 if [[ "$SENSORS_ONLY" == false && "$IMU_READY" == true ]]; then
-  echo "WARNING: camera-to-IMU calibration is provisional. Validate the trajectory before using it as a measurement." >&2
+  echo "Using the selected camera/IMU calibration. IMU noise remains provisional; see hw290_stereo/calibration/README.md." >&2
   sleep 2
   ESTIMATOR_ARGS=()
   if [[ "$DIAGNOSTICS" == true ]]; then
