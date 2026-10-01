@@ -100,9 +100,12 @@ Esc stops the recorder and closes the window; the launcher then stops sensors.
 Each recording saves `sensors_bag`, `target.yaml`, the displayed image and
 recorder log in a `screen_calibration_*` result directory. Use its `target.yaml`
 with Kalibr. A live preview and tag count confirm visibility; the Kalibr report
-must still verify calibration quality. Detection uses Kalibr's two-bit marker
-border, with a fallback for dim or distorted previews in OpenCV 4.5. The
-fallback changes preview detection only; images saved in the bag remain raw.
+must still verify calibration quality. The preview uses Kalibr's native
+`ethz_apriltag2` tag36h11 detector with a two-bit black border. On the live
+images Kalibr accepted 126 left and 105 right corners while OpenCV reported
+too few tags. The native preview detected 32 left and 27 right tags in the
+same images. It checks tag validity and a four-pixel image border margin.
+Images saved in the bag remain raw.
 
 Run this command twice, stopping each run with Ctrl-C:
 

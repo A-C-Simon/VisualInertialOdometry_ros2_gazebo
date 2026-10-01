@@ -15,7 +15,8 @@
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/image.hpp>
 #include <sensor_msgs/msg/imu.hpp>
-#include <opencv2/aruco.hpp>
+#include <apriltags/TagDetector.h>
+#include <apriltags/Tag36h11.h>
 #include <opencv2/imgproc.hpp>
 #include <array>
 #include <cmath>
@@ -195,28 +196,24 @@ class CalibrationScreen : public QWidget {
       std::array<std::set<int>, 2> ids;
       for (int camera = 0; camera < 2; ++camera) {
         if (images_[camera].empty()) continue;
-        std::vector<int> found;
-        std::vector<std::vector<cv::Point2f>> corners;
-        auto parameters = cv::aruco::DetectorParameters::create();
-        parameters->markerBorderBits = 2;  // Kalibr's generated target has a two-bit black border.
-        parameters->cornerRefinementMethod = cv::aruco::CORNER_REFINE_APRILTAG;
-        cv::aruco::detectMarkers(images_[camera], dictionary_, corners, found, parameters);
-        if (found.size() < 7) {
-          // OpenCV 4.5's AprilTag quad search misses some dim, distorted views.
-          // Keep the raw recording intact; this fallback is for preview only.
-          parameters->cornerRefinementMethod = cv::aruco::CORNER_REFINE_SUBPIX;
-          cv::aruco::detectMarkers(images_[camera], dictionary_, corners, found, parameters);
-          if (found.size() < 7) {
-            cv::Mat contrast;
-            cv::createCLAHE(2.0)->apply(images_[camera], contrast);
-            cv::aruco::detectMarkers(contrast, dictionary_, corners, found, parameters);
-          }
-        }
-        for (int id : found) if (id >= 0 && id < 36) ids[camera].insert(id);
-        tag_counts_[camera] = ids[camera].size();
+        const auto detections = detector_.extractTags(images_[camera]);
         cv::Mat preview;
         cv::cvtColor(images_[camera], preview, cv::COLOR_GRAY2RGB);
-        if (!found.empty()) cv::aruco::drawDetectedMarkers(preview, corners, found);
+        for (const auto &tag : detections) {
+          bool valid = tag.good && tag.id >= 0 && tag.id < 36;
+          std::vector<cv::Point> corners;
+          for (const auto &corner : tag.p) {
+            valid = valid && corner.first >= 4 && corner.second >= 4 &&
+                corner.first <= images_[camera].cols - 4 && corner.second <= images_[camera].rows - 4;
+            corners.emplace_back(cvRound(corner.first), cvRound(corner.second));
+          }
+          if (!valid) continue;
+          ids[camera].insert(tag.id);
+          cv::polylines(preview, corners, true, cv::Scalar(0, 255, 0), 1);
+          cv::putText(preview, std::to_string(tag.id), corners[0], cv::FONT_HERSHEY_SIMPLEX, 0.4,
+                      cv::Scalar(0, 255, 0), 1);
+        }
+        tag_counts_[camera] = ids[camera].size();
         QImage qt(preview.data, preview.cols, preview.rows, preview.step, QImage::Format_RGB888);
         views_[camera]->setPixmap(QPixmap::fromImage(qt.copy()).scaled(180, 135, Qt::KeepAspectRatio));
       }
@@ -286,7 +283,7 @@ class CalibrationScreen : public QWidget {
   rclcpp::executors::SingleThreadedExecutor executor_;
   std::array<rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr, 2> subscriptions_;
   rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr imu_;
-  cv::Ptr<cv::aruco::Dictionary> dictionary_ = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_APRILTAG_36h11);
+  AprilTags::TagDetector detector_{AprilTags::tagCodes36h11, 2};
   std::array<cv::Mat, 2> images_;
   std::array<qint64, 2> image_times_{{-1, -1}};
   std::array<double, 2> stamps_{{0, 0}};
