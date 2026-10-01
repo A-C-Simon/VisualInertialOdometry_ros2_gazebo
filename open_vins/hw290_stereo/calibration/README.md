@@ -51,7 +51,7 @@ the stereo camchain and measured IMU noise file. The local Docker image is
 Example conversion and static calibration:
 
 ```bash
-rosbags-convert /path/to/static_run/sensors_bag \
+rosbags-convert --src /path/to/static_run/sensors_bag \
   --dst /path/to/static_run/static.bag
 docker run --rm -v /path/to/static_run:/data \
   -v "$PWD/hw290_stereo/calibration:/config:ro" \
