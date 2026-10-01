@@ -2,13 +2,21 @@
 
 HW290 OpenVINS drift investigation
 
-Work completed
+Introduction
+
+I am testing OpenVINS and ORB-SLAM3 with my HW290 IMU and stereo camera for
+reliable motion tracking and lower computational cost. After securing the
+wiring, OpenVINS still produced false meter- and kilometer-scale trajectories.
+Today I focused on calibration and checking movement within my desk limits.
+
+Work done
 
 I restored camera texture with 5 ms exposure and gain 255, but my first desk
 test still reached 7.46 m. I completed the screen calibration capture, checked
 40 mm tag edges and 12 mm gaps, and fitted the stereo cameras and IMU alignment.
 I fixed the capture countdown and IMU recording queue, added estimator input
 counters, and made image rectification and static TF follow the selected profile.
+I also updated the overview and comprehensive pipeline model.
 
 Results
 
@@ -20,16 +28,20 @@ stayed below 0.47 m. Comparison against the camera-derived board reference gave
 
 My fresh two-minute continuous desk test stayed within the limits with no
 flights. Across 868 seconds of saved poses, maximum displacement was 0.852 m,
-below the 1.72 m desk diagonal. I made this tested profile the OpenVINS default.
+below the 1.72 m desk diagonal.
 The estimator averaged 14.82 ms per tracking/update cycle, 56.5% of one CPU core,
 and 185.1 MiB peak memory. Recording and RViz costs are reported separately.
 
-Remaining work
+Conclusion and future work
+
+The new calibration removed the large flights in replay and my physical test,
+so I made it the OpenVINS default. Independent ground truth is still needed
+to measure trajectory accuracy.
 
 IMU noise needs long stationary measurement; the fitted 6.7 cm lever arm needs
 a better physical check. The bag had no IMU gaps above 25 ms, but OpenVINS
-logged 46 input gaps above 50 ms. ORB calibration and a matched compute/accuracy
-comparison are still pending. I updated the overview and comprehensive model.
+logged 46 input gaps above 50 ms. I still need to check estimator delivery,
+update ORB calibration, and run a matched compute and accuracy comparison.
 
 Summary for supervisor (Telegram)
 
