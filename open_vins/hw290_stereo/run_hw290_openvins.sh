@@ -37,16 +37,17 @@ RUN_LABEL=hw290_openvins
 source "$ROOT/process_helpers.sh"
 start_node camera /tmp/hw290_usb_cam.log "$CAMERA_NODE" --ros-args --params-file "${ROOT}/usb_cam_hw290.yaml"
 sleep 1
-# usb_cam 0.8.1 leaves this camera in UVC manual mode even when its Boolean
-# autoexposure parameter is true. Apply the device's actual auto mode after
-# startup, while keeping brightness and backlight compensation neutral.
+# usb_cam 0.8.1 does not reliably apply this camera's UVC exposure controls.
+# Reapply the tested low-blur manual setting after startup and verify it.
 command -v v4l2-ctl >/dev/null 2>&1 || { echo "v4l2-ctl is required for HW290 exposure control" >&2; exit 1; }
-v4l2-ctl -d /dev/video0 --set-ctrl=auto_exposure=3,brightness=0,backlight_compensation=0,gain=120 \
+v4l2-ctl -d /dev/video0 --set-ctrl=auto_exposure=1,exposure_time_absolute=50,brightness=0,backlight_compensation=0,gain=255 \
   >/tmp/hw290_v4l2_controls.log 2>&1 || { echo "Failed to set safe HW290 exposure controls" >&2; exit 1; }
-v4l2-ctl -d /dev/video0 --get-ctrl=auto_exposure,brightness,backlight_compensation,gain \
+v4l2-ctl -d /dev/video0 --get-ctrl=auto_exposure,exposure_time_absolute,brightness,backlight_compensation,gain \
   >>/tmp/hw290_v4l2_controls.log 2>&1 || { echo "Failed to read back HW290 exposure controls" >&2; exit 1; }
-grep -Eq '^auto_exposure: 3([[:space:]]|$)' /tmp/hw290_v4l2_controls.log || {
-  echo "HW290 camera rejected automatic exposure mode; see /tmp/hw290_v4l2_controls.log" >&2
+grep -Eq '^auto_exposure: 1([[:space:]]|$)' /tmp/hw290_v4l2_controls.log &&
+grep -Eq '^exposure_time_absolute: 50([[:space:]]|$)' /tmp/hw290_v4l2_controls.log &&
+grep -Eq '^gain: 255([[:space:]]|$)' /tmp/hw290_v4l2_controls.log || {
+  echo "HW290 camera rejected the tested exposure controls; see /tmp/hw290_v4l2_controls.log" >&2
   exit 1
 }
 sleep 2

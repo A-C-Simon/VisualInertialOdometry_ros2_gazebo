@@ -147,11 +147,13 @@ around the first departure contained about 98 percent pixels below intensity
 10 and as few as 1 and 10 ORB keypoints in the two images. The first 1 m error
 appeared at 64.00 seconds and 10 m at 66.83 seconds.
 
-Direct tests found that `autoexposure: true` in usb_cam 0.8.1 did not change
-this device from UVC manual mode. The launcher now applies UVC mode 3 after
-camera startup and sets brightness and backlight compensation to zero. A clean
-restart reported mode 3 and sampled ROS images reached the 1,500-keypoint test
-cap in both stereo halves, with about 0.1 percent bright pixels.
+Direct tests found that `autoexposure: true` in usb_cam 0.8.1 did not reliably
+control this device. A later clean restart reported UVC mode 3 but stayed at the
+old 5 ms value, producing a mean intensity of 0.03/255 and only 10 to 21 ORB
+keypoints. Raising gain from 120 to 255 while retaining 5 ms produced about
+1,400 keypoints and 81 valid stereo matches in the same view. The launcher now
+applies and verifies manual 5 ms exposure, gain 255, neutral brightness and
+neutral backlight compensation after camera startup.
 
 Replaying the earlier failure with a 10 ms camera-to-IMU offset worsened the
 maximum displacement to 16.32 m. The retained 20 ms offset produced 0.958 m on

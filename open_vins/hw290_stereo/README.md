@@ -142,10 +142,10 @@ one ORB keypoint and the other had ten. The path reached 39.90 m despite clean
 IMU delivery, so that run demonstrates visual-observation loss rather than an
 IMU communication failure.
 
-On this camera, `usb_cam` 0.8.1 leaves the UVC device in manual exposure mode
-even when its Boolean `autoexposure` parameter is true. The launcher now sets
-UVC auto-exposure mode 3 after the camera starts, with neutral brightness and
-backlight compensation, then reads the controls back and aborts if mode 3 was
-not accepted. A clean launcher test confirmed mode 3 and 1,500 ORB keypoints
-per sampled stereo half with negligible highlight clipping. A full continuous
-motion desk test is still required before accepting the repair.
+On this camera, the advertised UVC automatic mode can remain at the old 5 ms
+manual value without adapting. In the current desk view that produced a mean
+intensity of 0.03/255 and only 10 to 21 ORB keypoints. A live exposure sweep
+showed that 5 ms with gain 255 retained about 1,400 ORB keypoints and 81 valid
+stereo matches without increasing exposure time. The launcher now applies and
+reads back that manual setting after camera startup. A full continuous motion
+desk test is still required before accepting the repair.

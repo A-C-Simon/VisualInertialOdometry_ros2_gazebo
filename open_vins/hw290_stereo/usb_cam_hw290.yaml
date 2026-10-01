@@ -10,9 +10,11 @@
     camera_name: "hw290_side_by_side"
     camera_info_url: ""
     autofocus: false
-    # Automatic exposure is required across the bright and dark parts of the
-    # desk. Neutral brightness avoids the earlier highlight clipping.
-    autoexposure: true
+    # This camera reports automatic mode but can remain at an unusably dark
+    # exposure. Five milliseconds limits motion blur; high sensor gain keeps
+    # enough texture for KLT tracking in the tested desk lighting.
+    autoexposure: false
+    exposure: 50
     brightness: 0
-    gain: 120
+    gain: 255
     auto_white_balance: true
