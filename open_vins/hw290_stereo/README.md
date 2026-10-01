@@ -133,3 +133,18 @@ maximum source interval was 20.884 ms. Long-motion validation is still pending.
 The normal startup reports `I2C_CLOCK_HZ` in builds containing this option.
 Verify actual source intervals, health counters and trajectory during motion
 before accepting the alternative clock as a useful correction.
+
+### Exposure correction, 2026-10-01
+
+The fixed 5 ms exposure used in the final 30 September run made much of the
+recording nearly black. At the first trajectory departure, one lens had only
+one ORB keypoint and the other had ten. The path reached 39.90 m despite clean
+IMU delivery, so that run demonstrates visual-observation loss rather than an
+IMU communication failure.
+
+On this camera, `usb_cam` 0.8.1 leaves the UVC device in manual exposure mode
+even when its Boolean `autoexposure` parameter is true. The launcher now sets
+UVC auto-exposure mode 3 after the camera starts, with neutral brightness and
+backlight compensation. A clean launcher test confirmed mode 3 and 1,500 ORB
+keypoints per sampled stereo half with negligible highlight clipping. A full
+continuous-motion desk test is still required before accepting the repair.

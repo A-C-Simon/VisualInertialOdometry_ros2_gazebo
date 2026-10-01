@@ -36,7 +36,14 @@ HW290_DIR="$ROOT"
 RUN_LABEL=hw290_openvins
 source "$ROOT/process_helpers.sh"
 start_node camera /tmp/hw290_usb_cam.log "$CAMERA_NODE" --ros-args --params-file "${ROOT}/usb_cam_hw290.yaml"
-sleep 3
+sleep 1
+# usb_cam 0.8.1 leaves this camera in UVC manual mode even when its Boolean
+# autoexposure parameter is true. Apply the device's actual auto mode after
+# startup, while keeping brightness and backlight compensation neutral.
+command -v v4l2-ctl >/dev/null 2>&1 || { echo "v4l2-ctl is required for HW290 exposure control" >&2; exit 1; }
+v4l2-ctl -d /dev/video0 --set-ctrl=auto_exposure=3,brightness=0,backlight_compensation=0,gain=120 \
+  >/tmp/hw290_v4l2_controls.log 2>&1 || { echo "Failed to set safe HW290 exposure controls" >&2; exit 1; }
+sleep 2
 # The local usb_cam fixes the clock-unit bug. Do not apply arrival-time
 # correction to properly converted V4L2 capture timestamps.
 start_node splitter /tmp/hw290_splitter.log "$SPLITTER" --ros-args -p calibration_file:="$CALIBRATION" -p auto_timestamp_correction:=false

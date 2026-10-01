@@ -139,6 +139,25 @@ the next physical check; a specific wiring or module cause is still unproven.
 Artifacts: `benchmark/results/hw290_openvins_20260930_134122_p84GeF/` and
 `benchmark/results/hw290_20260930_openvins_desk_3/`.
 
+### Visual loss and exposure correction, 2026-10-01
+
+The final fixed-exposure run had no I2C errors, sequence gaps or saturated IMU
+samples, but reached 39.90 m. Recorded images were nearly black: the interval
+around the first departure contained about 98 percent pixels below intensity
+10 and as few as 1 and 10 ORB keypoints in the two images. The first 1 m error
+appeared at 64.00 seconds and 10 m at 66.83 seconds.
+
+Direct tests found that `autoexposure: true` in usb_cam 0.8.1 did not change
+this device from UVC manual mode. The launcher now applies UVC mode 3 after
+camera startup and sets brightness and backlight compensation to zero. A clean
+restart reported mode 3 and sampled ROS images reached the 1,500-keypoint test
+cap in both stereo halves, with about 0.1 percent bright pixels.
+
+Replaying the earlier failure with a 10 ms camera-to-IMU offset worsened the
+maximum displacement to 16.32 m. The retained 20 ms offset produced 0.958 m on
+the same 5x-gate replay, so the calibrated 20 ms value remains in use. Physical
+continuous-motion validation of the exposure correction remains pending.
+
 ## Reproduction
 
 ```bash
