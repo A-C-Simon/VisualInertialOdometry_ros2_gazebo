@@ -12,8 +12,9 @@ I tested the camera controls directly and found that usb_cam 0.8.1 kept the
 device in UVC manual exposure mode even when `autoexposure` was enabled in its
 YAML file. I updated the launcher to force UVC automatic exposure mode 3 after
 camera startup, with brightness and backlight compensation set to zero. A clean
-restart confirmed the requested mode. Sampled ROS images reached the 1,500 ORB
-keypoint test cap in each stereo half and had negligible highlight clipping.
+restart confirmed the requested mode. The launcher now reads the controls back
+and stops if the camera rejected automatic mode. Sampled ROS images reached the
+1,500 ORB keypoint test cap in each stereo half and had negligible clipping.
 
 I also replayed the earlier failure with a 10 ms camera-to-IMU offset. It
 worsened the maximum displacement to 16.32 m, compared with 0.958 m using the
