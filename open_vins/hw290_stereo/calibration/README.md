@@ -104,7 +104,14 @@ The timer stops recording after 90 seconds and returns to a normal window.
 Use `CALIBRATION_SECONDS=60` for the dynamic camera to IMU recording.
 Esc stops the recorder and closes the window; the launcher then stops sensors.
 Each recording saves `sensors_bag`, `target.yaml`, the displayed image and
-recorder log in a `screen_calibration_*` result directory. Use its `target.yaml`
+recorder log in a `screen_calibration_*` result directory. It also saves
+`record_qos.yaml` and applies a reliable, bounded 1,000-sample IMU recording
+queue to absorb brief stalls while stereo images are written. Check recorded
+IMU timestamp intervals after capture; preview rate alone does not verify bag
+completeness. Under the simulated stereo load, the default recorder saved
+139 IMU samples over 7.11 seconds; the explicit queue saved 704 over 7.03 seconds.
+This verifies that recording case; physical capture still needs its own check.
+Use the saved `target.yaml`
 with Kalibr. A live preview and tag count confirm visibility; the Kalibr report
 must still verify calibration quality. The preview uses Kalibr's native
 `ethz_apriltag2` tag36h11 detector with a two-bit black border. On the live

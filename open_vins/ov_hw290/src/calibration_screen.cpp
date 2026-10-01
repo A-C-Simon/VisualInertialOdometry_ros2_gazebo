@@ -179,7 +179,18 @@ class CalibrationScreen : public QWidget {
     yaml.write(QString("target_type: aprilgrid\ntagCols: 6\ntagRows: 6\ntagSize: %1\ntagSpacing: 0.3\n")
                    .arg(tag_size_, 0, 'g', 10).toUtf8());
     yaml.close();
-    recorder_.start("ros2", {"bag", "record", "-o", run_dir_ + "/sensors_bag",
+    // Keep a bounded IMU queue large enough for short recorder stalls while
+    // writing stereo images. Preserve this configuration with the recording.
+    QFile qos(run_dir_ + "/record_qos.yaml");
+    if (!qos.open(QIODevice::WriteOnly)) {
+      failed_ = true;
+      border(false, "Cannot save recording QoS configuration.");
+      return;
+    }
+    qos.write("/imu0:\n  history: keep_last\n  depth: 1000\n  reliability: reliable\n  durability: volatile\n");
+    qos.close();
+    recorder_.start("ros2", {"bag", "record", "--qos-profile-overrides-path", run_dir_ + "/record_qos.yaml",
+                    "-o", run_dir_ + "/sensors_bag",
                     "/cam0/image_raw", "/cam1/image_raw", "/cam0/camera_info", "/cam1/camera_info", "/imu0"});
     recorder_start_ = clock_.elapsed();
   }
