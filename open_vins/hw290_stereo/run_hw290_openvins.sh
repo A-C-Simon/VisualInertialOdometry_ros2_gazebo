@@ -5,6 +5,7 @@ SHOW_RVIZ=true
 DIAGNOSTICS=false
 RAW_STEREO=false
 IMU_ALLAN=false
+CALIBRATION_SCREEN=false
 for arg in "$@"; do
   case "$arg" in
     --sensors-only) SENSORS_ONLY=true ;;
@@ -12,16 +13,27 @@ for arg in "$@"; do
     --diagnostics) DIAGNOSTICS=true ;;
     --raw-stereo) RAW_STEREO=true ;;
     --imu-allan) IMU_ALLAN=true ;;
+    --calibration-screen) CALIBRATION_SCREEN=true ;;
     --help|-h)
-      echo "Usage: $0 [--sensors-only] [--no-rviz] [--diagnostics] [--raw-stereo] [--imu-allan]"
+      echo "Usage: $0 [--sensors-only] [--no-rviz] [--diagnostics] [--raw-stereo] [--imu-allan] [--calibration-screen]"
       echo "Diagnostics records a sensor bag, raw IMU records and estimator state/debug logs."
       echo "Raw stereo disables rectification for offline camera calibration."
       echo "IMU Allan records only /imu0 for a long stationary noise measurement."
+      echo "Calibration screen shows the target and a live stereo preview with timed recording."
       echo "A valid VIO trajectory requires a rigid camera-IMU mount and measured extrinsics."
       exit 0 ;;
     *) echo "Unknown argument: $arg" >&2; exit 2 ;;
   esac
 done
+if [[ "$CALIBRATION_SCREEN" == true ]]; then
+  [[ "$IMU_ALLAN" == false && "$DIAGNOSTICS" == false ]] || {
+    echo "--calibration-screen manages its own recording; use it separately from --imu-allan and --diagnostics." >&2
+    exit 2
+  }
+  SENSORS_ONLY=true
+  SHOW_RVIZ=false
+  RAW_STEREO=true
+fi
 if [[ "$IMU_ALLAN" == true && "$RAW_STEREO" == true ]]; then
   echo "--imu-allan and --raw-stereo are separate recording modes." >&2
   exit 2
@@ -53,6 +65,11 @@ if [[ "$IMU_ALLAN" == false ]]; then
   [[ -r /dev/video0 && -r /dev/ttyUSB0 ]] || echo "Camera or Nano unavailable; RViz diagnostics will remain available." >&2
 else
   [[ -r /dev/ttyUSB0 ]] || echo "Nano unavailable; the Allan recording cannot start." >&2
+fi
+if [[ "$CALIBRATION_SCREEN" == true ]]; then
+  [[ -x "${ROOT}/../install_vio/ov_hw290/lib/ov_hw290/calibration_screen" ]] || {
+    echo "Build ov_hw290 first to install the calibration screen." >&2; exit 1;
+  }
 fi
 echo "ROS_DOMAIN_ID=${ROS_DOMAIN_ID}"
 HW290_DIR="$ROOT"
@@ -123,5 +140,13 @@ if [[ "$SHOW_RVIZ" == true ]]; then
   start_node rviz /tmp/hw290_rviz.log rviz2 -d "$RVIZ_CONFIG"
 fi
 echo "HW290 stereo sensors running (sensors_only=${SENSORS_ONLY}, rviz=${SHOW_RVIZ}). Ctrl-C stops all nodes."
+if [[ "$CALIBRATION_SCREEN" == true ]]; then
+  start_node calibration_screen /tmp/hw290_calibration_screen.log \
+    "${ROOT}/../install_vio/ov_hw290/lib/ov_hw290/calibration_screen" --ros-args \
+    -p target_image:="${ROOT}/calibration/aprilgrid_6x6.png" \
+    -p output_root:="${ROOT}/../benchmark/results" \
+    -p record_seconds:="${CALIBRATION_SECONDS:-90}" \
+    -p tag_size_m:="${CALIBRATION_TAG_SIZE_M:-0.040}"
+fi
 # Keep the diagnostic window available even when a sensor fails.
 wait_for_run

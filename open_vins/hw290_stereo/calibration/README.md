@@ -11,6 +11,15 @@ Measure one black tag edge after printing. It must be 23.0 mm. If the printer
 scaled it, enter the measured edge length in metres as `tagSize` in
 `aprilgrid_6x6_a4.yaml`. Keep the sheet flat and rigid.
 
+Alternatively, use the calibration screen described below and measure one
+complete black tag edge with a ruler. The gap divided by tag edge must be
+0.30. Keep display scaling and target size fixed during both recordings.
+The screen measurement on October 1 was approximately 40 mm per tag with
+12 mm gaps. The printed target YAML still describes the 23 mm printed tags.
+For screen recordings, use the saved run's `target.yaml` in both Kalibr commands
+below. Keep the screen fixed and move the rig for both recordings. Check
+captured images for glare and flicker before collecting calibration data.
+
 ## 2. Measure IMU noise
 
 Place the complete rig on a vibration-free surface and do not touch it for at
@@ -26,6 +35,31 @@ camera to IMU calibration.
 
 ## 3. Record raw stereo calibration data
 
+For a screen target, use the C++ calibration window:
+
+```bash
+./hw290_stereo/run_hw290_openvins.sh --calibration-screen
+```
+
+It shows the target at full screen with two small camera previews in the top
+right, without covering the grid. Measure the tag edge at this display size
+before clicking **Prepare**, and enter it in the measured tag edge field.
+The field defaults to 40 mm; `CALIBRATION_TAG_SIZE_M` changes that default.
+The border stays
+red while the window checks fresh stereo frames, at least seven tags per camera
+and four matching tags between the cameras,
+and 80 to 120 Hz IMU delivery. After the recorder subscribes to both cameras
+and IMU, a five second countdown appears. Green means start moving.
+The timer stops recording after 90 seconds and returns to a normal window.
+Use `CALIBRATION_SECONDS=60` for the dynamic camera to IMU recording.
+Esc stops the recorder and closes the window; the launcher then stops sensors.
+Each recording saves `sensors_bag`, `target.yaml`, the displayed image and
+recorder log in a `screen_calibration_*` result directory. Use its `target.yaml`
+with Kalibr. A live preview and tag count confirm visibility; the Kalibr report
+must still verify calibration quality. Detection uses Kalibr's two-bit marker
+border, with a fallback for dim or distorted previews in OpenCV 4.5. The
+fallback changes preview detection only; images saved in the bag remain raw.
+
 Run this command twice, stopping each run with Ctrl-C:
 
 ```bash
@@ -33,8 +67,10 @@ Run this command twice, stopping each run with Ctrl-C:
   --sensors-only --no-rviz --diagnostics --raw-stereo
 ```
 
-For the first run, hold the rig fixed and move the AprilGrid for one to two
-minutes. Cover the full image, use different distances, and tilt the grid.
+For the first run, change the relative pose of rig and target for one to two
+minutes. With a printed grid, hold the rig fixed and move the grid. With a
+screen, move the rig. Cover the full image, use different distances, and tilt
+the rig or grid.
 
 For the second run, fix the grid and move the rig smoothly for 30 to 60
 seconds. Keep the full grid visible while rotating around roll, pitch and yaw
