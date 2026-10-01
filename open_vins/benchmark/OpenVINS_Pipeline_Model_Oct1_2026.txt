@@ -3,8 +3,10 @@ OPENVINS PIPELINE MODEL
 
 Scope: my current physical rig and checked source/configuration in
 /home/ac/VisualInertialOdometry_ros2_gazebo/open_vins.
-This describes the current system and its observed failure mechanism. It does
-not claim that the drift is fixed or that its underlying cause is proven.
+This describes the current system, the earlier failure mechanism and the
+calibration correction checked today. The new profile passed the continuous
+desk test. Independent trajectory accuracy and all future conditions remain
+unmeasured.
 
 
 1. HIGH LEVEL OVERVIEW
@@ -61,15 +63,23 @@ OBSERVED FAILURE CHAIN
                          |
   RViz draws the false estimate outside the physical workspace
 
-The observed failure point is the loss of useful visual corrections around
-the visual-update stage. The exact initiating cause remains unconfirmed.
-Provisional camera-to-IMU geometry, time alignment and noise settings are
-leading checks. Image quality can also interrupt the visual constraints.
+The observed failure point was loss of useful visual corrections around the
+visual-update stage. Replacing the camera geometry, camera/IMU transform and
+time offset together removed the kilometer-scale flight in replay and passed
+a fresh physical desk test. This supports calibration mismatch as a contributor;
+it does not isolate which individual parameter initiated the failure.
+Image quality and input delivery can also interrupt the visual constraints.
 
 My bounded desk test allows a 1.40 x 0.80 x 0.60 m workspace. Its maximum
 corner-to-corner distance is about 1.72 m. One recorded trajectory crossed
 that bound after about 64.1 seconds and reached 7.46 m. This establishes a
 failure even though I did not measure the exact path at every instant.
+
+With the new calibration, the same recording stayed below 0.47 m displacement
+instead of reaching 18.92 km. The fresh physical run stayed below 0.852 m across
+868 seconds of poses, including a two-minute continuous desk-motion test.
+I stayed within the limits and saw no flights. No trajectory bounds or origin
+resets were introduced. See section 2.10 for the checks and remaining limits.
 
 
 2. COMPREHENSIVE MODEL
@@ -82,7 +92,7 @@ Normal launch:
   ./hw290_stereo/run_hw290_openvins.sh
 
 The launcher starts camera acquisition, the stereo splitter, the IMU bridge,
-static camera transforms, OpenVINS and RViz. The normal ROS domain is 8 unless
+static camera transforms, OpenVINS and RViz. The normal ROS domain is 48 unless
 the environment overrides it. All participating ROS processes must use the
 same domain. Startup waits for verified IMU delivery around 80-120 Hz before
 starting the estimator.
@@ -169,18 +179,17 @@ Clean serial delivery verifies transport, not complete physical calibration.
 
 The active configuration files are:
   hw290_stereo/estimator_config.yaml
-  hw290_stereo/kalibr_imucam_chain.yaml
-  hw290_stereo/kalibr_imu_chain.yaml
+  hw290_stereo/calibration/20261001/camchain.yaml
+  hw290_stereo/calibration/20261001/imu.yaml
 
 The separate stereo rectification file is:
-  /home/ac/VisualInertialOdometry_ros2_gazebo/calibration/
-  elp_3dgs1200p01/calib/calibration_opencv.yaml
+  hw290_stereo/calibration/20261001/stereo_opencv.yaml
 
 Current rectified camera intrinsics, both cameras:
-  fx = fy = 433.10635826 pixels
-  cx = 325.54584656, cy = 245.57666931 pixels
+  fx = fy = 367.53325092 pixels
+  cx = 324.01826477, cy = 268.30197144 pixels
   resolution = 640x480; pinhole/radtan with zero remaining distortion
-  stereo baseline approximately 0.06 m
+  stereo baseline approximately 0.05945 m
 
 Spatial calibration:
   T_imu_cam maps camera coordinates into IMU coordinates.
@@ -188,13 +197,15 @@ Spatial calibration:
 
 The loader also accepts the inverse convention T_cam_imu and inverts it when
 needed. Rotation, translation and transform direction must all agree. The
-current mount rotation came from a motion fit; translation uses the measured
-roughly 4 cm camera/IMU separation and photo estimates, including an estimated
-depth component. Full spatial calibration remains pending.
+current mount transform comes from the October 1 Kalibr fit, rotated into each
+rectified camera frame. Its rotation differs from the previous transform by
+about 26.5 degrees. The fitted 6.7 cm lever arm still needs a better physical
+check against the rough 4 cm measurement. Provisional IMU noise was used in
+the fit. The static camera TF uses this same selected calibration chain.
 
 Temporal calibration:
   t_IMU = t_camera + timeshift_cam_imu
-  current fixed offset = +0.020 seconds
+  current fixed offset = +0.013040460 seconds
 
 The image queue waits until the IMU buffer covers this shifted camera time.
 This compensates a relative offset; it is not hardware synchronization. The
@@ -379,7 +390,7 @@ Confirmed findings from my recordings:
 
   F. A replay with online spatial/time calibration estimated approximately
      8.4-10.5 ms offset but still diverged to approximately 1,577 m. That offset
-     is not a validated replacement for the active 20 ms setting.
+     did not validate that replay's replacement for the previous 20 ms setting.
 
 Detailed failed-run logs identify visual constraint rejection/loss followed by
 continued inertial propagation. The bounded desk recording establishes the
@@ -392,6 +403,9 @@ Open questions and the measurements needed to resolve them:
   IMU noise and bias behavior  Long stationary data and Allan analysis
   Camera/stereo geometry      Raw-image calibration and reprojection errors
   Feature failure trigger     Accepted-update counts, rejection logs, image replay
+
+The fitted camera geometry, spatial transform and timing have now passed
+the tests below. Exact mount translation and measured IMU noise remain open.
 
 Separate fault branches:
   No USB enumeration: device/connection problem before ROS acquisition.
@@ -415,6 +429,9 @@ The screen-calibration mode follows a separate branch:
 The target is a 6x6 AprilGrid with approximately 40 mm tag edges and 12 mm
 gaps; tagSpacing=0.3. Its displayed physical size must remain fixed. A screen
 target's ruler measurement, display scaling and flatness limit metric accuracy.
+I checked the fullscreen scale separately after confirming that the earlier
+measurement came from a browser. The saved fullscreen measurement also gives
+40 mm edges, with a 1440-pixel target on a 2560x1440 display.
 The GUI now uses Kalibr's native detector because the earlier preview detector
 rejected images that Kalibr accepted. That was a capture-readiness fault; it
 was not the ordinary OpenVINS KLT tracker.
@@ -425,11 +442,59 @@ means capture readiness, not validated calibration or a drift-free estimator.
 The five-second countdown now tolerates brief detection/callback fluctuations.
 It is not a vibration measurement. Sustained target loss or invalid IMU rate
 restarts readiness; missing sensor streams end the capture as incomplete.
+The recorder now saves and applies a reliable 1,000-sample IMU queue to absorb
+brief stalls. A measurement-only window saves the fullscreen ruler measurement
+without recording or requiring connected sensors.
 
 A physical bag was saved today in screen_calibration_20261001_133319_434.
 Its metadata contains 19,134 IMU messages and about 5,759 frames per camera
 over 193.94 seconds. Those counts support nominal delivery; calibration
 coverage, timestamp quality and fitted results still require inspection.
+
+Later capture and fit results:
+  screen_calibration_20261001_134827_547 completed about 95 seconds with 2,854
+  frames per camera and 9,356 IMU samples. Its saved IMU stream has six gaps
+  above 25 ms, including 309 ms. The larger recording queue passed a simulated
+  load check at 100 Hz. The subsequent physical recording verification is below.
+  Stereo reprojection component spreads were about 0.26-0.32 pixels.
+  A diagnostic camera/IMU fit on the first 60 seconds, before the long gaps,
+  estimated a cam0 offset of 13.04 ms and a rotation approximately 26.5 degrees
+  from the previous transform after accounting for rectification. Its estimated
+  6.7 cm lever arm exceeds the approximate 4 cm mount measurement. Noise values
+  remain provisional. After replay and physical checks, this fit became the
+  normal OpenVINS profile in calibration/20261001/.
+
+Replay checks:
+  Both old and fitted models used the same dynamic initialization settings and
+  half-speed playback. Static initialization produced no trajectory because the
+  capture begins in motion. The old model reached 18,919.61 m displacement;
+  the fitted model stayed below 0.46848 m and retained visual features in 2,725
+  of 2,741 updates. The baseline was rectified offline from raw mono images;
+  rounding can differ slightly from rectifying RGB before conversion.
+
+  An AprilGrid PnP reference shares camera observations and the fitted model,
+  so it is not independent ground truth. A rigid alignment without scale fitting
+  used the first 60 seconds. Beyond 60 seconds, position RMSE was 2.67 cm and
+  maximum error was 3.54 cm across 68 samples. This checks transfer beyond the
+  camera/IMU fit interval, with the shared-camera limitation.
+
+Physical check:
+  hw290_openvins_20261001_165958_VkGYYe used stationary initialization and the
+  same mount. I completed about two minutes of continuous desk movement within
+  the stated workspace and confirmed no flights. Across 18,718 poses spanning
+  868.00 seconds, maximum displacement was 0.85166 m. The final 30-second
+  per-axis position ranges were 2.77, 7.04 and 3.69 mm. Later waiting and possible
+  repositioning mean final displacement cannot be treated as return error.
+
+  The diagnostic run logged mean 14.82 ms and p95 23.70 ms tracking/update time.
+  Estimator CPU averaged 56.46% of one core with 185.14 MiB peak RSS. Total
+  measured child CPU averaged 125.59% of one core, including RViz and recording.
+
+  The bag saved 92,748 IMU measurements at 99.02 Hz with a 22.02 ms maximum
+  interval and no interval above 25 ms. OpenVINS still logged 46 input gaps
+  above 50 ms, maximum 280.11 ms. This exposes an estimator delivery issue
+  even though the recorded stream is complete. Counts also include different
+  startup/shutdown times and must not be subtracted as a simple loss total.
 
 Raw Kalibr results must be applied consistently: normal VIO uses rectified
 images, so camera/IMU transforms must also account for rectification rotations,
@@ -445,8 +510,8 @@ Kalibr's documented ROS 2 workflow converts the recording into a ROS 1 bag for
 its calibration tools. My conversion tool and Kalibr build have been checked.
 Source: https://github.com/ethz-asl/kalibr/wiki/ROS2-Calibration-Using-Kalibr
 
-Success must be demonstrated with held-out motion recordings and a physical
-desk test long enough to include the delayed failure. Staying inside the desk
+The checked replay and physical motion test cover the earlier delayed failure
+duration and showed no gross divergence with the new profile. Staying inside the desk
 bound rules out that gross failure, but centimeter accuracy still requires
 measured motion or an independent ground-truth trajectory. Clipping the path,
 resetting to the origin or stopping prediction would not validate the estimate.
@@ -481,6 +546,10 @@ Desk-test evidence:
   benchmark/results/hw290_20261001_openvins_desk_gain255_1/analysis.json
   benchmark/results/hw290_20261001_openvins_desk_gain255_1/trajectory_failure.png
   benchmark/results/hw290_openvins_20261001_103252_39j3QM/summary.json
+  benchmark/results/hw290_openvins_20261001_165958_VkGYYe/analysis.json
+  benchmark/results/hw290_openvins_20261001_165958_VkGYYe/trajectory_validation.png
+  benchmark/results/screen_calibration_20261001_134827_547/replay_validation/
+  hw290_stereo/calibration/20261001/README.md
 
 Other reviewed recordings:
   benchmark/results/hw290_openvins_20260930_164302_BK9ali/
