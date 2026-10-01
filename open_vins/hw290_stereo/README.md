@@ -169,6 +169,9 @@ dynamic AprilGrid sequence that excites every rotation and acceleration axis.
 Accept the result only when Kalibr's reprojection and predicted IMU plots fit
 and a continuous desk-motion test remains inside the measured workspace.
 
+Follow the [HW290 offline calibration procedure](calibration/README.md) for the
+printable target, raw recordings, Allan dataset and Kalibr commands.
+
 Record a Kalibr input bag with the raw lens images and standard ROS IMU message:
 
 ```bash

@@ -22,8 +22,8 @@ photo-estimated transform, assumed timing and guessed IMU noise are inadequate.
 Next step
 
 I added and verified raw 640x480 stereo capture at 30 Hz for Kalibr. The mode
-blocks OpenVINS because VIO expects rectified images. I am preparing full stereo
-and camera-IMU calibration, followed by Allan-variance IMU noise measurement.
+blocks OpenVINS because VIO expects rectified images. I built Kalibr, generated
+an A4 AprilGrid, and verified a compact IMU-only Allan recording mode.
 
 Summary for supervisor (Telegram)
 
