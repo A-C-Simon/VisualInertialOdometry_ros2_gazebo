@@ -57,11 +57,13 @@ export ROS_DOMAIN_ID="${ROS_DOMAIN_ID:-48}"
 export DISPLAY="${DISPLAY:-:1}"
 SPLITTER="${ROOT}/../install_vio/ov_hw290/lib/ov_hw290/stereo_splitter"
 ESTIMATOR="${ROOT}/../install_vio/ov_msckf/lib/ov_msckf/run_subscribe_msckf"
-CALIBRATION="${ROOT}/../../calibration/elp_3dgs1200p01/calib/calibration_opencv.yaml"
+CALIBRATION="${HW290_STEREO_CALIBRATION:-${ROOT}/../../calibration/elp_3dgs1200p01/calib/calibration_opencv.yaml}"
+ESTIMATOR_CONFIG="${HW290_VIO_CONFIG:-${ROOT}/estimator_config.yaml}"
 if [[ "$IMU_ALLAN" == false ]]; then
   [[ -x "$CAMERA_NODE" ]] || { echo "Build the corrected camera driver: hw290_stereo/build_camera_driver.sh" >&2; exit 1; }
   [[ -x "$SPLITTER" && -x "$ESTIMATOR" ]] || { echo "Build ov_hw290 and ov_msckf first" >&2; exit 1; }
   [[ -r "$CALIBRATION" ]] || { echo "Stereo calibration unavailable: $CALIBRATION" >&2; exit 1; }
+  [[ -r "$ESTIMATOR_CONFIG" ]] || { echo "Estimator configuration unavailable: $ESTIMATOR_CONFIG" >&2; exit 1; }
   [[ -r /dev/video0 && -r /dev/ttyUSB0 ]] || echo "Camera or Nano unavailable; RViz diagnostics will remain available." >&2
 else
   [[ -r /dev/ttyUSB0 ]] || echo "Nano unavailable; the Allan recording cannot start." >&2
@@ -124,7 +126,8 @@ if ! wait_for_imu /tmp/hw290_imu.log; then
   echo "Starting RViz in sensor view; VIO is unavailable until the IMU connection is restored and this launcher is restarted." >&2
 fi
 for camera in cam0 cam1; do
-  mapfile -t TF_ARGS < <(python3 "$ROOT/static_transform_args.py" "$camera")
+  HW290_TF_OUTPUT=$(python3 "$ROOT/static_transform_args.py" "$camera" --estimator-config "$ESTIMATOR_CONFIG")
+  mapfile -t TF_ARGS <<< "$HW290_TF_OUTPUT"
   start_node "tf_$camera" "/tmp/hw290_tf_${camera}.log" /opt/ros/humble/lib/tf2_ros/static_transform_publisher "${TF_ARGS[@]}"
 done
 if [[ "$SENSORS_ONLY" == false && "$IMU_READY" == true ]]; then
@@ -134,7 +137,7 @@ if [[ "$SENSORS_ONLY" == false && "$IMU_READY" == true ]]; then
   if [[ "$DIAGNOSTICS" == true ]]; then
     ESTIMATOR_ARGS=(-p verbosity:=DEBUG -p save_total_state:=true -p filepath_est:="$RUN_DIR/state_estimate.txt" -p filepath_std:="$RUN_DIR/state_deviation.txt" -p filepath_gt:="$RUN_DIR/state_groundtruth.txt")
   fi
-  start_node estimator /tmp/hw290_openvins.log "$ESTIMATOR" "${ROOT}/estimator_config.yaml" --ros-args -r __ns:=/ov_msckf -p use_sim_time:=false -p publish_calibration_tf:=false "${ESTIMATOR_ARGS[@]}"
+  start_node estimator /tmp/hw290_openvins.log "$ESTIMATOR" "$ESTIMATOR_CONFIG" --ros-args -r __ns:=/ov_msckf -p use_sim_time:=false -p publish_calibration_tf:=false "${ESTIMATOR_ARGS[@]}"
 fi
 if [[ "$SHOW_RVIZ" == true ]]; then
   RVIZ_CONFIG="${ROOT}/rviz_hw290.rviz"
