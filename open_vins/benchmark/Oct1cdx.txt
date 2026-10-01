@@ -17,17 +17,23 @@ Finding
 The logs match reported OpenVINS failures where MSCKF rejects visual updates
 and IMU propagation then drives the position away. Online extrinsic and timing
 calibration estimated an 8.4 to 10.5 ms offset but still diverged. The current
-photo-estimated transform, assumed timing and guessed IMU noise are inadequate.
+photo-estimated transform, assumed timing and guessed IMU noise need measurement;
+the exact cause of visual rejection is still unconfirmed.
 
 Next step
 
-I added and verified raw 640x480 stereo capture at 30 Hz for Kalibr. The mode
-blocks OpenVINS because VIO expects rectified images. I built Kalibr, generated
-an A4 AprilGrid, and verified a compact IMU-only Allan recording mode.
+I prepared Kalibr, raw 640x480 stereo capture at 30 Hz and an IMU-only Allan
+recording mode. ROS bag conversion passed on 8,870 IMU messages. My screen
+target measured about 40 mm tags with 12 mm gaps.
+
+I built a C++ screen recorder with stereo previews, red and green cues and a
+countdown. I fixed the 20 Hz preview rate error and camera-resolution tag
+detection. A separate test verified the green cue and saved bag; I checked the
+live camera preview. Physical calibration and the final desk test remain pending.
 
 Summary for supervisor (Telegram)
 
 I verified low-blur camera settings, clean 99 Hz IMU delivery and strong feature counts.
 The desk test still escaped its 1.72 m bound and reached 7.46 m after about 64 seconds.
-The failure is caused by rejected visual updates from inconsistent camera-IMU calibration.
-I prepared raw Kalibr capture to replace the provisional transform, timing and IMU noise values.
+Visual updates are rejected; calibration remains a suspected cause needing measurement.
+I prepared Kalibr and a screen recorder with camera preview to measure the calibration.
