@@ -24,7 +24,8 @@ Next step
 
 I prepared Kalibr, raw 640x480 stereo capture at 30 Hz and an IMU-only Allan
 recording mode. ROS bag conversion passed on 8,870 IMU messages. My screen
-target measured about 40 mm tags with 12 mm gaps.
+target measured about 40 mm tags with 12 mm gaps. I built the C++ Allan tool
+and checked its curves on the short IMU bag; the three-hour measurement is pending.
 
 I built a C++ screen recorder with stereo previews, red and green cues and a
 countdown. I fixed the 20 Hz preview rate error and camera-resolution tag
