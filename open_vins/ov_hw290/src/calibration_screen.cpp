@@ -275,7 +275,8 @@ class CalibrationScreen : public QWidget {
         .arg(tag_counts_[0]).arg(tag_counts_[1]).arg(rate, 0, 'f', 1)
         .arg(tag_counts_[0] < 7 || tag_counts_[1] < 7 ?
              "Aim straight at the grid and move closer until at least 7 tags appear in each view. Keep the complete grid visible." :
-             (armed_ ? "Hold steady while I check the image." : "Click Prepare; hold still until green, then move for 90 seconds.")));
+             (armed_ ? "Hold steady while I check the image." :
+              QString("Click Prepare; hold still until green, then move for %1 seconds.").arg(seconds_))));
     if (armed_ && ready) {
       if (stable_since_ < 0) stable_since_ = now;
       if (now - stable_since_ >= 3000) startRecorder();
@@ -315,6 +316,10 @@ int main(int argc, char **argv) {
     auto node = std::make_shared<rclcpp::Node>("hw290_calibration_screen");
     CalibrationScreen window(node);
     window.showFullScreen();
+    QTimer::singleShot(500, &window, [&window] {
+      window.raise();
+      window.activateWindow();
+    });
     const int result = app.exec();
     rclcpp::shutdown();
     return result;
