@@ -33,6 +33,50 @@ The saved run contains `imu_bag` and the raw serial log. Use Allan variance to
 replace the four provisional noise and random-walk values before the final
 camera to IMU calibration.
 
+The C++ `allan_variance_ros` tool is built locally in the ignored
+`.allan_workspace` directory. It uses upstream commit
+`1d54b602ee7f2ba0427865d63afe4945d913ed24` from
+https://github.com/ori-drs/allan_variance_ros. It was checked on the 8,870-message
+IMU smoke bag; that 89.6 second check is too short for bias noise calibration.
+The following commands are for a completed stationary recording of at least
+three hours. Put only that one converted bag in the analysis directory.
+
+```bash
+rosbags-convert --src /path/to/run/imu_bag \
+  --dst /path/to/allan_results/imu.bag
+cp hw290_stereo/calibration/allan_hw290.yaml /path/to/allan_results/
+docker run --rm --cpus=2 -e OMP_NUM_THREADS=2 \
+  -v "$PWD/hw290_stereo/calibration/.allan_workspace:/allan_ws" \
+  -v /path/to/allan_results:/data \
+  --entrypoint /bin/bash kalibr-hw290 -lc \
+  'set -e; source /allan_ws/devel/setup.bash; \
+   roscore > /data/roscore.log 2>&1 & core_pid=$!; \
+   trap '\''kill "$core_pid" 2>/dev/null || true'\'' EXIT; sleep 2; \
+   rosrun allan_variance_ros allan_variance /data /data/allan_hw290.yaml \
+   > /data/computation.log 2>&1; \
+   cd /data; MPLBACKEND=Agg rosrun allan_variance_ros analysis.py \
+   --data allan_variance.csv --config allan_hw290.yaml --output imu.yaml'
+```
+
+The result includes `acceleration.png`, `gyro.png` and a flat Kalibr `imu.yaml`.
+Inspect the curves and fit before using the four noise values. The configuration
+uses integer rates because the upstream tool reads `measure_rate` as an integer.
+If `.allan_workspace` is absent, rebuild it from the pinned source:
+
+```bash
+mkdir -p hw290_stereo/calibration/.allan_workspace/src
+git clone https://github.com/ori-drs/allan_variance_ros.git \
+  hw290_stereo/calibration/.allan_workspace/src/allan_variance_ros
+git -C hw290_stereo/calibration/.allan_workspace/src/allan_variance_ros \
+  checkout 1d54b602ee7f2ba0427865d63afe4945d913ed24
+docker run --rm \
+  -v "$PWD/hw290_stereo/calibration/.allan_workspace:/allan_ws" \
+  --entrypoint /bin/bash kalibr-hw290 -lc \
+  'source /catkin_ws/devel/setup.bash; cd /allan_ws; \
+   catkin init; catkin config --cmake-args -DCMAKE_BUILD_TYPE=Release; \
+   catkin build allan_variance_ros --no-status --jobs 2'
+```
+
 ## 3. Record raw stereo calibration data
 
 For a screen target, use the C++ calibration window:
