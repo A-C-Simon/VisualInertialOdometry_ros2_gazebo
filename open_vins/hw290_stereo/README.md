@@ -147,5 +147,24 @@ manual value without adapting. In the current desk view that produced a mean
 intensity of 0.03/255 and only 10 to 21 ORB keypoints. A live exposure sweep
 showed that 5 ms with gain 255 retained about 1,400 ORB keypoints and 81 valid
 stereo matches without increasing exposure time. The launcher now applies and
-reads back that manual setting after camera startup. A full continuous motion
-desk test is still required before accepting the repair.
+reads back that manual setting after camera startup. A continuous motion desk
+test with this setting still escaped the 1.72 m desk bound after about 64
+seconds and reached 7.46 m. The IMU remained near 99 Hz without packet, I2C or
+saturation faults, and the images still held about 1,480 features after the
+failure. Exposure loss is therefore not the complete cause.
+
+### Calibration correction, 2026-10-01
+
+The latest failure logs match the OpenVINS failure mode in which tracked
+features are rejected by the MSCKF innovation test, visual updates collapse,
+and unconstrained IMU propagation drives the position away. A replay using
+online camera extrinsic and time-offset calibration moved the offset estimate
+from 20 ms to about 8.4 to 10.5 ms, but still diverged. Online calibration did
+not repair the provisional starting calibration.
+
+The next correction is a complete offline calibration. Record raw, unrectified
+left and right images for stereo intrinsics and extrinsics, measure IMU white
+noise and random walk from a long stationary dataset, then record a smooth
+dynamic AprilGrid sequence that excites every rotation and acceleration axis.
+Accept the result only when Kalibr's reprojection and predicted IMU plots fit
+and a continuous desk-motion test remains inside the measured workspace.

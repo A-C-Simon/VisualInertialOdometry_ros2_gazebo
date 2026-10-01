@@ -30,9 +30,23 @@ The IMU then delivered 16,653 clean samples before its serial output stopped;
 the USB device remained connected. I preserved the diagnostic run and will use
 a lighter recording for the next motion test.
 
+I completed the lighter continuous-motion test with the verified 5 ms and gain
+255 setting. The path crossed the 1.72 m desk bound after about 64 seconds and
+reached 7.46 m. The IMU remained near 99 Hz without packet, I2C or saturation
+faults, and the camera still showed about 1,480 features after the failure.
+
+I compared the logs with the OpenVINS documentation, source configuration and
+reported failures. The matching signature is visual features being rejected by
+the MSCKF innovation test, followed by unconstrained IMU propagation. A replay
+with online extrinsic and time-offset calibration estimated about 8.4 to 10.5
+ms instead of the assumed 20 ms, but still diverged to over 1 km. I therefore
+stopped changing gates and exposure. The required correction is a full Kalibr
+stereo and camera-IMU calibration using raw images, plus measured Allan-variance
+IMU noise values.
+
 Summary for supervisor (Telegram)
 
-I traced the latest 39.9 m OpenVINS failure to nearly black camera frames and visual-feature loss.
-Automatic exposure proved unreliable, so I selected verified 5 ms exposure with gain 255.
-The corrected live images retained about 1,400 features and 81 valid stereo matches.
-The next step is a lighter continuous-motion run after a clean IMU restart.
+I verified low-blur camera settings, clean 99 Hz IMU delivery and strong live feature counts.
+The continuous desk test still escaped its 1.72 m bound and reached 7.46 m after about 64 seconds.
+The failure matches rejected MSCKF visual updates caused by inconsistent camera-IMU calibration.
+I will replace the provisional transform, timing and noise values with full Kalibr and Allan results.
