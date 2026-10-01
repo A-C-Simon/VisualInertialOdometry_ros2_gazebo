@@ -4,21 +4,33 @@ SENSORS_ONLY=false
 SHOW_RVIZ=true
 DIAGNOSTICS=false
 RAW_STEREO=false
+IMU_ALLAN=false
 for arg in "$@"; do
   case "$arg" in
     --sensors-only) SENSORS_ONLY=true ;;
     --no-rviz) SHOW_RVIZ=false ;;
     --diagnostics) DIAGNOSTICS=true ;;
     --raw-stereo) RAW_STEREO=true ;;
+    --imu-allan) IMU_ALLAN=true ;;
     --help|-h)
-      echo "Usage: $0 [--sensors-only] [--no-rviz] [--diagnostics] [--raw-stereo]"
+      echo "Usage: $0 [--sensors-only] [--no-rviz] [--diagnostics] [--raw-stereo] [--imu-allan]"
       echo "Diagnostics records a sensor bag, raw IMU records and estimator state/debug logs."
       echo "Raw stereo disables rectification for offline camera calibration."
+      echo "IMU Allan records only /imu0 for a long stationary noise measurement."
       echo "A valid VIO trajectory requires a rigid camera-IMU mount and measured extrinsics."
       exit 0 ;;
     *) echo "Unknown argument: $arg" >&2; exit 2 ;;
   esac
 done
+if [[ "$IMU_ALLAN" == true && "$RAW_STEREO" == true ]]; then
+  echo "--imu-allan and --raw-stereo are separate recording modes." >&2
+  exit 2
+fi
+if [[ "$IMU_ALLAN" == true ]]; then
+  SENSORS_ONLY=true
+  SHOW_RVIZ=false
+  DIAGNOSTICS=true
+fi
 if [[ "$RAW_STEREO" == true && "$SENSORS_ONLY" == false ]]; then
   echo "--raw-stereo requires --sensors-only because the VIO configuration expects rectified images." >&2
   exit 2
@@ -28,20 +40,34 @@ source /opt/ros/humble/setup.bash
 source "${ROOT}/../install_vio/setup.bash"
 CAMERA_PREFIX="${ROOT}/../install_camera/usb_cam"
 CAMERA_NODE="$CAMERA_PREFIX/lib/usb_cam/usb_cam_node_exe"
-[[ -x "$CAMERA_NODE" ]] || { echo "Build the corrected camera driver: hw290_stereo/build_camera_driver.sh" >&2; exit 1; }
 export LD_LIBRARY_PATH="$CAMERA_PREFIX/lib:${LD_LIBRARY_PATH:-}"
 export ROS_DOMAIN_ID="${ROS_DOMAIN_ID:-48}"
 export DISPLAY="${DISPLAY:-:1}"
 SPLITTER="${ROOT}/../install_vio/ov_hw290/lib/ov_hw290/stereo_splitter"
 ESTIMATOR="${ROOT}/../install_vio/ov_msckf/lib/ov_msckf/run_subscribe_msckf"
 CALIBRATION="${ROOT}/../../calibration/elp_3dgs1200p01/calib/calibration_opencv.yaml"
-[[ -x "$SPLITTER" && -x "$ESTIMATOR" ]] || { echo "Build ov_hw290 and ov_msckf first" >&2; exit 1; }
-[[ -r "$CALIBRATION" ]] || { echo "Stereo calibration unavailable: $CALIBRATION" >&2; exit 1; }
-[[ -r /dev/video0 && -r /dev/ttyUSB0 ]] || echo "Camera or Nano unavailable; RViz diagnostics will remain available." >&2
+if [[ "$IMU_ALLAN" == false ]]; then
+  [[ -x "$CAMERA_NODE" ]] || { echo "Build the corrected camera driver: hw290_stereo/build_camera_driver.sh" >&2; exit 1; }
+  [[ -x "$SPLITTER" && -x "$ESTIMATOR" ]] || { echo "Build ov_hw290 and ov_msckf first" >&2; exit 1; }
+  [[ -r "$CALIBRATION" ]] || { echo "Stereo calibration unavailable: $CALIBRATION" >&2; exit 1; }
+  [[ -r /dev/video0 && -r /dev/ttyUSB0 ]] || echo "Camera or Nano unavailable; RViz diagnostics will remain available." >&2
+else
+  [[ -r /dev/ttyUSB0 ]] || echo "Nano unavailable; the Allan recording cannot start." >&2
+fi
 echo "ROS_DOMAIN_ID=${ROS_DOMAIN_ID}"
 HW290_DIR="$ROOT"
 RUN_LABEL=hw290_openvins
+[[ "$IMU_ALLAN" == true ]] && RUN_LABEL=hw290_imu_allan
 source "$ROOT/process_helpers.sh"
+if [[ "$IMU_ALLAN" == true ]]; then
+  start_node recorder /tmp/hw290_recorder.log ros2 bag record -o "$RUN_DIR/imu_bag" /imu0
+  sleep 1
+  start_hw290_imu /tmp/hw290_imu.log
+  wait_for_imu /tmp/hw290_imu.log
+  echo "Stationary IMU Allan recording running. Keep the rig untouched for at least 3 hours; Ctrl-C stops and saves it."
+  wait_for_run
+  exit 0
+fi
 start_node camera /tmp/hw290_usb_cam.log "$CAMERA_NODE" --ros-args --params-file "${ROOT}/usb_cam_hw290.yaml"
 sleep 1
 # usb_cam 0.8.1 does not reliably apply this camera's UVC exposure controls.
