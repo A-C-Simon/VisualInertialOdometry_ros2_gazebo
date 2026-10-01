@@ -96,6 +96,10 @@ and 80 to 120 Hz IMU delivery. After the recorder subscribes to both cameras
 and IMU, a five second countdown appears. Capture starts automatically when
 the checks pass; there is no terminal prompt or Prepare click. Green means
 start moving. The Cancel button or Esc stops the capture.
+Once started, the countdown tolerates brief tag detection or stereo callback
+fluctuations. It checks stream health and target visibility rather than measuring
+perfect stillness. Target loss or an invalid IMU rate lasting 1.5 seconds restarts
+readiness; loss of sensor data ends the capture as incomplete.
 The timer stops recording after 90 seconds and returns to a normal window.
 Use `CALIBRATION_SECONDS=60` for the dynamic camera to IMU recording.
 Esc stops the recorder and closes the window; the launcher then stops sensors.

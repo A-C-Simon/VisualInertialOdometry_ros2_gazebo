@@ -225,9 +225,11 @@ class CalibrationScreen : public QWidget {
       for (int id : ids[0]) if (ids[1].count(id)) ++common_tags_;
     }
     if (failed_ || finishing_) return;
-    const bool ready = streams && rate >= 80 && rate <= 120 &&
+    const bool sensor_health = streams && rate >= 80 && rate <= 120;
+    const bool target_visible = tag_counts_[0] >= 7 && tag_counts_[1] >= 7 && common_tags_ >= 4;
+    const bool ready = sensor_health &&
         std::abs(stamps_[0] - stamps_[1]) < 0.005 &&
-        tag_counts_[0] >= 7 && tag_counts_[1] >= 7 && common_tags_ >= 4;
+        target_visible;
     if (now - last_log_ >= 3000) {
       last_log_ = now;
       RCLCPP_INFO(node_->get_logger(), "preview: common_tags=%d imu_rate=%.1f streams=%s ready=%s",
@@ -261,13 +263,35 @@ class CalibrationScreen : public QWidget {
         failed_ = true;
         stopRecorder();
         border(false, "RED: recorder did not subscribe to the sensors. Return to chat.");
-      } else if (subscribed && ready) {
-        if (countdown_since_ < 0) countdown_since_ = now;
+      } else if (subscribed && (countdown_since_ >= 0 || ready)) {
+        // Readiness starts the countdown; it is not a stillness measurement.
+        // The two latest callbacks can temporarily refer to adjacent stereo
+        // frames. Do not restart a running countdown on that snapshot or a
+        // brief tag-detection fluctuation. Require sustained target loss.
+        if (!streams) {
+          failed_ = true;
+          stopRecorder();
+          border(false, "RED: sensor data stopped before movement. Recording saved but incomplete. Return to chat.");
+          showNormal();
+          return;
+        }
+        if (!sensor_health || !target_visible) {
+          if (countdown_bad_since_ < 0) countdown_bad_since_ = now;
+          if (now - countdown_bad_since_ >= 1500) {
+            countdown_since_ = -1;
+            border(false, !sensor_health ? "RED: waiting for a stable 80-120 Hz IMU stream." :
+                                         "RED: bring the grid back into both camera views.");
+            return;
+          }
+        } else countdown_bad_since_ = -1;
+        if (countdown_since_ < 0) {
+          countdown_since_ = now;
+          countdown_bad_since_ = -1;
+        }
         const int remaining = 5 - int((now - countdown_since_) / 1000);
-        if (remaining <= 0) recording_since_ = now;
+        if (remaining <= 0 && sensor_health && target_visible) recording_since_ = now;
         border(false, QString("RED: hold steady. Start moving when green, in %1 seconds.").arg(std::max(0, remaining)));
       } else {
-        countdown_since_ = -1;
         border(false, "RED: hold steady with the grid visible. Waiting for recorder and sensors.");
       }
       return;
@@ -305,7 +329,7 @@ class CalibrationScreen : public QWidget {
   QElapsedTimer clock_;
   QTimer timer_;
   qint64 last_detection_ = -1000, last_log_ = -3000, stable_since_ = -1, recorder_start_ = -1,
-         countdown_since_ = -1, recording_since_ = -1;
+         countdown_since_ = -1, countdown_bad_since_ = -1, recording_since_ = -1;
   int seconds_ = 90, common_tags_ = 0;
   double tag_size_ = 0.040;
   bool armed_ = false, finishing_ = false, failed_ = false;
