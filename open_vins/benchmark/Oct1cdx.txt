@@ -2,57 +2,32 @@
 
 HW290 OpenVINS drift investigation
 
-I analyzed the latest 39.90 m failure using its complete diagnostic bag. The
-IMU stayed clean, but the fixed 5 ms camera exposure made many frames nearly
-black. Around the first trajectory departure, about 98 percent of pixels were
-below intensity 10 and the two stereo images had as few as 1 and 10 ORB
-keypoints. Visual correction was therefore lost before the false flight.
+Work completed
 
-I tested the camera controls directly and found that usb_cam 0.8.1 kept the
-device in UVC manual exposure mode even when `autoexposure` was enabled in its
-YAML file. I updated the launcher to force UVC automatic exposure mode 3 after
-camera startup, with brightness and backlight compensation set to zero. A clean
-restart confirmed the requested mode. The launcher now reads the controls back
-and stops if the camera rejected automatic mode. Sampled ROS images reached the
-1,500 ORB keypoint test cap in each stereo half and had negligible clipping.
+I traced the 39.90 m failure to dark frames and visual-update loss. Automatic
+exposure was unreliable, so I set and verified 5 ms exposure with gain 255.
+This restored about 1,400 features and 81 stereo matches.
 
-I also replayed the earlier failure with a 10 ms camera-to-IMU offset. It
-worsened the maximum displacement to 16.32 m, compared with 0.958 m using the
-calibrated 20 ms offset and the current innovation gate. I restored and kept
-the 20 ms calibration. A two-minute continuous desk-motion test is still needed
-to confirm that the exposure correction prevents false meter-scale flight.
+I ran a lighter continuous desk test. The IMU stayed near 99 Hz without packet,
+I2C or saturation faults, but the path crossed the 1.72 m desk bound after
+about 64 seconds and reached 7.46 m. About 1,480 features remained visible.
 
-A later live restart showed that the camera could report automatic mode while
-remaining nearly black. I measured only 10 to 21 features. Keeping the 5 ms
-exposure and raising gain from 120 to 255 restored about 1,400 features and 81
-valid stereo matches. I changed the launcher to apply and verify this setting.
-The IMU then delivered 16,653 clean samples before its serial output stopped;
-the USB device remained connected. I preserved the diagnostic run and will use
-a lighter recording for the next motion test.
+Finding
 
-I completed the lighter continuous-motion test with the verified 5 ms and gain
-255 setting. The path crossed the 1.72 m desk bound after about 64 seconds and
-reached 7.46 m. The IMU remained near 99 Hz without packet, I2C or saturation
-faults, and the camera still showed about 1,480 features after the failure.
+The logs match reported OpenVINS failures where MSCKF rejects visual updates
+and IMU propagation then drives the position away. Online extrinsic and timing
+calibration estimated an 8.4 to 10.5 ms offset but still diverged. The current
+photo-estimated transform, assumed timing and guessed IMU noise are inadequate.
 
-I compared the logs with the OpenVINS documentation, source configuration and
-reported failures. The matching signature is visual features being rejected by
-the MSCKF innovation test, followed by unconstrained IMU propagation. A replay
-with online extrinsic and time-offset calibration estimated about 8.4 to 10.5
-ms instead of the assumed 20 ms, but still diverged to over 1 km. I therefore
-stopped changing gates and exposure. The required correction is a full Kalibr
-stereo and camera-IMU calibration using raw images, plus measured Allan-variance
-IMU noise values.
+Next step
 
-I added a protected raw-stereo calibration mode. It records the two lens images
-before rectification and refuses to start OpenVINS in that mode. A live check
-confirmed 640x480 images at about 30 Hz with the real lens distortion model,
-while the IMU stayed near 99 Hz without gaps, corruption or saturation. I also
-started building the official Kalibr ROS 1 Docker environment.
+I added and verified raw 640x480 stereo capture at 30 Hz for Kalibr. The mode
+blocks OpenVINS because VIO expects rectified images. I am preparing full stereo
+and camera-IMU calibration, followed by Allan-variance IMU noise measurement.
 
 Summary for supervisor (Telegram)
 
-I verified low-blur camera settings, clean 99 Hz IMU delivery and strong live feature counts.
-The continuous desk test still escaped its 1.72 m bound and reached 7.46 m after about 64 seconds.
-The failure matches rejected MSCKF visual updates caused by inconsistent camera-IMU calibration.
-I prepared raw Kalibr capture so I can replace the provisional transform, timing and IMU noise values.
+I verified low-blur camera settings, clean 99 Hz IMU delivery and strong feature counts.
+The desk test still escaped its 1.72 m bound and reached 7.46 m after about 64 seconds.
+The failure is caused by rejected visual updates from inconsistent camera-IMU calibration.
+I prepared raw Kalibr capture to replace the provisional transform, timing and IMU noise values.
