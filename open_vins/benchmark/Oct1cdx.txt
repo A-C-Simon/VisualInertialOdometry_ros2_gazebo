@@ -1,0 +1,29 @@
+1 OCTOBER 2026
+
+HW290 OpenVINS drift investigation
+
+I analyzed the latest 39.90 m failure using its complete diagnostic bag. The
+IMU stayed clean, but the fixed 5 ms camera exposure made many frames nearly
+black. Around the first trajectory departure, about 98 percent of pixels were
+below intensity 10 and the two stereo images had as few as 1 and 10 ORB
+keypoints. Visual correction was therefore lost before the false flight.
+
+I tested the camera controls directly and found that usb_cam 0.8.1 kept the
+device in UVC manual exposure mode even when `autoexposure` was enabled in its
+YAML file. I updated the launcher to force UVC automatic exposure mode 3 after
+camera startup, with brightness and backlight compensation set to zero. A clean
+restart confirmed the requested mode. Sampled ROS images reached the 1,500 ORB
+keypoint test cap in each stereo half and had negligible highlight clipping.
+
+I also replayed the earlier failure with a 10 ms camera-to-IMU offset. It
+worsened the maximum displacement to 16.32 m, compared with 0.958 m using the
+calibrated 20 ms offset and the current innovation gate. I restored and kept
+the 20 ms calibration. A two-minute continuous desk-motion test is still needed
+to confirm that the exposure correction prevents false meter-scale flight.
+
+Summary for supervisor (Telegram)
+
+I traced the latest 39.9 m OpenVINS failure to nearly black camera frames and loss of visual features.
+I corrected the launcher to enforce the camera's real UVC automatic exposure mode after startup.
+The corrected ROS images now retain strong feature coverage with little highlight clipping.
+I retained the verified 20 ms camera-to-IMU offset; continuous-motion validation is the remaining step.
