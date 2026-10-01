@@ -3,7 +3,32 @@
 The OpenVINS source, Gazebo rover simulator, launcher, isolated build outputs,
 and documentation are kept in [`open_vins/`](open_vins/).
 
-Start the full visual inertial odometry test with:
+## HW290 hardware: calibration that stopped the large drift
+
+**Start with [the tested calibration correction](open_vins/hw290_stereo/DRIFT_FIX.md).**
+It records the camera/IMU fitting method, the matching rectified image models,
+and the physical test that showed no large flights. The
+[October 1 profile](open_vins/hw290_stereo/calibration/20261001/README.md) is
+already the normal OpenVINS default for the unchanged mount.
+
+Git reference: `hw290-openvins-drift-fix-20261001`, calibration commit `0c9cf22`.
+The previous-model replay reached 18.92 km; the fitted model stayed below
+0.47 m. The fresh desk test stayed below 0.852 m displacement.
+
+Quick hardware run with RViz:
+
+```bash
+cd /home/ac/VisualInertialOdometry_ros2_gazebo/open_vins
+./hw290_stereo/run_hw290_openvins.sh
+```
+
+Hold the rig still until initialization, then move. Ctrl+C saves the benchmark
+summary. Changing the mount requires repeating the documented calibration.
+ORB-SLAM3 still needs the new calibration applied and tested separately.
+
+## Gazebo simulation
+
+Start the full simulated visual inertial odometry test with:
 
 ```bash
 cd /home/ac/VisualInertialOdometry_ros2_gazebo/open_vins

@@ -1,5 +1,14 @@
 # HW290 timing and trajectory repair, 2026-09-25
 
+## Tested calibration update, 2026-10-01
+
+**The active OpenVINS profile is now [calibration/20261001/](calibration/20261001/README.md).**
+Read [DRIFT_FIX.md](DRIFT_FIX.md) for the correction that passed the continuous
+desk test, its Git reference and the method for future mounts. The older 20 ms
+offset and approximate mount transforms below describe earlier tests. They
+are superseded for OpenVINS by the October 1 fit and matching rectification.
+The ORB launcher still uses its earlier profile.
+
 ## Confirmed findings
 
 - Installed usb_cam 0.8.1 converted `tv_usec` to milliseconds while adding it
@@ -28,7 +37,7 @@
   It now consumes the actual CameraInfo, subtracts measured stationary gyro bias,
   and reports a held-out rotational residual.
 
-## Current mount calibration
+## Earlier mount calibration, 2026-09-25
 
 Confirmed that both position and orientation changed. A fresh rigid
 assembly rotation capture produced 247 usable pairs, axis spread 0.200,

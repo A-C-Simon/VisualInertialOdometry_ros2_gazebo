@@ -6,6 +6,13 @@ ORB-SLAM3 estimator. The IMU reports identity 0x98, consistent with an
 ICM-20689. OpenVINS now uses the measured October 1 camera and IMU mount profile.
 IMU noise remains provisional; ORB-SLAM3 still uses the earlier calibration.
 
+## Start here: calibration that stopped the large drift
+
+**Read [DRIFT_FIX.md](DRIFT_FIX.md) before changing this calibration.**
+It identifies the tested profile, the changes that removed the large flights,
+and the method to repeat for a changed mount. The profile is already the normal
+OpenVINS default. Git reference: `hw290-openvins-drift-fix-20261001` (`0c9cf22`).
+
 ## Run
 
 From `open_vins`:
@@ -32,7 +39,7 @@ then move slowly through a static, textured scene with objects about 0.5 to 2 m
 away. Do not assess accuracy from a stationary cumulative path length. Use a
 measured motion and return test, and compare against ground truth when available.
 
-## Current hardware status, 2026-09-30
+## Earlier hardware status, 2026-09-30
 
 Earlier, a 20 cm out and back test reached 21.1 cm estimated displacement and
 returned within 2.46 cm. Later failures showed the IMU rate dropping to about

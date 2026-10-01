@@ -5,6 +5,23 @@ used for camera plus IMU visual inertial odometry. OpenVINS uses a bounded
 MSCKF estimator. It does not run loop closure, place recognition, a persistent
 global map, or Pangolin.
 
+## HW290 calibration that stopped the large drift
+
+**For the physical rig, start with [the tested drift correction](hw290_stereo/DRIFT_FIX.md).**
+The normal hardware launcher already selects the measured October 1 profile.
+The previous-model replay reached 18.92 km; the fitted model stayed below
+0.47 m, and a fresh desk test stayed below 0.852 m with no reported flights.
+The guide records the camera/IMU calibration method, matching rectification,
+evidence, limitations and quick launch commands.
+
+```bash
+./hw290_stereo/run_hw290_openvins.sh
+```
+
+Git reference: `hw290-openvins-drift-fix-20261001` (`0c9cf22`). Reuse the
+[dated profile](hw290_stereo/calibration/20261001/README.md) for the unchanged
+mount; repeat the calibration method when the mount changes.
+
 ## Layout
 
 | Path | Purpose |
@@ -13,6 +30,8 @@ global map, or Pangolin.
 | `ov_rover_sim/` | Gazebo rover, sensors, motion, truth, and RViz2 setup |
 | `ov_rover_sim/config/rover_stereo/` | Camera, IMU, and estimator calibration |
 | `benchmark/` | EuRoC replay, resource measurement, ATE tools, and comparison report |
+| `hw290_stereo/DRIFT_FIX.md` | Tested physical calibration correction and how to repeat it |
+| `hw290_stereo/calibration/20261001/` | Default measured HW290 camera/IMU profile and validation |
 | `run_vio_gazebo.sh` | Full simulation launcher |
 | `build_vio/` | Isolated colcon build output |
 | `install_vio/` | Isolated ROS 2 install space |

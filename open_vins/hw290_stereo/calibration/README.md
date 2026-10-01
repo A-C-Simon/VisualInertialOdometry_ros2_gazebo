@@ -1,5 +1,7 @@
 # HW290 offline calibration
 
+**Start with [the tested drift correction and repeatable method](../DRIFT_FIX.md).**
+
 The normal OpenVINS launcher uses the [October 1 profile](20261001/README.md).
 Its stereo geometry, camera to IMU transforms and time offset come from the
 screen recording and passed replay and physical desk checks. IMU noise remains

@@ -1,4 +1,9 @@
-# HW290 OpenVINS calibration, 1 October 2026
+# Tested HW290 OpenVINS calibration: large drift stopped, 1 October 2026
+
+**This is the profile that passed the replay and physical desk checks after
+the earlier meter- and kilometer-scale failures.**
+See [what changed and how to repeat the calibration](../../DRIFT_FIX.md).
+Git reference: `hw290-openvins-drift-fix-20261001` (`0c9cf22`).
 
 This is the default OpenVINS profile for the unchanged mount tested on October 1.
 Run from `open_vins`:
