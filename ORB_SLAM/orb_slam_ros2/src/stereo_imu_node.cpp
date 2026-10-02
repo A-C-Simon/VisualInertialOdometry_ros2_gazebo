@@ -22,6 +22,7 @@
 #include <iomanip>
 #include <functional>
 #include <memory>
+#include <limits>
 #include <mutex>
 #include <numeric>
 #include <stdexcept>
@@ -52,6 +53,7 @@
 
 #include <ImuTypes.h>
 #include <MapPoint.h>
+#include <Map.h>
 #include <System.h>
 #include <Settings.h>
 
@@ -174,6 +176,7 @@ private:
     declare_parameter<bool>("reliable_images", false);
     declare_parameter<bool>("publish_tf", true);
     declare_parameter<bool>("publish_tracking_image", true);
+    declare_parameter<bool>("publish_bootstrap_poses", false);
     declare_parameter<int>("opencv_threads", 1);
     declare_parameter<double>("visualization_hz", 5.0);
     declare_parameter<double>("camera_imu_offset", 0.0);
@@ -199,6 +202,7 @@ private:
     reliable_images_ = get_parameter("reliable_images").as_bool();
     publish_tf_ = get_parameter("publish_tf").as_bool();
     publish_tracking_image_ = get_parameter("publish_tracking_image").as_bool();
+    publish_bootstrap_poses_ = get_parameter("publish_bootstrap_poses").as_bool();
     opencv_threads_ = get_parameter("opencv_threads").as_int();
     visualization_hz_ = get_parameter("visualization_hz").as_double();
     camera_imu_offset_ = get_parameter("camera_imu_offset").as_double();
@@ -401,6 +405,42 @@ private:
     tracking_state_pub_->publish(state_msg);
     log_state_transition(state);
 
+    // Stereo tracking can be OK before inertial initialization. Its world
+    // axes change during gravity alignment, so it is not yet a VIO output.
+    // Map's status accessor locks its state; avoid the upstream debug time
+    // getter, which reads an unset first-IMU timestamp before initialization.
+    const auto tracked_points = slam_->GetTrackedMapPoints();
+    bool found_map = false;
+    bool initialized = false;
+    unsigned long map_id = 0;
+    for (auto * point : tracked_points) {
+      if (!point || point->isBad()) continue;
+      auto * map = point->GetMap();
+      if (!map) continue;
+      map_id = map->GetId();
+      initialized = map->isImuInitialized();
+      found_map = true;
+      break;
+    }
+    bool inertial_pose_ready = found_map && initialized && last_imu_initialized_ &&
+      map_id == last_pose_map_id_;
+    if (found_map && (map_id != last_pose_map_id_ || initialized != last_imu_initialized_)) {
+      RCLCPP_INFO(get_logger(), "Inertial output: map=%lu initialized=%s timestamp=%.9f",
+        map_id, initialized ? "true" : "false", timestamp);
+      // Do not join paths across reset maps or across gravity alignment.
+      // Raw bootstrap output remains available for diagnostic replays.
+      if (!publish_bootstrap_poses_) {
+        path_.poses.clear();
+        path_.header.stamp = stamp;
+        path_.header.frame_id = map_frame_;
+        path_pub_->publish(path_);
+      }
+    }
+    if (found_map) {
+      last_pose_map_id_ = map_id;
+      last_imu_initialized_ = initialized;
+    }
+
     const auto now = std::chrono::steady_clock::now();
     visualization_due_ = visualization_hz_ > 0 &&
       std::chrono::duration<double>(now - last_visualization_).count() >= 1.0 / visualization_hz_;
@@ -409,13 +449,12 @@ private:
       const bool points_needed = points_pub_->get_subscription_count() > 0;
       const bool image_needed = publish_tracking_image_ && tracking_image_pub_->get_subscription_count() > 0;
       if (points_needed || image_needed) {
-        const auto tracked_points = slam_->GetTrackedMapPoints();
         if (points_needed) publish_points(tracked_points, stamp);
         if (image_needed) publish_tracking_image(left, tracked_points, stamp);
       }
     }
 
-    if (state == 2 || state == 5) {
+    if ((state == 2 || state == 5) && (publish_bootstrap_poses_ || inertial_pose_ready)) {
       publish_pose(t_camera_world.inverse(), stamp);
       ++successful_pose_count_;
     }
@@ -621,6 +660,9 @@ private:
   std::deque<std::pair<Image::ConstSharedPtr, Image::ConstSharedPtr>> pending_stereo_;
   bool publish_tf_{true};
   bool publish_tracking_image_{true};
+  bool publish_bootstrap_poses_{false};
+  bool last_imu_initialized_{false};
+  unsigned long last_pose_map_id_{std::numeric_limits<unsigned long>::max()};
   std::string map_frame_;
   std::string camera_frame_;
   std::size_t max_path_length_{10000};

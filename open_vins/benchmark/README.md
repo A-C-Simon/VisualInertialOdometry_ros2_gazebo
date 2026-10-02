@@ -158,3 +158,20 @@ still more expensive than OpenVINS on the matched recording.
 
 Evidence: `results/tower_live_replay_20261002/orb_motion_gate/` and
 `results/tower_matched_20261002/orb_motion_gate/`.
+
+
+### Initialization-aware online output
+
+The native wrapper now waits for inertial initialization before publishing pose,
+body pose, path, TF and the online trajectory. It skips the transition frame and
+clears the displayed path when the map changes. Map resets remain diagnostic
+failures, even when separate map paths are no longer joined in RViz. Enable
+`publish_bootstrap_poses` for raw preliminary stereo poses.
+
+On the failed live recording, the initialized-output replay completed both
+refinements with zero resets and zero tracking losses. It produced 3,241 poses
+over 107.94 seconds, with maximum step 5.25 cm and maximum pose interval 36.1 ms.
+The full input still covered 190.2 seconds and 5,567 tracked stereo pairs. The
+shorter pose coverage reflects waiting for initialization; it is not frame
+filtering or position smoothing. This replay used 155.18 CPU seconds and
+693.48 MiB peak memory. Evidence: `results/tower_live_replay_20261002/orb_motion_gate_display/`.

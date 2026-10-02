@@ -111,3 +111,25 @@ Use a static/dynamic transform downstream if a REP-103 body frame is needed.
 On clean shutdown the EuRoC-format frame and keyframe trajectories are saved
 to `trajectory_path` and `keyframe_trajectory_path`. Set either parameter to an
 empty string to disable that file.
+
+
+## Stereo-inertial initialization and pose output
+
+The native stereo-inertial node defaults to `publish_bootstrap_poses:=false`.
+Stereo tracking can report state OK before the IMU fit establishes gravity.
+The pose, body pose, path, TF and online trajectory wait for that fit and one
+subsequent tracked frame. This avoids joining the preliminary stereo coordinate
+frame to the gravity-aligned VIO coordinate frame. Tracking state and camera
+visualization remain available while initialization is pending.
+
+`Inertial output` log entries give the map ID, initialized state and sensor
+timestamp. A map change clears the displayed path instead of drawing a segment
+between unrelated origins. Resets remain visible in the estimator log and must
+still be counted when judging stability. Later refinements can still correct
+poses; this change does not smooth or clamp positions.
+
+Set the ROS parameter `publish_bootstrap_poses:=true` for raw diagnostic replays
+that include preliminary stereo poses. Those samples are not initialized VIO.
+Online trajectory coverage and comparisons must state which mode was used.
+The bounded `sync_queue_size` defaults to 64 pairs to accommodate measured IMU
+receipt delays; camera and IMU acquisition timestamps still need calibration.
