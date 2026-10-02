@@ -38,6 +38,10 @@ configuration and limits for each recorded comparison.
 
 ## Hardware runs
 
+The [October 2 tower replay comparison](tower_comparison_20261002.md) records
+sequential real-time runs with the selected measured calibration. OpenVINS
+remained bounded; ORB still reset and exceeded the physical workspace.
+
 The HW290 launchers save individual run summaries under `results/`. These
 include sensor faults, logged estimator timings, process CPU and peak memory.
 Manual out and back distances are diagnostic checks, not time resolved ATE.
