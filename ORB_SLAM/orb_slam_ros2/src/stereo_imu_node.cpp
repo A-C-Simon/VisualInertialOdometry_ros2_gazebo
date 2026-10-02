@@ -100,6 +100,7 @@ public:
         pending_stereo_.clear();
         last_input_timestamp_ = -1.0;
         last_stereo_t_ = -1.0;
+        last_sent_imu_t_ = -1.0;
         response->success = true;
         response->message = "ORB-SLAM3 atlas reset";
       });
@@ -296,8 +297,11 @@ private:
         }
       }
       for (const auto & p : imu_buffer_) {
-        if (p.t > last_stereo_t_ && p.t <= timestamp) {
+        // ORB retains the closing sample in its queue. Send each acquisition
+        // once, including the first sample at/after the camera timestamp.
+        if (p.t > last_sent_imu_t_) {
           vImuMeas.push_back(p);
+          if (p.t >= timestamp) break;
         }
       }
       if (vImuMeas.size() > 500) {
@@ -306,14 +310,15 @@ private:
       }
     }
     if (vImuMeas.size() < 2 ||
-        !(vImuMeas.front().t < timestamp - kImuPreintegrationMarginS))
+        !(vImuMeas.front().t < timestamp - kImuPreintegrationMarginS) ||
+        vImuMeas.back().t < timestamp)
     {
       // Tracking::PreintegrateIMU() needs at least 2 samples spanning the
       // frame interval: one strictly older than (frame_time - mImuPer) plus a
       // closing sample. Anything less prints "Empty IMU measurements vector"
       // and segfaults on the null preintegrator. Skip the frame and keep
       // last_stereo_t_ so the next frame reuses these samples.
-      // mImuPer = 1/IMU.Frequency = 0.01 s here; the margin adds slack.
+      // This core uses mImuPer=0.001 s, independent of the noise frequency.
       RCLCPP_WARN_THROTTLE(
         get_logger(), *get_clock(), 2000,
         "Skipping stereo frame %.3f: %zu IMU samples in (%.3f, %.3f], oldest %.3f (imu received: %zu)",
@@ -324,6 +329,7 @@ private:
     {
       std::lock_guard<std::mutex> lock(imu_mutex_);
       last_stereo_t_ = timestamp;
+      last_sent_imu_t_ = vImuMeas.back().t;
     }
 
     const rclcpp::Time stamp(static_cast<int64_t>(timestamp * 1e9), RCL_ROS_TIME);
@@ -599,6 +605,7 @@ private:
   int last_tracking_state_{-1};
   double last_input_timestamp_{-1.0};
   double last_stereo_t_{-1.0};
+  double last_sent_imu_t_{-1.0};
   std::size_t successful_pose_count_{0};
   std::size_t frame_count_{0};
   std::atomic<std::size_t> imu_count_{0};
@@ -607,11 +614,8 @@ private:
   std::mutex imu_mutex_;
   std::deque<ORB_SLAM3::IMU::Point> imu_buffer_;
 
-  // Minimum age of the oldest IMU sample relative to the stereo frame time
-  // before TrackStereo may be called. Tracking::PreintegrateIMU() consumes
-  // samples older than (frame_time - mImuPer) plus one closing sample, where
-  // mImuPer = 1/IMU.Frequency (0.01 s at 100 Hz). Anything less segfaults.
-  static constexpr double kImuPreintegrationMarginS = 0.012;
+  // Installed preintegration uses a 1 ms margin and retains the closing sample.
+  static constexpr double kImuPreintegrationMarginS = 0.001;
 
   rclcpp::Subscription<Imu>::SharedPtr imu_sub_;
   message_filters::Subscriber<Image> left_sub_;
