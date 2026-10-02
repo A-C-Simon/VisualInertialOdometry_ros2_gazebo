@@ -12,5 +12,6 @@
   <depend>eigen</depend>
   <depend>qtbase5-dev</depend>
   <depend>openssl</depend>
+  <depend>yaml-cpp</depend>
   <export><build_type>ament_cmake</build_type></export>
 </package>

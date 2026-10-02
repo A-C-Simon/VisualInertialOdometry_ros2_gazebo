@@ -202,3 +202,31 @@ bounds, and mount geometry as well. See the [official calibration guidance](http
 Finally, repeat the continuous desk test and require displacement to remain
 below the 1.72 m workspace diagonal. This checks gross divergence; independent
 ground truth is still needed for a trajectory accuracy score.
+
+## 5. Build matching rectified profiles
+
+After reviewing the raw camera/IMU fit, use the C++ converter to create a new
+directory. It refuses to overwrite an existing profile:
+
+```bash
+./install_vio/ov_hw290/lib/ov_hw290/build_rectified_profile \
+  /path/to/dynamic-camchain-imucam.yaml \
+  hw290_stereo/calibration/20261001/imu.yaml \
+  hw290_stereo/estimator_config.yaml /path/to/new_profile
+```
+
+The second argument is an OpenVINS IMU model, including its intrinsic matrices;
+the historical file above contains provisional noise. Replace it with measured
+noise when available. The converter preserves those values and the estimator
+settings. It accepts the HW290's 640x480 pinhole/radtan pair, checks that the
+stereo and IMU transforms agree, and runs OpenCV `stereoRectify` with zero
+disparity and alpha 0. It applies each rectification rotation before inverting
+the raw `T_cam_imu` into the OpenVINS `T_imu_cam`.
+
+The directory contains `camchain_raw.yaml`, `camchain.yaml`, `imu.yaml`,
+`estimator_config.yaml` and `stereo_opencv.yaml`. Select the estimator and
+splitter files together; use the existing C++ ORB exporter for that same pair.
+OpenCV versions can produce slightly different alpha-0 focal lengths. Keep
+each generated chain with its generated projection matrices. This conversion
+does not validate a fit or activate a mount; follow the current mount's
+validation procedure first.
