@@ -331,3 +331,20 @@ replace matched headless cost measurements.
 
 Evidence: `results/hw290_orb_20261002_190440_OTDslo/analysis.json`,
 `sensor_delivery.json`, and [tower_initialization_20261002.json](tower_initialization_20261002.json).
+
+
+### Wider healthy keyframe spacing trial
+
+A native-resolution experiment increased healthy keyframe spacing from
+0.25 to 0.5 seconds after the first inertial fit. Both profiles tracked all
+2,911 eligible public-sequence stereo pairs and completed both refinements
+without resets. Estimator CPU fell from 146.26 to 127.60 seconds (12.8%),
+and peak RSS from 702.81 to 664.00 MiB.
+
+Post-30-second ATE changed from 1.894 to 1.864 cm; 1-second translation RPE
+changed from 1.201 to 1.281 cm. Full common-interval ATE increased from 3.458
+to 6.204 cm, with RPE rising from 1.965 to 3.127 cm. Therefore this candidate
+is not selected on late accuracy alone. A follow-up will retain 0.25 seconds
+until the second inertial refinement completes, then try 0.5 seconds.
+[Measurements and limits](euroc_spacing_20261002.json) retain both intervals;
+one trial cannot separate scheduling variation from the policy change.
