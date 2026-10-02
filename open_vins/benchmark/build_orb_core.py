@@ -21,13 +21,19 @@ p.add_argument('--check-translation-invariance',type=Path,metavar='ORB_SETTINGS'
                help='Build and run the native visual/inertial edge check with these settings')
 p.add_argument('--keyframe-interval-s',type=float,default=0.,
                help='Experimental minimum interval for healthy initialized stereo-inertial keyframes (0 to 0.5 s)')
+p.add_argument('--refined-keyframe-interval-s',type=float,default=0.,
+               help='Experimental interval after second inertial refinement; 0 retains the initial interval')
 p.add_argument('--motion-gated-initialization',action='store_true',
                help='Experimental: require measured translation before inertial initialization and wait during quiet intervals')
 a=p.parse_args()
 root=a.orb_root.resolve();out=a.output.resolve()
 if not 0 <= a.keyframe_interval_s <= .5:
  p.error('Keyframe interval must be between 0 and 0.5 seconds')
-if (a.preserve_inertial_origin or a.keyframe_interval_s or a.motion_gated_initialization) and out == (ROOT/'benchmark/build_orb_core').resolve():
+if not 0 <= a.refined_keyframe_interval_s <= .5:
+ p.error('Refined keyframe interval must be between 0 and 0.5 seconds')
+if a.refined_keyframe_interval_s and a.refined_keyframe_interval_s < a.keyframe_interval_s:
+ p.error('Refined keyframe interval must not shorten the initial interval')
+if (a.preserve_inertial_origin or a.keyframe_interval_s or a.refined_keyframe_interval_s or a.motion_gated_initialization) and out == (ROOT/'benchmark/build_orb_core').resolve():
  p.error('Use a separate --output directory for experimental core changes')
 if a.check_translation_invariance and (a.prepare_only or not a.check_translation_invariance.is_file()):
  p.error('Translation check requires an existing settings file and a compiled build')
@@ -39,6 +45,7 @@ for line in flags_file.read_text().splitlines():
   key,value=line.split('=',1);flags[key.strip()]=shlex.split(value.strip())
 manifest={'preserve_inertial_origin':a.preserve_inertial_origin,
           'keyframe_interval_s':a.keyframe_interval_s,
+          'refined_keyframe_interval_s':a.refined_keyframe_interval_s,
           'motion_gated_initialization':a.motion_gated_initialization,
           'original_library_sha256':hashlib.sha256((root/'lib/libORB_SLAM3.so').read_bytes()).hexdigest(),
           'flags':flags,'sources':{},'compile_commands':[]}
@@ -88,7 +95,10 @@ for name in ['Optimizer.cc','Settings.cc','System.cc','Tracking.cc','LocalMappin
         // Tracking and inertial optimization must use a deterministic window.
         mnFramesToResetIMU = mMaxFrames;
     }''')
-  if a.keyframe_interval_s:
+  if a.keyframe_interval_s or a.refined_keyframe_interval_s:
+   interval=format(a.keyframe_interval_s,'.17g')
+   if a.refined_keyframe_interval_s:
+    interval='(mpAtlas->GetCurrentMap()->GetIniertialBA2() ? '+format(a.refined_keyframe_interval_s,'.17g')+' : '+interval+')'
    marker='    if(mbOnlyTracking)\n        return false;'
    assert new.count(marker)==1
    new=new.replace(marker,'''    // Diagnostic trial: retain frame tracking while avoiding redundant
@@ -97,8 +107,7 @@ for name in ['Optimizer.cc','Settings.cc','System.cc','Tracking.cc','LocalMappin
     if ((mSensor == System::IMU_STEREO || mSensor == System::IMU_RGBD) &&
         mpAtlas->GetCurrentMap()->isImuInitialized() && mpLastKeyFrame &&
         mState == OK && mnMatchesInliers >= 50 &&
-        mCurrentFrame.mTimeStamp - mpLastKeyFrame->mTimeStamp < '''+
-        format(a.keyframe_interval_s,'.17g')+''')
+        mCurrentFrame.mTimeStamp - mpLastKeyFrame->mTimeStamp < '''+interval+''')
         return false;
 
 '''+marker)
@@ -155,7 +164,7 @@ for name in ['Optimizer.cc','Settings.cc','System.cc','Tracking.cc','LocalMappin
                                     fromfile='a/src/'+name,tofile='b/src/'+name))
  elif name=='System.cc':export_patch+=source_patch
  elif name=='Tracking.cc':
-  if a.keyframe_interval_s:
+  if a.keyframe_interval_s or a.refined_keyframe_interval_s:
    (out/'orb_keyframe_interval.patch').write_text(source_patch)
   else:tracking_patch+=source_patch
  elif name=='LocalMapping.cc':
@@ -168,7 +177,7 @@ for name in ['Optimizer.cc','Settings.cc','System.cc','Tracking.cc','LocalMappin
  manifest['compile_commands'].append(command)
 (ROOT/'benchmark/patches/orb_local_ba_window.patch').write_text(patch)
 (ROOT/'benchmark/patches/orb_safe_trajectory_export.patch').write_text(export_patch)
-if not a.keyframe_interval_s:
+if not (a.keyframe_interval_s or a.refined_keyframe_interval_s):
  (ROOT/'benchmark/patches/orb_tracking_reset_window.patch').write_text(tracking_patch)
 if not a.motion_gated_initialization:
  (ROOT/'benchmark/patches/orb_initialization_diagnostics.patch').write_text(motion_patch)

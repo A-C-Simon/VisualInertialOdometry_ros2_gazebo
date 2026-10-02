@@ -348,3 +348,21 @@ is not selected on late accuracy alone. A follow-up will retain 0.25 seconds
 until the second inertial refinement completes, then try 0.5 seconds.
 [Measurements and limits](euroc_spacing_20261002.json) retain both intervals;
 one trial cannot separate scheduling variation from the policy change.
+
+
+The follow-up builder option `--refined-keyframe-interval-s 0.5`, with initial
+`--keyframe-interval-s 0.25`, changes the interval only after `GetIniertialBA2()`.
+It requires an isolated output directory and preserves urgent insertion when
+tracking weakens. The first trial used 127.04 CPU seconds and 664.84 MiB, but
+post-30-second ATE increased to 2.258 cm and translation RPE to 1.308 cm. Full
+common-interval ATE increased to 4.971 cm. Both refinements completed with no
+resets and all eligible inputs retained. This variant remains unselected.
+[Follow-up measurements](euroc_refined_spacing_20261002.json) record the limits.
+To reproduce the experimental library:
+
+```bash
+python3 benchmark/build_orb_core.py \
+  --output benchmark/build_orb_motion_gate_refined05 \
+  --preserve-inertial-origin --motion-gated-initialization \
+  --keyframe-interval-s 0.25 --refined-keyframe-interval-s 0.5
+```
