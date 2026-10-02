@@ -34,7 +34,13 @@ target_link_libraries(calibration_screen kalibr_apriltags ${OpenCV_LIBS} Qt5::Wi
 target_compile_features(calibration_screen PUBLIC cxx_std_17)
 target_compile_options(calibration_screen PRIVATE -O2 -Wall -Wextra)
 
-install(TARGETS hw290_imu stereo_splitter calibration_screen DESTINATION lib/${PROJECT_NAME})
+add_executable(export_orb_calibration src/export_orb_calibration.cpp)
+target_include_directories(export_orb_calibration PRIVATE ${OpenCV_INCLUDE_DIRS})
+target_link_libraries(export_orb_calibration ${OpenCV_LIBS})
+target_compile_features(export_orb_calibration PUBLIC cxx_std_17)
+target_compile_options(export_orb_calibration PRIVATE -O2 -Wall -Wextra)
+
+install(TARGETS hw290_imu stereo_splitter calibration_screen export_orb_calibration DESTINATION lib/${PROJECT_NAME})
 install(FILES third_party/ethz_apriltag2/LICENSE third_party/ethz_apriltag2/README.md
         DESTINATION share/${PROJECT_NAME}/third_party/ethz_apriltag2)
 ament_package()
