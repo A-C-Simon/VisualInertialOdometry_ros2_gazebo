@@ -182,9 +182,21 @@ void ROS2Visualizer::setup_subscribers(std::shared_ptr<ov_core::YamlParser> pars
   _node->declare_parameter<std::string>("topic_imu", "/imu0");
   _node->get_parameter("topic_imu", topic_imu);
   parser->parse_external("relative_config_imu", "imu0", "rostopic", topic_imu);
-  sub_imu = _node->create_subscription<sensor_msgs::msg::Imu>(topic_imu, rclcpp::SensorDataQoS(),
+  // A camera callback can wait behind a visual update. At 100 Hz the default
+  // five-sample sensor queue only absorbs 50 ms, then silently loses inertial
+  // measurements. Keep a bounded backlog without excluding best-effort IMUs.
+  int imu_queue_depth = 1000;
+  if (_node->has_parameter("imu_queue_depth"))
+    _node->get_parameter("imu_queue_depth", imu_queue_depth);
+  else
+    _node->declare_parameter<int>("imu_queue_depth", imu_queue_depth);
+  if (imu_queue_depth < 5 || imu_queue_depth > 10000)
+    throw std::invalid_argument("imu_queue_depth must be in [5, 10000]");
+  auto imu_qos = rclcpp::SensorDataQoS();
+  imu_qos.keep_last(static_cast<size_t>(imu_queue_depth));
+  sub_imu = _node->create_subscription<sensor_msgs::msg::Imu>(topic_imu, imu_qos,
                                                               std::bind(&ROS2Visualizer::callback_inertial, this, std::placeholders::_1));
-  PRINT_INFO("subscribing to IMU: %s\n", topic_imu.c_str());
+  PRINT_INFO("subscribing to IMU: %s (queue depth %d)\n", topic_imu.c_str(), imu_queue_depth);
 
   // Logic for sync stereo subscriber
   // https://answers.ros.org/question/96346/subscribe-to-two-image_raws-with-one-function/?answer=96491#post-id-96491

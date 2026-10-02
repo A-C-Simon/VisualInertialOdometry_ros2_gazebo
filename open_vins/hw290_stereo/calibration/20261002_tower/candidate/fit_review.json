@@ -145,5 +145,16 @@
     "max_received_dt_ms": 250.033,
     "source_imu_count": 6429,
     "scope": "real-time headless replay, original five-message queue; no fresh physical validation"
+  },
+  "imu_queue_fix_replay": {
+    "run": "benchmark/results/hw290_openvins_20261002_144009_LinLH5/replay_validation/queue1000_installed",
+    "queue_depth": 1000,
+    "received_imu_count": 6429,
+    "recorded_imu_count": 6429,
+    "gaps_over_50ms": 0,
+    "max_received_dt_ms": 21.523,
+    "max_displacement_m": 0.4946765694592781,
+    "pose_span_s": 43.040899991989136,
+    "scope": "real-time headless replay, initialization times differ from baseline; physical repeat outstanding"
   }
 }

@@ -194,3 +194,40 @@ ROS_DOMAIN_ID=48 python3 hw290_stereo/inspect_sensors.py \
 
 Register references: [TDK ICM-20689 datasheet](https://product.tdk.com/system/files/dam/doc/product/sensor/mortion-inertial/imu/data_sheet/ds-000143-icm-20689-datasheet.pdf),
 [TDK MPU6050 register map](https://invensense.tdk.com/wp-content/uploads/2015/02/MPU-6000-Register-Map1.pdf).
+
+### Estimator IMU delivery failure, 2026-10-02
+
+The rigid tower's first physical calibration trial reached 15.856 m despite
+confirmed desk-scale motion. Firmware reported no I2C errors, corrupt samples,
+sequence gaps or saturation. The recording contains 6,429 IMU samples at
+99.019 Hz with maximum interval 21.523 ms. OpenVINS received gaps up to
+680.785 ms and exited after negative covariance entries.
+
+The default ROS 2 SensorDataQoS retains five IMU messages, only about 50 ms
+at this rate. Image callbacks share the default callback group and can wait
+behind the camera update queue lock. The subscriber now retains 1,000 messages
+by default; `imu_queue_depth` can select 5 to 10,000. Best-effort compatibility
+is preserved. This absorbs stalls but does not guarantee delivery under
+unbounded load or prove that dropped IMU was the sole cause of divergence.
+
+Real-time headless replays of the same failed recording showed:
+
+| Check | Original queue 5 | Queue 1,000 |
+|---|---:|---:|
+| Received IMU samples | 6,239 | 6,429 |
+| Received intervals above 50 ms | 17 | 0 |
+| Maximum received interval | 250.033 ms | 21.523 ms |
+| Maximum trajectory displacement | 0.501 m | 0.495 m |
+
+Initialization times differed, so these displacement values are not an
+accuracy improvement score. Both replays ended near the recording's final
+image timestamp. The fixed replay excludes camera drivers, RViz and recording;
+a new physical test with those processes still needs to pass.
+
+Evidence: `benchmark/results/hw290_openvins_20261002_144009_LinLH5/`, including
+`imu_continuity.json` and `replay_validation/{baseline_queue5,queue1000_installed}`.
+The earlier `queue1000` trial loaded the old installed library and was stopped;
+it is incomplete and excluded. The valid trial startup explicitly logged
+`queue depth 1000`. Build and install the library before validating runtime
+changes: `cmake --build build_vio/ov_msckf --target run_subscribe_msckf -j2`,
+then `cmake --install build_vio/ov_msckf`.
