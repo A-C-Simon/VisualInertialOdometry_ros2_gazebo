@@ -229,5 +229,117 @@
     "sensor_failure": "Nano CH340 USB disconnected at 17:00:26, re-enumerated at 17:00:28",
     "imu_exit_code": 1,
     "physical_bounds_confirmed": null
+  },
+  "live_usb_secured_mostly_stationary": {
+    "run": "benchmark/results/hw290_orb_20261002_190024_vxBPnT",
+    "bootstrap_poses_included": false,
+    "pose_count": 839,
+    "pose_span_s": 27.9160897731781,
+    "first_pose_s_after_cue": 92.68829321861267,
+    "max_displacement_m": 0.07577750939103961,
+    "max_step_m": 0.005262338577235217,
+    "max_pose_gap_s": 0.03604578971862793,
+    "active_map_resets": 0,
+    "motion_reset_events": 0,
+    "lost_transitions": 0,
+    "recently_lost_transitions": 0,
+    "refinement_stages": [],
+    "inertial_output_transitions": [
+      "Inertial output: map=0 initialized=false timestamp=1790956843.242124319",
+      "Inertial output: map=0 initialized=true timestamp=1790956962.870301485"
+    ],
+    "finite": true,
+    "estimator_including_ros_launch_resources": {
+      "wall_seconds": 155.38875589499366,
+      "cpu_seconds": 191.725477,
+      "cpu_percent_one_core": 123.3843954124721,
+      "peak_rss_mib": 713.53515625,
+      "exit_code": 0,
+      "forced_shutdown": false
+    },
+    "timing_ms": {
+      "frames": 4432,
+      "mean": 20.119132513537906,
+      "p95": 29.860664999999997
+    },
+    "scope": "Physical desk bounds only, no independent ground truth; live includes sensor drivers, recording and RViz elsewhere in run summary",
+    "complete_two_minute_test": false,
+    "sensor_failure": null,
+    "imu_exit_code": 0,
+    "operator_observation": "Barely moved the tower; requested a repeated cue",
+    "physical_bounds_confirmed": null,
+    "usb_kernel_events": "No matching disconnect or CH340 re-enumeration events in recording interval",
+    "limitations": "120-second capture completed, but mostly stationary; only 27.92 seconds initialized poses and neither later refinement. Not a continuous-motion VIO pass."
+  },
+  "live_usb_secured_continuous_movement": {
+    "run": "benchmark/results/hw290_orb_20261002_190440_OTDslo",
+    "bootstrap_poses_included": false,
+    "pose_count": 3251,
+    "pose_span_s": 109.1007821559906,
+    "first_pose_s_after_cue": 10.217050075531006,
+    "max_displacement_m": 0.8419011535001796,
+    "max_step_m": 0.09579871692989278,
+    "max_pose_gap_s": 0.8319840431213379,
+    "active_map_resets": 0,
+    "motion_reset_events": 0,
+    "lost_transitions": 0,
+    "recently_lost_transitions": 1,
+    "refinement_stages": [
+      "start VIBA 1",
+      "end VIBA 1",
+      "start VIBA 2",
+      "end VIBA 2"
+    ],
+    "inertial_output_transitions": [
+      "Inertial output: map=0 initialized=false timestamp=1790957099.356629133",
+      "Inertial output: map=0 initialized=true timestamp=1790957125.008786440"
+    ],
+    "finite": true,
+    "estimator_including_ros_launch_resources": {
+      "wall_seconds": 144.6025111550116,
+      "cpu_seconds": 153.160135,
+      "cpu_percent_one_core": 105.9180326652936,
+      "peak_rss_mib": 710.06640625,
+      "exit_code": 0,
+      "forced_shutdown": false
+    },
+    "timing_ms": {
+      "frames": 4047,
+      "mean": 19.71613979490981,
+      "p95": 31.038679999999996
+    },
+    "scope": "Physical desk bounds only, no independent ground truth; live includes sensor drivers, recording and RViz elsewhere in run summary",
+    "complete_two_minute_test": true,
+    "movement_capture_duration_s": 121.08789920806885,
+    "sensor_failure": null,
+    "imu_exit_code": 0,
+    "physical_bounds_confirmed": true,
+    "operator_observation": "Continuous movement within desk and height limits; no flights or resets",
+    "usb_kernel_events": "No matching disconnect or CH340 re-enumeration events in recording interval",
+    "sensor_delivery": {
+      "/cam1/image_raw": {
+        "messages": 4573,
+        "source_span_s": 152.30903697013855,
+        "source_max_gap_ms": 36.76009178161621,
+        "source_gaps_over_50ms": 0,
+        "receipt_max_gap_ms": 140.24686813354492
+      },
+      "/cam0/image_raw": {
+        "messages": 4573,
+        "source_span_s": 152.30903697013855,
+        "source_max_gap_ms": 36.76009178161621,
+        "source_gaps_over_50ms": 0,
+        "receipt_max_gap_ms": 140.22207260131836
+      },
+      "/imu0": {
+        "messages": 14639,
+        "source_span_s": 147.8229956626892,
+        "source_max_gap_ms": 21.968841552734375,
+        "source_gaps_over_50ms": 0,
+        "receipt_max_gap_ms": 1030.2977561950684
+      }
+    },
+    "largest_step_context": "9.58 cm across 0.832-second RECENTLY_LOST gap; recovered on same map",
+    "limitations": "Single physical desk test; initialized pose coverage 109.10 seconds after 10.22-second startup; one recovered tracking interruption; no independent ground truth. Live resources include sensor drivers, recorder and RViz in separate totals."
   }
 }

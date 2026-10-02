@@ -301,3 +301,33 @@ full common-interval metrics and initialization coverage are retained in
 estimator startup and shutdown, excluding the player and viewers. One trial
 per profile on one sequence does not establish repeatability or a general
 accuracy ranking.
+
+
+## USB-secured tower movement check
+
+After securing the Nano USB connection, the first recording was mostly
+stationary and initialized late. It is retained as a delivery check, not a
+continuous-motion pass. A restarted recording completed 121.1 seconds after
+the movement cue, with physical motion confirmed inside the 140 x 80 cm desk
+area and 60 cm height limit, without observed flights or resets.
+
+The experimental motion-gated core at native resolution completed both
+inertial refinements, with zero map resets and no sensor failure. It published
+3,251 initialized poses over 109.10 seconds after a 10.22-second startup.
+Maximum displacement was 84.19 cm. One RECENTLY_LOST episode recovered in
+0.832 seconds; the largest 9.58 cm step spans that gap. This is a successful
+desk-scale stability check, with a brief output interruption and no independent
+ground truth. It does not establish continuous pose coverage or an accuracy
+ranking. The default core remains unchanged.
+
+All 14,639 recorded IMU samples had source gaps below 22 ms, and all 4,573
+images per camera had source gaps below 37 ms. IMU receipt still stalled up to
+1.03 seconds, so the enlarged bounded queue remains necessary. Firmware
+reported no I2C errors and the kernel had no Nano USB disconnect events in the
+recording interval. The live estimator including ROS launch used 153.16 CPU
+seconds, 710.07 MiB peak RSS, and TrackStereo averaged 19.72 ms; this diagnostic
+run also included sensor drivers, recording and RViz, so these totals cannot
+replace matched headless cost measurements.
+
+Evidence: `results/hw290_orb_20261002_190440_OTDslo/analysis.json`,
+`sensor_delivery.json`, and [tower_initialization_20261002.json](tower_initialization_20261002.json).
