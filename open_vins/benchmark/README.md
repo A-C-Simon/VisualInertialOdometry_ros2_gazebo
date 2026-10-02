@@ -108,3 +108,10 @@ Actual movement was confirmed within the desk limits. Origin preservation is
 retained for investigation; the keyframe-spacing trial has not established
 stable initialization. Evidence is in
 `results/hw290_orb_20261002_160638_e9Uy92/`.
+
+To reproduce that keyframe-spacing trial, add `--keyframe-interval-s 0.25`
+to the experimental build command. This keeps camera tracking at its input
+rate, but limits redundant keyframe insertion while tracking has at least 50
+inliers. Weak tracking and loss retain urgent insertion. The initial ten-keyframe
+bootstrap, motion-reset thresholds and full inertial refinement are unchanged.
+The interval defaults to zero and cannot be enabled in the default core directory.
