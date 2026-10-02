@@ -17,7 +17,8 @@ __pycache__/
 install_camera/
 benchmark/results/
 symlink_install_manifest.txt
-benchmark/build_orb_core/
+# Generated isolated ORB variants; source builders and patches stay tracked.
+benchmark/build_orb_*/
 
 # Work reports belong in /home/ac/Work_Reports, outside the VIO repository.
 benchmark/*cdx.txt
