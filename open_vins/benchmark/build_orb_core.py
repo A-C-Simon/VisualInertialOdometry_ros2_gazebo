@@ -14,14 +14,25 @@ import subprocess
 ROOT=Path(__file__).resolve().parents[1]
 p=argparse.ArgumentParser();p.add_argument('--orb-root',type=Path,default=Path('/home/ac/ORB_SLAM3'))
 p.add_argument('--output',type=Path,default=ROOT/'benchmark/build_orb_core')
-p.add_argument('--prepare-only',action='store_true');a=p.parse_args()
-root=a.orb_root.resolve();out=a.output.resolve();out.mkdir(parents=True,exist_ok=True)
+p.add_argument('--prepare-only',action='store_true')
+p.add_argument('--preserve-inertial-origin',action='store_true',
+               help='Experimental: preserve the translation origin through full inertial BA')
+p.add_argument('--check-translation-invariance',type=Path,metavar='ORB_SETTINGS',
+               help='Build and run the native visual/inertial edge check with these settings')
+a=p.parse_args()
+root=a.orb_root.resolve();out=a.output.resolve()
+if a.preserve_inertial_origin and out == (ROOT/'benchmark/build_orb_core').resolve():
+ p.error('Use a separate --output directory for the experimental inertial-origin change')
+if a.check_translation_invariance and (a.prepare_only or not a.check_translation_invariance.is_file()):
+ p.error('Translation check requires an existing settings file and a compiled build')
+out.mkdir(parents=True,exist_ok=True)
 flags_file=root/'build/CMakeFiles/ORB_SLAM3.dir/flags.make'
 flags={}
 for line in flags_file.read_text().splitlines():
  if line.startswith('CXX_'):
   key,value=line.split('=',1);flags[key.strip()]=shlex.split(value.strip())
-manifest={'original_library_sha256':hashlib.sha256((root/'lib/libORB_SLAM3.so').read_bytes()).hexdigest(),
+manifest={'preserve_inertial_origin':a.preserve_inertial_origin,
+          'original_library_sha256':hashlib.sha256((root/'lib/libORB_SLAM3.so').read_bytes()).hexdigest(),
           'flags':flags,'sources':{},'compile_commands':[]}
 patch='';export_patch='';tracking_patch='';motion_patch='';objects={}
 for name in ['Optimizer.cc','Settings.cc','System.cc','Tracking.cc','LocalMapping.cc']:
@@ -100,11 +111,22 @@ for name in ['Optimizer.cc','Settings.cc','System.cc','Tracking.cc','LocalMappin
 
 '''+marker)
    new=new[:start]+section+new[finish:]
+ baseline_new=new
  patched=out/name;patched.write_text(new)
+ if name=='Optimizer.cc' and a.preserve_inertial_origin:
+  subprocess.run(['patch','--silent','--fuzz=0',str(patched),
+                  str(ROOT/'benchmark/patches/orb_inertial_origin.patch')],check=True)
+  new=patched.read_text()
  manifest['sources'][name]={'original_sha256':hashlib.sha256(old.encode()).hexdigest(),
                            'patched_sha256':hashlib.sha256(new.encode()).hexdigest()}
  source_patch=''.join(difflib.unified_diff(old.splitlines(True),new.splitlines(True),fromfile='a/src/'+name,tofile='b/src/'+name))
- if name=='System.cc':export_patch+=source_patch
+ if name=='Optimizer.cc' and a.preserve_inertial_origin:
+  # Keep the default local-BA patch independent of the experimental change.
+  origin_patch=(ROOT/'benchmark/patches/orb_inertial_origin.patch').read_text()
+  manifest['inertial_origin_patch_sha256']=hashlib.sha256(origin_patch.encode()).hexdigest()
+  patch+=''.join(difflib.unified_diff(old.splitlines(True),baseline_new.splitlines(True),
+                                    fromfile='a/src/'+name,tofile='b/src/'+name))
+ elif name=='System.cc':export_patch+=source_patch
  elif name=='Tracking.cc':tracking_patch+=source_patch
  elif name=='LocalMapping.cc':motion_patch+=source_patch
  else:patch+=source_patch
@@ -123,3 +145,28 @@ if not a.prepare_only:
  for command in manifest['compile_commands']:subprocess.run(command,cwd=root/'build',check=True)
  subprocess.run(link,cwd=root/'build',check=True)
  print('Built isolated library:',out/'libORB_SLAM3.so')
+ if a.check_translation_invariance:
+  test_source=ROOT/'benchmark/orb_translation_invariance.cc'
+  test_object=out/'orb_translation_invariance.o'
+  test_binary=out/'orb_translation_invariance'
+  compile_test=['/usr/bin/c++']+flags['CXX_DEFINES']+flags['CXX_INCLUDES']+[
+      '-O0','-std=c++14','-Wno-deprecated-declarations','-c',str(test_source),'-o',str(test_object)]
+  dependencies=[x for x in link if x.startswith('-l') or
+      (not x.startswith('-') and (x.endswith('.so') or '.so.' in x) and x!=str(out/'libORB_SLAM3.so'))]
+  link_test=['/usr/bin/c++',str(test_object),'-o',str(test_binary),str(out/'libORB_SLAM3.so')]+dependencies+[
+      '-Wl,-rpath,'+str(out),'-Wl,-rpath,'+str(root/'Thirdparty/g2o/lib'),
+      '-Wl,-rpath,'+str(root/'Thirdparty/DBoW2/lib')]
+  with (out/'translation_check_build.log').open('w') as build_log:
+   for command in [compile_test,link_test]:
+    subprocess.run(command,cwd=root/'build',stdout=build_log,stderr=subprocess.STDOUT,check=True)
+  settings=a.check_translation_invariance.resolve()
+  result=subprocess.run([str(test_binary),str(settings)],cwd=root/'build',text=True,
+                        stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+  (out/'translation_check.txt').write_text(result.stdout)
+  manifest['translation_check']={'compile':compile_test,'link':link_test,
+      'settings':str(settings),'settings_sha256':hashlib.sha256(settings.read_bytes()).hexdigest(),
+      'source_sha256':hashlib.sha256(test_source.read_bytes()).hexdigest(),
+      'exit_code':result.returncode,'output':result.stdout}
+  (out/'build_manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+  print(result.stdout,end='')
+  result.check_returncode()

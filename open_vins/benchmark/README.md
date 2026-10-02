@@ -68,3 +68,43 @@ libraries were renamed to prevent launch selection. The default core retains
 the upstream reset protection. Sensor recordings, online poses and logs remain
 in ignored benchmark results for comparison with the unchanged core. Dated
 reports remain in `/home/ac/Work_Reports`.
+
+## Experimental inertial map origin preservation
+
+Full inertial BA can move the optimizer's unconstrained global translation.
+The origin experiment translates the optimized cameras and included map points
+back to the earliest retained camera's pre-BA position. It leaves optimized
+rotations, velocities, biases and relative geometry intact. It applies the same
+correction to immediate and staged BA outputs; locally anchored BA is unchanged.
+
+Build it explicitly in a separate directory:
+
+```bash
+python3 benchmark/build_orb_core.py \
+  --output benchmark/build_orb_origin --preserve-inertial-origin \
+  --check-translation-invariance ../ORB_SLAM/orb_slam_ros2/config/ELP_640x480_inertial.yaml
+```
+
+The builder rejects selecting this option for the default core directory. Its
+manifest records the patch and source hashes. `INERTIAL_BA_ORIGIN` reports the
+removed translation and largest remaining relative keyframe correction.
+
+The selected tower recording removed an 11.07 m translation during VIBA 2,
+while the largest relative correction was 4.4 mm. The separate origin-only
+trial remained below 73.3 cm but still reset 51 times, so origin preservation
+does not resolve initialization by itself. Those are diagnostic results,
+without independent ground truth.
+
+`orb_translation_invariance.cc` checks the change using ORB's actual stereo
+and inertial graph edges, with the exported tower extrinsics. Across 180
+checks with translations up to 1,000 m, maximum visual residual change was
+5.84e-11 pixels and inertial residual change was 1.67e-12. This verifies the
+coordinate transformation; it does not validate optimizer convergence or
+live accuracy. The default core is unchanged while live validation continues.
+
+The fresh two-minute tower test stayed below 84.8 cm and completed VIBA 2,
+but still reset during the first minute, including a 66.5 cm discontinuity.
+Actual movement was confirmed within the desk limits. Origin preservation is
+retained for investigation; the keyframe-spacing trial has not established
+stable initialization. Evidence is in
+`results/hw290_orb_20261002_160638_e9Uy92/`.
