@@ -1,0 +1,16 @@
+%YAML:1.0
+mount_id: "20261002_rigid_tower"
+status: "CAD_prior_only"
+source: "hw290_stereo/vio_rig_stand_simple.scad"
+source_sha256: "87941446750c7abe89fb900245fe0bee36ce464a0bfa50a122283c75ba29fd8a"
+extraction: "OpenSCAD CLI CALIB echoes, 2026-10-02"
+rig_axes: "X right, Y forward, Z up; origin base center"
+optical_axes: "x right, y down, z forward"
+nominal_baseline_m: 0.06
+p_IMU_in_cam0_m: [0.03, 0.0, -0.0317]
+p_IMU_in_cam1_m: [-0.03, 0.0, -0.0317]
+position_reference: "Breakout board center, not independently surveyed IMU die center"
+rotation_status: "unverified; no numerical rotation assigned"
+timeshift_cam_imu_prior_s: 0.02
+timeshift_status: "starting estimate; refit with current capture"
+transform_status: "Not a Kalibr T_imu_cam. Optical-frame lever arms cannot be inserted into its IMU-frame translation column."
