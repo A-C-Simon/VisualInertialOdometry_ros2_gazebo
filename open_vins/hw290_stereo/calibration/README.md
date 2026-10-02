@@ -2,11 +2,12 @@
 
 **Start with [the tested drift correction and repeatable method](../DRIFT_FIX.md).**
 
-The normal OpenVINS launcher uses the [October 1 profile](20261001/README.md).
-Its stereo geometry, camera to IMU transforms and time offset come from the
-screen recording and passed replay and physical desk checks. IMU noise remains
-provisional. The profile README records the evidence and remaining limits.
-ORB-SLAM3 still uses its earlier profile; it needs a separate update and test.
+The [current tower mount](20261002_tower/README.md) requires a fresh spatial/time
+fit. Both launchers check `current_mount.yaml` and refuse live VIO with a chain
+from the previous mount. Raw recording remains available. The
+[October 1 profile](20261001/README.md) passed earlier-mount desk checks;
+ORB received that profile on October 2, before the tower change. IMU noise
+remains provisional. Preserve historical profiles for old recordings.
 
 ## 1. Print the target
 

@@ -5,7 +5,10 @@ the earlier meter- and kilometer-scale failures.**
 See [what changed and how to repeat the calibration](../../DRIFT_FIX.md).
 Git reference: `hw290-openvins-drift-fix-20261001` (`0c9cf22`).
 
-This is the default OpenVINS profile for the unchanged mount tested on October 1.
+This is the historical profile for the mount tested on October 1. The
+[current tower](../20261002_tower/README.md) needs a new camera/IMU fit.
+The live launchers reject this profile until the current mount is validated.
+The following command applies to the earlier unchanged mount only.
 Run from `open_vins`:
 
 ```bash
@@ -46,8 +49,8 @@ The mount rotation differs by about 26.5 degrees from the previous profile.
 (324.01826, 268.30197). `camchain.yaml` uses these rectified intrinsics and zero
 distortion. Its transforms include the corresponding rectification rotations.
 The static TF helper reads this same chain through `estimator_config.yaml`.
-The earlier `hw290_stereo/kalibr_imucam_chain.yaml` is a legacy profile still
-used by the existing ORB launcher; it is not the OpenVINS default.
+The earlier `hw290_stereo/kalibr_imucam_chain.yaml` is a legacy profile.
+ORB now exports the selected OpenVINS chain; live use requires a matching mount.
 
 ## Validation
 

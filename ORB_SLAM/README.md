@@ -211,6 +211,12 @@ grow in Map Viewer. Stop with Ctrl+C; trajectories are saved in this directory.
 
 ## HW-290 stereo-inertial live test
 
+**The mount changed to a rigid tower on October 2. Its camera/IMU rotation and
+time shift need a fresh fit. [Current mount status and recording steps](../open_vins/hw290_stereo/calibration/20261002_tower/README.md).**
+Both hardware launchers verify the selected calibration against the current
+mount fingerprints before live VIO. The commands below require a validated
+profile; `--sensors-only` remains available while calibration is pending.
+
 Fused VIO with the ELP camera and the HW-290 IMU on the Arduino Nano.
 This module reports WHO_AM_I 0x98; the driver treats it as an ICM-compatible
 variant rather than assuming the board label identifies an MPU6050.

@@ -1,13 +1,22 @@
 # HW290 timing and trajectory repair, 2026-09-25
 
-## Tested calibration update, 2026-10-01
+## Current mount change, 2026-10-02
 
-**The active OpenVINS profile is now [calibration/20261001/](calibration/20261001/README.md).**
-Read [DRIFT_FIX.md](DRIFT_FIX.md) for the correction that passed the continuous
-desk test, its Git reference and the method for future mounts. The older 20 ms
-offset and approximate mount transforms below describe earlier tests. They
-are superseded for OpenVINS by the October 1 fit and matching rectification.
-The ORB launcher still uses its earlier profile.
+The ELP stereo camera, HW290 and Nano now share the rigid printed tower.
+[The OpenSCAD geometry and calibration status](calibration/20261002_tower/README.md)
+replace the old photo-based mount prior. OpenSCAD reports a nominal 60 mm
+baseline and board-center optical lever arms [0.030, 0, -0.0317] m and
+[-0.030, 0, -0.0317] m. Rotation is unverified; +20 ms is a timing starting
+estimate. Neither is a completed calibration. Both hardware launchers now
+require approved fingerprints for this mount before enabling live VIO.
+
+## Tested previous-mount calibration, 2026-10-01
+
+[calibration/20261001/](calibration/20261001/README.md) passed the earlier
+OpenVINS desk test. [DRIFT_FIX.md](DRIFT_FIX.md) preserves its Git reference,
+results and repeatable calibration method. ORB received that profile on
+October 2 before the tower change. Numerical profiles and earlier history
+below belong to their original mounts and recordings.
 
 ## Confirmed findings
 

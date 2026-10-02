@@ -51,5 +51,19 @@ repeat a fresh continuous movement test before activation.
 `requires_calibration`. Both hardware launchers reject live VIO until that
 file is marked `validated` with SHA256 fingerprints of the selected camera/IMU
 chain and stereo calibration. The C++ checker verifies those files at startup.
-Raw recording remains available, and unverified camera/IMU TF is omitted.
+After inspecting a fresh fit, set `fitted_pending_validation` and its matching
+chain/stereo fingerprints. Use the explicit validation mode for the desk test:
+
+```bash
+./hw290_stereo/run_hw290_openvins.sh --calibration-test --diagnostics
+# ORB uses the same explicit mode after exporting that fitted profile:
+../ORB_SLAM/orbslam3_hw290_vio.sh --calibration-test --efficient --diagnostics --rviz
+```
+
+Select the fitted files with `HW290_VIO_CONFIG` and
+`HW290_STEREO_CALIBRATION`. This mode still rejects `requires_calibration` and
+incorrect fingerprints. Mark `validated` only after the movement checks pass.
+Normal runs reject `fitted_pending_validation`; trial runs save a
+`calibration_test` marker. Raw recording remains available, and unverified
+camera/IMU TF is omitted.
 Keep the previous profiles and evidence for replay of the old mount.

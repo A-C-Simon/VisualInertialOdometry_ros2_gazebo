@@ -1,7 +1,13 @@
 # Start here: the calibration that stopped the large OpenVINS flights
 
-**Use the [tested October 1 profile](calibration/20261001/README.md) for the
-unchanged HW290/stereo mount. It is already the normal OpenVINS default.**
+**The mount changed to a rigid tower on October 2. The previous fit is invalid
+for live camera/IMU alignment on that tower. Start with
+[the current mount and calibration steps](calibration/20261002_tower/README.md).**
+
+The [October 1 profile](calibration/20261001/README.md) below records the
+successful correction for the earlier unchanged mount. Its numerical files
+are preserved for historical replay; live launchers require matching current
+mount fingerprints before enabling VIO.
 
 Git reference: `hw290-openvins-drift-fix-20261001`, pointing to calibration
 commit `0c9cf22`. Calibration files and compact validation results are tracked;
@@ -47,7 +53,8 @@ The active profile is `hw290_stereo/calibration/20261001/`:
 `hw290_stereo/estimator_config.yaml` selects the dated camera and IMU chains.
 `run_hw290_openvins.sh` selects the dated stereo rectification file.
 Keep those selections consistent. The legacy `kalibr_imucam_chain.yaml` is
-still used by the existing ORB launcher and is not the tested OpenVINS profile.
+not the tested profile. ORB now exports the selected OpenVINS profile, subject
+to the same current-mount check.
 
 The successful run also used the corrected camera acquisition timestamps,
 MCU acquisition timestamps in the IMU bridge, approximately 100 Hz IMU delivery,
@@ -93,6 +100,9 @@ Reuse today's numerical profile only while the mount and camera mode stay the
 same. A position or orientation change needs a new fit using this method.
 
 ## Quick runs
+
+These VIO commands require a validated profile for the current mount. While
+the tower fit is pending, use `--calibration-screen` to record raw data.
 
 From `/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins`:
 
