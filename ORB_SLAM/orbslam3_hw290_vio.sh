@@ -14,17 +14,20 @@ SENSORS_ONLY=false
 SHOW_RVIZ=false
 USE_VIEWER=false
 EFFICIENT=false
+DIAGNOSTICS=false
 for arg in "$@"; do
   case "$arg" in
     --sensors-only) SENSORS_ONLY=true ;;
     --efficient) EFFICIENT=true ;;
+    --diagnostics) DIAGNOSTICS=true ;;
     --rviz) SHOW_RVIZ=true ;;
     --viewer) USE_VIEWER=true ;;
     --no-rviz) SHOW_RVIZ=false ;;
     --no-viewer) USE_VIEWER=false ;;
     --help|-h)
-      echo "Usage: $0 [--sensors-only] [--efficient] [--rviz] [--viewer] [--no-rviz] [--no-viewer]"
+      echo "Usage: $0 [--sensors-only] [--efficient] [--diagnostics] [--rviz] [--viewer] [--no-rviz] [--no-viewer]"
       echo "  --efficient    use 600 features and capped local BA (validated on EuRoC)"
+      echo "  --diagnostics  save sensor/pose bag and raw IMU log"
       echo "  --sensors-only  publish camera+IMU only, skip ORB-SLAM3"
       echo "  --no-rviz       skip RViz2 (default; --viewer enables Pangolin)"
       echo "  --no-viewer     disable Pangolin viewer (headless benchmark)"
@@ -92,6 +95,12 @@ sleep 1
 configure_hw290_camera /tmp/orb_vio_v4l2_controls.log
 sleep 2
 start_node splitter /tmp/orb_vio_splitter.log "$SPLITTER" --ros-args -p calibration_file:="$CALIBRATION" -p auto_timestamp_correction:=false
+if [[ "$DIAGNOSTICS" == true ]]; then
+  touch "$RUN_DIR/diagnostics_enabled"
+  cp "$HW290_DIR/record_qos.yaml" "$RUN_DIR/record_qos.yaml"
+  start_node recorder /tmp/orb_vio_recorder.log ros2 bag record --qos-profile-overrides-path "$RUN_DIR/record_qos.yaml" -o "$RUN_DIR/sensors_bag" /cam0/image_raw /cam1/image_raw /imu0 /orbslam_vio/pose_imu /orbslam_vio/tracking_state
+  sleep 2
+fi
 start_hw290_imu /tmp/orb_vio_imu.log
 IMU_READY=true
 if ! wait_for_imu /tmp/orb_vio_imu.log; then
@@ -113,7 +122,8 @@ if [[ "$SENSORS_ONLY" == false && "$IMU_READY" == true ]]; then
   sleep 2
   start_node estimator /tmp/orb_vio_slam.log ros2 launch orb_slam_ros2 stereo_inertial_topics.launch.py \
     namespace:=orbslam_vio viewer:="$USE_VIEWER" reliable_images:="${ORB_RELIABLE_IMAGES:-true}" settings_path:="$SETTINGS_PATH" camera_imu_offset:="${CAMERA_IMU_OFFSET:-$CALIBRATED_OFFSET}" \
-    trajectory_path:="$RUN_DIR/vio_session.txt" keyframe_trajectory_path:="$RUN_DIR/kf_vio_session.txt" timing_path:="$RUN_DIR/vio_timing.txt"
+    trajectory_path:="$RUN_DIR/vio_session.txt" keyframe_trajectory_path:="$RUN_DIR/kf_vio_session.txt" timing_path:="$RUN_DIR/vio_timing.txt" \
+    online_trajectory_path:="$RUN_DIR/online_imu_poses.txt"
 fi
 if [[ "$SHOW_RVIZ" == true ]]; then
   RVIZ_CONFIG="$RVIZ_VIO"
