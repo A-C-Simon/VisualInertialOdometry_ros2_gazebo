@@ -11,6 +11,20 @@ start_node() {
   python3 "$HW290_DIR/managed_process.py" "$RUN_DIR/$role.resources.json" "$@" > "$log" 2>&1 &
   PIDS+=("$!"); ROLES+=("$role"); LOGS+=("$log")
 }
+configure_hw290_camera() {
+  local control_log=$1
+  command -v v4l2-ctl >/dev/null 2>&1 || { echo "v4l2-ctl is required for HW290 exposure control" >&2; return 1; }
+  v4l2-ctl -d /dev/video0 --set-ctrl=auto_exposure=1,exposure_time_absolute=50,brightness=0,backlight_compensation=0,gain=255 \
+    >"$control_log" 2>&1 || { echo "Failed to set HW290 exposure controls" >&2; return 1; }
+  v4l2-ctl -d /dev/video0 --get-ctrl=auto_exposure,exposure_time_absolute,brightness,backlight_compensation,gain \
+    >>"$control_log" 2>&1 || { echo "Failed to read back HW290 exposure controls" >&2; return 1; }
+  grep -Eq '^auto_exposure: 1([[:space:]]|$)' "$control_log" &&
+  grep -Eq '^exposure_time_absolute: 50([[:space:]]|$)' "$control_log" &&
+  grep -Eq '^gain: 255([[:space:]]|$)' "$control_log" || {
+    echo "HW290 camera rejected the tested exposure controls; see $control_log" >&2
+    return 1
+  }
+}
 start_hw290_imu() {
   local log=$1
   local raw_args=()
