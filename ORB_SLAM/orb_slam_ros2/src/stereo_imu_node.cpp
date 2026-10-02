@@ -19,6 +19,7 @@
 #include <deque>
 #include <filesystem>
 #include <fstream>
+#include <iomanip>
 #include <functional>
 #include <memory>
 #include <mutex>
@@ -70,6 +71,13 @@ public:
     declare_parameters();
     read_parameters();
     validate_files();
+    if (!online_trajectory_path_.empty()) {
+      online_trajectory_.open(online_trajectory_path_);
+      if (!online_trajectory_) throw std::runtime_error("Cannot open online trajectory output");
+      online_trajectory_ << "# timestamp_s x y z qx qy qz qw tracking_state\n";
+      online_trajectory_.flush();
+      online_trajectory_ << std::fixed << std::setprecision(9);
+    }
     if (opencv_threads_ >= 0) cv::setNumThreads(opencv_threads_);
 
     pose_pub_ = create_publisher<geometry_msgs::msg::PoseStamped>("pose", 10);
@@ -173,6 +181,7 @@ private:
     declare_parameter<std::string>("trajectory_path", "vio_session.txt");
     declare_parameter<std::string>("keyframe_trajectory_path", "kf_vio_session.txt");
     declare_parameter<std::string>("timing_path", "vio_timing.txt");
+    declare_parameter<std::string>("online_trajectory_path", "");
   }
 
   void read_parameters()
@@ -198,6 +207,7 @@ private:
     trajectory_path_ = get_parameter("trajectory_path").as_string();
     keyframe_trajectory_path_ = get_parameter("keyframe_trajectory_path").as_string();
     timing_path_ = get_parameter("timing_path").as_string();
+    online_trajectory_path_ = get_parameter("online_trajectory_path").as_string();
   }
 
   void validate_files() const
@@ -232,6 +242,12 @@ private:
       // Out-of-order IMU sample; drop to keep the buffer monotonic.
       return;
     }
+    if (last_received_imu_t_ >= 0) {
+      const double dt = t - last_received_imu_t_;
+      max_imu_gap_s_ = std::max(max_imu_gap_s_, dt);
+      if (dt > .05) ++imu_gap_count_;
+    }
+    last_received_imu_t_ = t;
     imu_buffer_.push_back(p);
     // Keep ~15 s at 100 Hz.
     while (imu_buffer_.size() > 1500) {
@@ -297,8 +313,9 @@ private:
         }
       }
       for (const auto & p : imu_buffer_) {
-        // ORB retains the closing sample in its queue. Send each acquisition
-        // once, including the first sample at/after the camera timestamp.
+        // ORB retains the last closing sample in its own queue for the next
+        // frame. Send each acquisition once, including the first at/after the
+        // current camera time, so integration can interpolate the boundary.
         if (p.t > last_sent_imu_t_) {
           vImuMeas.push_back(p);
           if (p.t >= timestamp) break;
@@ -417,7 +434,7 @@ private:
     pose.pose.orientation.z = rotation.z();
     pose.pose.orientation.w = rotation.w();
     pose_pub_->publish(pose);
-    if (imu_pose_pub_->get_subscription_count() > 0) {
+    if (imu_pose_pub_->get_subscription_count() > 0 || online_trajectory_.is_open()) {
       const Sophus::SE3f t_world_imu = t_world_camera * t_camera_imu_;
       auto imu_pose = pose;
       const auto p = t_world_imu.translation();
@@ -425,7 +442,13 @@ private:
       imu_pose.pose.position.x = p.x(); imu_pose.pose.position.y = p.y(); imu_pose.pose.position.z = p.z();
       imu_pose.pose.orientation.x = q.x(); imu_pose.pose.orientation.y = q.y();
       imu_pose.pose.orientation.z = q.z(); imu_pose.pose.orientation.w = q.w();
-      imu_pose_pub_->publish(imu_pose);
+      if (imu_pose_pub_->get_subscription_count() > 0) imu_pose_pub_->publish(imu_pose);
+      if (online_trajectory_.is_open()) {
+        online_trajectory_ << stamp.seconds() << ' ' << p.x() << ' ' << p.y() << ' ' << p.z()
+          << ' ' << q.x() << ' ' << q.y() << ' ' << q.z() << ' ' << q.w()
+          << ' ' << slam_->GetTrackingState() << '\n';
+        if (++online_pose_count_ % 50 == 0) online_trajectory_.flush();
+      }
     }
 
     path_.header = pose.header;
@@ -532,6 +555,9 @@ private:
       return;
     }
     shutdown_ = true;
+    if (online_trajectory_.is_open()) online_trajectory_.close();
+    RCLCPP_INFO(get_logger(), "IMU input: received=%zu gaps_over_50ms=%zu max_gap_ms=%.3f",
+      imu_count_.load(), imu_gap_count_, max_imu_gap_s_ * 1000.);
     RCLCPP_INFO(get_logger(), "Shutting down ORB-SLAM3...");
     if (!slam_->isShutDown()) {
       slam_->Shutdown();
@@ -595,6 +621,9 @@ private:
   std::string trajectory_path_;
   std::string keyframe_trajectory_path_;
   std::string timing_path_;
+  std::string online_trajectory_path_;
+  std::ofstream online_trajectory_;
+  std::size_t online_pose_count_{0};
 
   Sophus::SE3f t_camera_imu_;
   rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr imu_pose_pub_;
@@ -606,6 +635,9 @@ private:
   double last_input_timestamp_{-1.0};
   double last_stereo_t_{-1.0};
   double last_sent_imu_t_{-1.0};
+  double last_received_imu_t_{-1.0};
+  std::size_t imu_gap_count_{0};
+  double max_imu_gap_s_{0};
   std::size_t successful_pose_count_{0};
   std::size_t frame_count_{0};
   std::atomic<std::size_t> imu_count_{0};
@@ -614,7 +646,8 @@ private:
   std::mutex imu_mutex_;
   std::deque<ORB_SLAM3::IMU::Point> imu_buffer_;
 
-  // Installed preintegration uses a 1 ms margin and retains the closing sample.
+  // The installed Tracking::PreintegrateIMU uses mImuPer=0.001 s and retains
+  // the closing sample. Keep an older sample and a sample at/after frame time.
   static constexpr double kImuPreintegrationMarginS = 0.001;
 
   rclcpp::Subscription<Imu>::SharedPtr imu_sub_;
