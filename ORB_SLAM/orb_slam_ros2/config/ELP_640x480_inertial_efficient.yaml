@@ -1,98 +1,44 @@
 %YAML:1.0
-
-# ELP 3DGS1200P01 + HW-290 (WHO_AM_I 0x98) - ORB-SLAM3 stereo-inertial settings
-# Images: rectified 640x480 pair from ov_hw290/stereo_splitter (usb_cam 1280x480
-# side-by-side MJPG). Intrinsics are P1/P2 from
-# calibration/elp_3dgs1200p01/calib/calibration_opencv.yaml scaled 1600x1200->640x480
-# (sx=sy=0.4): fx=433.10635826, cx=325.54584656, cy=245.57666931.
-# Distortion is zero because the splitter already undistorts/rectifies.
-# Baseline from P2 Tx: 64.853007/1082.765896 = 0.0598957 m (raw T gives 0.0598913 m).
-# IMU: HW-290 (WHO_AM_I 0x98) via Arduino Nano /imu0 at 100 Hz, +/-4g (8192 LSB/g),
-# +/-500 dps (65.5 LSB/dps). Noise values from
-# open_vins/hw290_stereo/kalibr_imu_chain.yaml (provisional, uncalibrated IMU).
-# T_b_c1: current rotation/time capture 2026-09-25; translation approximated
-# from user 4 cm lens distances + photographs, not a full spatial calibration.
-# The launcher reads camera_imu_offset from the OpenVINS calibration YAML.
+---
+# Generated from the selected OpenVINS camera/IMU and splitter profiles.
 File.version: "1.0"
-
-Camera.type: "PinHole"
-
-Camera1.fx: 433.10635826
-Camera1.fy: 433.10635826
-Camera1.cx: 325.54584656
-Camera1.cy: 245.57666931
-
-Camera1.k1: 0.0
-Camera1.k2: 0.0
-Camera1.p1: 0.0
-Camera1.p2: 0.0
-Camera1.k3: 0.0
-
-Camera2.fx: 433.10635826
-Camera2.fy: 433.10635826
-Camera2.cx: 325.54584656
-Camera2.cy: 245.57666931
-
-Camera2.k1: 0.0
-Camera2.k2: 0.0
-Camera2.p1: 0.0
-Camera2.p2: 0.0
-Camera2.k3: 0.0
-
+Camera.type: "Rectified"
+Camera1.fx: 367.53325091589227
+Camera1.fy: 367.53325091589227
+Camera1.cx: 324.01826477050781
+Camera1.cy: 268.30197143554688
 Camera.width: 640
 Camera.height: 480
-
 Camera.fps: 30
-
-# Splitter publishes rgb8; ORB-SLAM3 treats 0=BGR 1=RGB for color conversion.
 Camera.RGB: 1
-
-# Right-camera coordinates to left-camera coordinates: +baseline on X.
-Stereo.T_c1_c2: !!opencv-matrix
-  rows: 4
-  cols: 4
-  dt: f
-  data: [1.0, 0.0, 0.0, 0.0598957,
-         0.0, 1.0, 0.0, 0.0,
-         0.0, 0.0, 1.0, 0.0,
-         0, 0, 0, 1.0]
-
-Stereo.ThDepth: 40.0
-
-# Left camera -> body (IMU). Provisional translation - see header.
+Stereo.b: 0.059449785561765313
+Stereo.ThDepth: 40.000000000000000
 IMU.T_b_c1: !!opencv-matrix
   rows: 4
   cols: 4
   dt: f
-  data: [-0.0614365316, 0.1058871785, 0.9924784421, 0.0143651204, -0.9918715778, -0.1174863603, -0.0488643866, 0.0263304734, 0.1114285678, -0.9874132167, 0.1122444373, -0.0264641170, 0.0000000000, 0.0000000000, 0.0000000000, 1.0000000000]
-
+  data: [-0.45392330314461060, -0.0050692547953702805, 0.89102633940759779, 0.021613377054583018, -0.89019165995570870, 0.046225019130021069, -0.45323510030857883, 0.029849680009360967, -0.038890145378799472, -0.99891818997465798, -0.025495221712451045, -0.056150004405464367, 0.0000000000000000, 0.0000000000000000, 0.0000000000000000, 1.0000000000000000]
 IMU.InsertKFsWhenLost: 0
-
-# Provisional IMU noise densities (kalibr_imu_chain.yaml).
-IMU.NoiseGyro: 0.005
-IMU.NoiseAcc: 0.02
-IMU.GyroWalk: 0.00002
-IMU.AccWalk: 0.003
-IMU.Frequency: 100.0
-
-# Lighter than the 1600x1200 / 2000-feature pure-stereo config: N100 has 4 cores.
+IMU.NoiseGyro: 0.0050000000000000001
+IMU.NoiseAcc: 0.020000000000000000
+IMU.GyroWalk: 2.0000000000000002e-05
+IMU.AccWalk: 0.0030000000000000001
+IMU.Frequency: 100.00000000000000
+HW290.CameraImuOffset: 0.013040460027972208
 ORBextractor.nFeatures: 600
-ORBextractor.scaleFactor: 1.2
+ORBextractor.scaleFactor: 1.2000000000000000
 ORBextractor.nLevels: 8
 ORBextractor.iniThFAST: 20
 ORBextractor.minThFAST: 7
-
-Viewer.KeyFrameSize: 0.05
-Viewer.KeyFrameLineWidth: 1.0
-Viewer.GraphLineWidth: 0.9
-Viewer.PointSize: 2.0
-Viewer.CameraSize: 0.08
-Viewer.CameraLineWidth: 3.0
-Viewer.ViewpointX: 0.0
-Viewer.ViewpointY: -0.7
-Viewer.ViewpointZ: -1.8
-Viewer.ViewpointF: 500.0
-Viewer.imageViewScale: 1.0
-
-# Keep local inertial mapping; disable loop closure for this VIO profile.
+Viewer.KeyFrameSize: 0.050000000000000003
+Viewer.KeyFrameLineWidth: 1.0000000000000000
+Viewer.GraphLineWidth: 0.90000000000000002
+Viewer.PointSize: 2.0000000000000000
+Viewer.CameraSize: 0.080000000000000002
+Viewer.CameraLineWidth: 3.0000000000000000
+Viewer.ViewpointX: 0.0000000000000000
+Viewer.ViewpointY: -0.69999999999999996
+Viewer.ViewpointZ: -1.8000000000000000
+Viewer.ViewpointF: 500.00000000000000
+Viewer.imageViewScale: 1.0000000000000000
 loopClosing: 0
