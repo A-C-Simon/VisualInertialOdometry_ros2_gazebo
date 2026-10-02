@@ -23,8 +23,8 @@ for line in flags_file.read_text().splitlines():
   key,value=line.split('=',1);flags[key.strip()]=shlex.split(value.strip())
 manifest={'original_library_sha256':hashlib.sha256((root/'lib/libORB_SLAM3.so').read_bytes()).hexdigest(),
           'flags':flags,'sources':{},'compile_commands':[]}
-patch='';export_patch='';objects={}
-for name in ['Optimizer.cc','Settings.cc','System.cc']:
+patch='';export_patch='';tracking_patch='';objects={}
+for name in ['Optimizer.cc','Settings.cc','System.cc','Tracking.cc']:
  source=root/'src'/name;old=source.read_text();new=old
  if name=='Optimizer.cc':
   new=new.replace('#include <complex>','#include <complex>\n#include <cstdlib>')
@@ -58,6 +58,17 @@ for name in ['Optimizer.cc','Settings.cc','System.cc']:
         }
 ''' +marker)
   new=new[:start]+section+new[end:]
+ elif name=='Tracking.cc':
+  marker='''    if(settings){
+        newParameterLoader(settings);
+    }'''
+  assert new.count(marker)==1
+  new=new.replace(marker,'''    if(settings){
+        newParameterLoader(settings);
+        // The legacy loader sets this; the version 1.0 loader omitted it.
+        // Tracking and inertial optimization must use a deterministic window.
+        mnFramesToResetIMU = mMaxFrames;
+    }''')
  else:
   # An atlas emptied by initialization resets has no map with keyframes.
   # Both exporters otherwise dereference an uninitialized map pointer.
@@ -84,12 +95,14 @@ for name in ['Optimizer.cc','Settings.cc','System.cc']:
                            'patched_sha256':hashlib.sha256(new.encode()).hexdigest()}
  source_patch=''.join(difflib.unified_diff(old.splitlines(True),new.splitlines(True),fromfile='a/src/'+name,tofile='b/src/'+name))
  if name=='System.cc':export_patch+=source_patch
+ elif name=='Tracking.cc':tracking_patch+=source_patch
  else:patch+=source_patch
  obj=out/(name+'.o');objects['CMakeFiles/ORB_SLAM3.dir/src/'+name+'.o']=str(obj)
  command=['/usr/bin/c++']+flags['CXX_DEFINES']+flags['CXX_INCLUDES']+flags['CXX_FLAGS']+['-c',str(patched),'-o',str(obj)]
  manifest['compile_commands'].append(command)
 (ROOT/'benchmark/patches/orb_local_ba_window.patch').write_text(patch)
 (ROOT/'benchmark/patches/orb_safe_trajectory_export.patch').write_text(export_patch)
+(ROOT/'benchmark/patches/orb_tracking_reset_window.patch').write_text(tracking_patch)
 link=shlex.split((root/'build/CMakeFiles/ORB_SLAM3.dir/link.txt').read_text())
 link[link.index('-o')+1]=str(out/'libORB_SLAM3.so')
 link=[objects.get(arg,arg) for arg in link];manifest['link_command']=link
