@@ -175,3 +175,25 @@ The full input still covered 190.2 seconds and 5,567 tracked stereo pairs. The
 shorter pose coverage reflects waiting for initialization; it is not frame
 filtering or position smoothing. This replay used 155.18 CPU seconds and
 693.48 MiB peak memory. Evidence: `results/tower_live_replay_20261002/orb_motion_gate_display/`.
+
+
+### Fresh live check and sensor interruption
+
+The motion-gated core and initialized-output wrapper completed both refinements
+with zero active resets during the fresh tower run. The recorded initialized
+path lasted 70.13 seconds, stayed below 79.6 cm, and had a maximum position step
+of 5.7 cm. Two brief RECENTLY_LOST episodes recovered, with maximum pose gap
+168 ms. Actual movement was confirmed within the desk and height limits, with
+no observed flights or resets.
+
+This is an incomplete test: IMU measurements stopped approximately 87 seconds
+after the movement cue, and the sensor watchdog shut down the pipeline. The
+last firmware health record reported zero I2C errors; both USB device nodes
+remained present. No kernel USB event identified the cause. This does not
+establish a wiring or I2C fault, and does not qualify as a two-minute pass.
+The external movement timer initially missed the pipeline shutdown; saved
+metadata has been corrected. Resource totals from this shortened live run
+are not a valid matched efficiency comparison.
+
+Evidence: `results/hw290_orb_20261002_165009_S4g8Gr/analysis.json`.
+Compact replay and live measurements: [tower_initialization_20261002.json](tower_initialization_20261002.json).

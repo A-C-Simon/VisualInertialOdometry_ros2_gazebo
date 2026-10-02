@@ -1,0 +1,190 @@
+{
+  "date": "2026-10-02",
+  "scope": "Sequential real-time headless replay; estimator CPU/RSS only; no independent ground truth",
+  "configuration": {
+    "features": 600,
+    "local_ba_cap": 12,
+    "pending_stereo_depth": 64,
+    "minimum_keyframe_interval_s": 0.25,
+    "motion_gated_initialization": true,
+    "translation_origin_preserved": true
+  },
+  "results": [
+    {
+      "profile": "native600",
+      "label": "orb_motion_gate",
+      "playback_completed": true,
+      "failure": null,
+      "debug_run": false,
+      "player_exit": 0,
+      "resources": {
+        "wall_seconds": 199.8285997359926,
+        "cpu_seconds": 157.007826,
+        "cpu_percent_one_core": 78.57124866382183,
+        "peak_rss_mib": 692.125,
+        "exit_code": 0,
+        "forced_shutdown": false
+      },
+      "active_map_resets": 0,
+      "insufficient_motion_messages": 0,
+      "tracking_lost_transitions": 0,
+      "recently_lost_transitions": 0,
+      "missing_imu_messages": 1,
+      "initialization_progress": [
+        "start VIBA 1",
+        "end VIBA 1",
+        "start VIBA 2",
+        "end VIBA 2"
+      ],
+      "skipped_stereo_warnings": 1,
+      "scope": "Matched recorded input, estimator process CPU/RSS including startup/shutdown; no viewer, no recorder, no independent ground truth",
+      "online_pose_count": 3580,
+      "pose_span_s": 119.23434710502625,
+      "max_displacement_m": 0.8786302486647745,
+      "max_position_step_m": 0.25858923701083103,
+      "max_pose_interval_s": 0.03610420227050781,
+      "finite": true,
+      "processing_ms": {
+        "mean": 13.521314284174599,
+        "p95": 17.03341,
+        "count": 5567
+      },
+      "valid_trial": true,
+      "evidence_directory": "benchmark/results/tower_live_replay_20261002/orb_motion_gate",
+      "trial": "failed_live_raw_bootstrap",
+      "bootstrap_poses_included": true
+    },
+    {
+      "profile": "native600",
+      "label": "orb_motion_gate",
+      "playback_completed": true,
+      "failure": null,
+      "debug_run": false,
+      "player_exit": 0,
+      "resources": {
+        "wall_seconds": 175.8299091539957,
+        "cpu_seconds": 168.76594500000002,
+        "cpu_percent_one_core": 95.98250139126849,
+        "peak_rss_mib": 755.5,
+        "exit_code": 0,
+        "forced_shutdown": false
+      },
+      "active_map_resets": 0,
+      "insufficient_motion_messages": 0,
+      "tracking_lost_transitions": 0,
+      "recently_lost_transitions": 0,
+      "missing_imu_messages": 1,
+      "initialization_progress": [
+        "start VIBA 1",
+        "end VIBA 1",
+        "start VIBA 2",
+        "end VIBA 2"
+      ],
+      "skipped_stereo_warnings": 1,
+      "scope": "Matched recorded input, estimator process CPU/RSS including startup/shutdown; no viewer, no recorder, no independent ground truth",
+      "online_pose_count": 4868,
+      "pose_span_s": 162.13953495025635,
+      "max_displacement_m": 0.8108562647266288,
+      "max_position_step_m": 0.34076818501648093,
+      "max_pose_interval_s": 0.0361940860748291,
+      "finite": true,
+      "processing_ms": {
+        "mean": 16.233110433353872,
+        "p95": 21.283919999999984,
+        "count": 4869
+      },
+      "valid_trial": true,
+      "evidence_directory": "benchmark/results/tower_matched_20261002/orb_motion_gate",
+      "trial": "earlier_openvins_raw_bootstrap",
+      "bootstrap_poses_included": true
+    },
+    {
+      "profile": "native600",
+      "label": "orb_motion_gate_display",
+      "playback_completed": true,
+      "failure": null,
+      "debug_run": false,
+      "player_exit": 0,
+      "resources": {
+        "wall_seconds": 199.58194186000037,
+        "cpu_seconds": 155.181614,
+        "cpu_percent_one_core": 77.75333407110267,
+        "peak_rss_mib": 693.48046875,
+        "exit_code": 0,
+        "forced_shutdown": false
+      },
+      "active_map_resets": 0,
+      "insufficient_motion_messages": 0,
+      "tracking_lost_transitions": 0,
+      "recently_lost_transitions": 0,
+      "missing_imu_messages": 1,
+      "initialization_progress": [
+        "start VIBA 1",
+        "end VIBA 1",
+        "start VIBA 2",
+        "end VIBA 2"
+      ],
+      "skipped_stereo_warnings": 1,
+      "scope": "Matched recorded input, estimator process CPU/RSS including startup/shutdown; no viewer, no recorder, no independent ground truth",
+      "online_pose_count": 3241,
+      "pose_span_s": 107.94211626052856,
+      "max_displacement_m": 0.686441344462533,
+      "max_position_step_m": 0.052512471629989815,
+      "max_pose_interval_s": 0.03610420227050781,
+      "finite": true,
+      "processing_ms": {
+        "mean": 13.440385938566553,
+        "p95": 17.07331,
+        "count": 5567
+      },
+      "valid_trial": true,
+      "evidence_directory": "benchmark/results/tower_live_replay_20261002/orb_motion_gate_display",
+      "trial": "failed_live_initialized_only",
+      "bootstrap_poses_included": false
+    }
+  ],
+  "live_test": {
+    "run": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/hw290_orb_20261002_165009_S4g8Gr",
+    "bootstrap_poses_included": false,
+    "pose_count": 2100,
+    "pose_span_s": 70.12542796134949,
+    "first_pose_s_after_cue": 17.220650672912598,
+    "max_displacement_m": 0.7954134372014023,
+    "max_step_m": 0.05697970745143343,
+    "max_pose_gap_s": 0.16801214218139648,
+    "active_map_resets": 0,
+    "motion_reset_events": 0,
+    "lost_transitions": 0,
+    "recently_lost_transitions": 2,
+    "refinement_stages": [
+      "start VIBA 1",
+      "end VIBA 1",
+      "start VIBA 2",
+      "end VIBA 2"
+    ],
+    "inertial_output_transitions": [
+      "Inertial output: map=0 initialized=false timestamp=1790949077.409226179",
+      "Inertial output: map=0 initialized=true timestamp=1790949087.073428154"
+    ],
+    "finite": true,
+    "estimator_including_ros_launch_resources": {
+      "wall_seconds": 150.4817657599924,
+      "cpu_seconds": 119.001737,
+      "cpu_percent_one_core": 79.08050280975519,
+      "peak_rss_mib": 710.5625,
+      "exit_code": 0,
+      "forced_shutdown": false
+    },
+    "timing_ms": {
+      "frames": 3838,
+      "mean": 14.603530966649297,
+      "p95": 21.35438999999997
+    },
+    "scope": "Physical desk bounds only, no independent ground truth; live includes sensor drivers, recording and RViz elsewhere in run summary",
+    "complete_two_minute_test": false,
+    "sensor_failure": "IMU serial measurement stream stopped before requested movement interval ended",
+    "imu_exit_code": 1,
+    "physical_bounds_confirmed": true,
+    "operator_observation": "Stayed within limits; no flights or resets"
+  }
+}
