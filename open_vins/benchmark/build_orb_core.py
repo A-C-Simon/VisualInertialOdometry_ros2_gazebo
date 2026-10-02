@@ -14,7 +14,12 @@ import subprocess
 ROOT=Path(__file__).resolve().parents[1]
 p=argparse.ArgumentParser();p.add_argument('--orb-root',type=Path,default=Path('/home/ac/ORB_SLAM3'))
 p.add_argument('--output',type=Path,default=ROOT/'benchmark/build_orb_core')
-p.add_argument('--prepare-only',action='store_true');a=p.parse_args()
+p.add_argument('--prepare-only',action='store_true')
+p.add_argument('--temporal-init-motion',action='store_true',
+               help='Experimental one-second motion window; requires a separate --output directory')
+a=p.parse_args()
+if a.temporal_init_motion and a.output.resolve() == (ROOT/'benchmark/build_orb_core').resolve():
+ p.error('--temporal-init-motion requires a separate --output directory')
 root=a.orb_root.resolve();out=a.output.resolve();out.mkdir(parents=True,exist_ok=True)
 flags_file=root/'build/CMakeFiles/ORB_SLAM3.dir/flags.make'
 flags={}
@@ -22,8 +27,9 @@ for line in flags_file.read_text().splitlines():
  if line.startswith('CXX_'):
   key,value=line.split('=',1);flags[key.strip()]=shlex.split(value.strip())
 manifest={'original_library_sha256':hashlib.sha256((root/'lib/libORB_SLAM3.so').read_bytes()).hexdigest(),
-          'flags':flags,'sources':{},'compile_commands':[]}
-patch='';export_patch='';tracking_patch='';motion_patch='';objects={}
+          'flags':flags,'sources':{},'compile_commands':[],
+          'temporal_init_motion':a.temporal_init_motion}
+patch='';export_patch='';tracking_patch='';motion_patch='';temporal_patch='';objects={}
 for name in ['Optimizer.cc','Settings.cc','System.cc','Tracking.cc','LocalMapping.cc']:
  source=root/'src'/name;old=source.read_text();new=old
  if name=='Optimizer.cc':
@@ -79,6 +85,29 @@ for name in ['Optimizer.cc','Settings.cc','System.cc','Tracking.cc','LocalMappin
                                      << " refinement1=" << mpCurrentKeyFrame->GetMap()->GetIniertialBA1()
                                      << " refinement2=" << mpCurrentKeyFrame->GetMap()->GetIniertialBA2()
                                      << endl;''')
+  diagnostics_only=new
+  if a.temporal_init_motion:
+   marker='                        if(dist>0.05)'
+   assert new.count(marker)==1
+   new=new.replace(marker,'''                        // Prototype: compare motion over about one second of
+                        // temporal keyframes, independent of insertion frequency.
+                        KeyFrame* middle = mpCurrentKeyFrame->mPrevKF;
+                        while (middle->mPrevKF && mpCurrentKeyFrame->mTimeStamp-middle->mTimeStamp < 0.5)
+                            middle = middle->mPrevKF;
+                        KeyFrame* oldest = middle->mPrevKF;
+                        if (oldest) {
+                            while (oldest->mPrevKF && middle->mTimeStamp-oldest->mTimeStamp < 0.5)
+                                oldest = oldest->mPrevKF;
+                            if (mpCurrentKeyFrame->mTimeStamp-oldest->mTimeStamp >= 0.9)
+                                dist = (middle->GetCameraCenter()-mpCurrentKeyFrame->GetCameraCenter()).norm()
+                                     + (oldest->GetCameraCenter()-middle->GetCameraCenter()).norm();
+                        }
+'''+marker)
+   marker='                                     << " keyframes="'
+   assert new.count(marker)==1
+   new=new.replace(marker,'                                     << " adjacent_interval_s=" << mpCurrentKeyFrame->mTimeStamp-mpCurrentKeyFrame->mPrevKF->mPrevKF->mTimeStamp\n'+marker)
+   temporal_patch=''.join(difflib.unified_diff(diagnostics_only.splitlines(True),new.splitlines(True),
+                          fromfile='a/src/LocalMapping.cc',tofile='b/src/LocalMapping.cc'))
  else:
   # An atlas emptied by initialization resets has no map with keyframes.
   # Both exporters otherwise dereference an uninitialized map pointer.
@@ -106,7 +135,8 @@ for name in ['Optimizer.cc','Settings.cc','System.cc','Tracking.cc','LocalMappin
  source_patch=''.join(difflib.unified_diff(old.splitlines(True),new.splitlines(True),fromfile='a/src/'+name,tofile='b/src/'+name))
  if name=='System.cc':export_patch+=source_patch
  elif name=='Tracking.cc':tracking_patch+=source_patch
- elif name=='LocalMapping.cc':motion_patch+=source_patch
+ elif name=='LocalMapping.cc':
+  motion_patch+=''.join(difflib.unified_diff(old.splitlines(True),diagnostics_only.splitlines(True),fromfile='a/src/'+name,tofile='b/src/'+name))
  else:patch+=source_patch
  obj=out/(name+'.o');objects['CMakeFiles/ORB_SLAM3.dir/src/'+name+'.o']=str(obj)
  command=['/usr/bin/c++']+flags['CXX_DEFINES']+flags['CXX_INCLUDES']+flags['CXX_FLAGS']+['-c',str(patched),'-o',str(obj)]
@@ -115,6 +145,8 @@ for name in ['Optimizer.cc','Settings.cc','System.cc','Tracking.cc','LocalMappin
 (ROOT/'benchmark/patches/orb_safe_trajectory_export.patch').write_text(export_patch)
 (ROOT/'benchmark/patches/orb_tracking_reset_window.patch').write_text(tracking_patch)
 (ROOT/'benchmark/patches/orb_initialization_diagnostics.patch').write_text(motion_patch)
+if a.temporal_init_motion:
+ (ROOT/'benchmark/patches/orb_temporal_init_motion.patch').write_text(temporal_patch)
 link=shlex.split((root/'build/CMakeFiles/ORB_SLAM3.dir/link.txt').read_text())
 link[link.index('-o')+1]=str(out/'libORB_SLAM3.so')
 link=[objects.get(arg,arg) for arg in link];manifest['link_command']=link
