@@ -1,8 +1,9 @@
 # Tower calibration candidate, October 2
 
-This fitted profile is **inactive**. It has not passed held-out replay or a
-fresh physical movement test. The current mount manifest still rejects live
-VIO. Do not treat small fitting residuals as trajectory validation.
+This fitted profile **failed its first physical validation**. It passed the recorded
+OpenVINS consistency check below. Normal live VIO remains blocked; explicit
+`--calibration-test` accepts the matching fingerprints for a validation run.
+Do not treat small fitting residuals as trajectory validation.
 
 Source: `benchmark/results/screen_calibration_20261002_140205_724/`.
 The restarted recording includes 95 seconds, 2,856 raw frames per camera and
@@ -40,3 +41,33 @@ retains the previous estimator settings with local calibration paths.
 After reviewing replay and geometry, use the explicit mount validation mode
 described in [the tower procedure](../README.md). Normal live operation stays
 blocked until a matching profile is validated.
+
+## Recorded OpenVINS check
+
+The complete 95-second capture replayed at half speed without flight or reset.
+OpenVINS saved 2,681 poses over 89.28 seconds, maximum displacement 0.27522 m
+and maximum consecutive position change 0.02683 m. After a rigid alignment
+without fitting scale on the first 60 seconds, the 68 target-reference samples
+beyond 60 seconds differed by 0.02007 m RMS and at most 0.10747 m. The target
+reference shares camera data and calibration; it is not independent ground
+truth. The CAD mismatch and fresh physical movement check remain outstanding.
+
+To run this candidate explicitly from `open_vins`:
+
+```bash
+HW290_VIO_CONFIG="$PWD/hw290_stereo/calibration/20261002_tower/candidate/estimator_config.yaml" \
+HW290_STEREO_CALIBRATION="$PWD/hw290_stereo/calibration/20261002_tower/candidate/stereo_opencv.yaml" \
+./hw290_stereo/run_hw290_openvins.sh --calibration-test --diagnostics
+```
+
+## First physical check failed
+
+The October 2 live run `hw290_openvins_20261002_144009_LinLH5` reached
+15.856 m despite confirmed movement within the desk limits. The estimator
+exited after negative covariance entries. Its IMU subscription reported gaps
+up to 680.785 ms, while the recorded source contained 6,429 samples at 99.019 Hz
+with a maximum interval of 21.523 ms and no intervals above 25 ms. This exposes
+a delivery failure before the flight; it does not validate the calibration.
+An ORB replay was running in another ROS domain, so this is not an isolated
+compute measurement. Correct delivery and replay this failure recording before
+repeating live validation. Normal activation remains blocked.

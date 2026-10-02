@@ -1,8 +1,8 @@
 %YAML:1.0
-# Set approved fingerprints only after spatial/time fitting and movement validation.
+---
 mount_id: "20261002_rigid_tower"
-status: "requires_calibration"
+status: "fitted_pending_validation"
 geometry: "20261002_tower/geometry.yaml"
-validated_chain_sha256: ""
-validated_stereo_sha256: ""
-reason: "Camera/IMU position changed and rotation is unverified. October 1 extrinsics are for the previous mount."
+validated_chain_sha256: "5e573ea1e1a4f7056091620122e95100babe027e0b27d6b3b3ac1084406ed7c3"
+validated_stereo_sha256: "a2d499d85a4beb8c39d9f2811377e711bd14d1d9d9fc5b774f1a7d6c84f28f69"
+reason: "Tower candidate passed calibration replay but failed live at 15.9 m with estimator IMU gaps up to 681 ms. Delivery fix and fresh physical validation required. Explicit --calibration-test only."

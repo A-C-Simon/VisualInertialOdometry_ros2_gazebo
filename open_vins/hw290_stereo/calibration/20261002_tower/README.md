@@ -48,7 +48,8 @@ baseline with the CAD value. Inspect IMU continuity and held-out motion, then
 repeat a fresh continuous movement test before activation.
 
 [current_mount.yaml](../current_mount.yaml) currently says
-`requires_calibration`. Both hardware launchers reject live VIO until that
+`fitted_pending_validation` for the [new candidate](candidate/README.md).
+Both hardware launchers reject normal live VIO until that
 file is marked `validated` with SHA256 fingerprints of the selected camera/IMU
 chain and stereo calibration. The C++ checker verifies those files at startup.
 After inspecting a fresh fit, set `fitted_pending_validation` and its matching

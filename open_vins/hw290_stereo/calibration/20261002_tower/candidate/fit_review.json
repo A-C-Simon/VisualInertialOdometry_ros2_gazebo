@@ -1,5 +1,5 @@
 {
-  "status": "fitted_pending_review",
+  "status": "fitted_pending_validation",
   "source_capture": "benchmark/results/screen_calibration_20261002_140205_724",
   "target_edge_m": 0.04,
   "target_gap_m": 0.012,
@@ -42,5 +42,108 @@
     "estimator_config.yaml": "ed899a43224eae60e745aff4e17abffef2aa66900d8e97cca1d02d0e0994124c",
     "stereo_opencv.yaml": "a2d499d85a4beb8c39d9f2811377e711bd14d1d9d9fc5b774f1a7d6c84f28f69"
   },
-  "activation": "inactive; geometry review, held-out replay and physical validation outstanding"
+  "activation": "normal live operation blocked; physical test failed, IMU delivery and CAD mismatch remain unresolved",
+  "target_ruler_confirmation": "Explicit ruler confirmation: 40 mm black tag edge, October 2",
+  "openvins_replay": {
+    "profile": "openvins",
+    "label": "candidate_stationary",
+    "playback_completed": true,
+    "failure": null,
+    "debug_run": false,
+    "player_exit": 0,
+    "resources": {
+      "command": [
+        "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/install_vio/ov_msckf/lib/ov_msckf/run_subscribe_msckf",
+        "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/screen_calibration_20261002_140205_724/replay_validation/candidate_stationary/estimator_config.yaml",
+        "--ros-args",
+        "-r",
+        "__ns:=/ov_msckf",
+        "-p",
+        "use_sim_time:=false",
+        "-p",
+        "save_total_state:=true",
+        "-p",
+        "filepath_est:=/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/screen_calibration_20261002_140205_724/replay_validation/candidate_stationary/state_estimate.txt",
+        "-p",
+        "filepath_std:=/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/screen_calibration_20261002_140205_724/replay_validation/candidate_stationary/state_std.txt",
+        "-p",
+        "filepath_gt:=/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/screen_calibration_20261002_140205_724/replay_validation/candidate_stationary/state_gt.txt"
+      ],
+      "wall_seconds": 199.8050926069991,
+      "cpu_seconds": 69.130357,
+      "cpu_percent_one_core": 34.59889640349357,
+      "peak_rss_mib": 125.30859375,
+      "exit_code": 0,
+      "forced_shutdown": false
+    },
+    "active_map_resets": 0,
+    "insufficient_motion_messages": 0,
+    "tracking_lost_transitions": 0,
+    "recently_lost_transitions": 0,
+    "missing_imu_messages": 0,
+    "initialization_progress": [],
+    "skipped_stereo_warnings": 0,
+    "scope": "Matched recorded input, estimator process CPU/RSS including startup/shutdown; no viewer, no recorder, no independent ground truth",
+    "online_pose_count": 2681,
+    "pose_span_s": 89.28317999839783,
+    "max_displacement_m": 0.2752193666732049,
+    "max_position_step_m": 0.02682866120401836,
+    "max_pose_interval_s": 0.03620004653930664,
+    "finite": true,
+    "valid_trial": true
+  },
+  "target_reference_comparison": {
+    "reference": "Per-frame AprilGrid PnP with shared camera observations, stereo intrinsics and fitted IMU lever arm; not independent ground truth",
+    "alignment": "Rigid rotation and translation fitted on first 60 seconds; no fitted scale",
+    "reference_timestamp": "camera time plus fitted cam0 offset, matching saved OpenVINS IMU time",
+    "samples": 174,
+    "alignment_samples": 106,
+    "held_out_samples": 68,
+    "held_out_span_s": 34.34548997879028,
+    "overall_rmse_m": 0.01788091415751104,
+    "held_out_rmse_m": 0.0200729495497408,
+    "held_out_max_error_m": 0.1074714271695017,
+    "alignment_singular_values": [
+      1.2377638598407683,
+      0.6747039996420823,
+      0.4054488125357529
+    ]
+  },
+  "physical_validation": {
+    "status": "failed",
+    "confirmed_workspace_limits": true,
+    "run": "benchmark/results/hw290_openvins_20261002_144009_LinLH5",
+    "max_displacement_m": 15.856307777270974,
+    "pose_span_s": 29.880630016326904,
+    "estimator_imu_gap_max_ms": 680.785,
+    "source_imu_continuity": {
+      "recorded_imu_count": 6429,
+      "imu_span_s": 64.91671824455261,
+      "imu_hz": 99.0191767825447,
+      "max_dt_ms": 21.523475646972656,
+      "gaps_over_25ms": 0,
+      "gaps_over_50ms": 0,
+      "nonpositive_dt": 0,
+      "gyro_max_abs_rad_s": [
+        2.7409118832386565,
+        2.7946552534982376,
+        2.930876073166088
+      ],
+      "acc_max_abs_m_s2": [
+        11.501744775390625,
+        9.938331091308592,
+        9.883264453125
+      ]
+    },
+    "parallel_work": "ORB replay on isolated ROS domain, not an isolated compute benchmark",
+    "next_check": "estimator IMU queue delivery fix, replay failed recording before another live run"
+  },
+  "failed_recording_headless_baseline_replay": {
+    "max_displacement_m": 0.5005339685206189,
+    "received_imu_count": 6239,
+    "gaps_over_50ms": 17,
+    "max_received_dt_ms": 250.033,
+    "source_imu_count": 6429,
+    "scope": "real-time headless replay, original five-message queue; no fresh physical validation"
+  }
 }
