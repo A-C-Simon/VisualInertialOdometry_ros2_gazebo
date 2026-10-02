@@ -312,12 +312,15 @@ versus 16.27 ms with an additional identity rectification on the same input.
 The trials followed different reset histories, so this pair does not isolate
 the remap cost or establish equal trajectory quality.
 
-A separate temporal motion-window prototype completed both inertial refinements,
-with 10 resets and 0.62 m maximum displacement. It measures motion across roughly
-one second instead of only adjacent keyframes. It is under evaluation and is
-not enabled in the hardware launcher. An overlapping diagnostic build makes
-its CPU result unsuitable for performance ranking. The official EuRoC archive
-is currently rate limited and the previous local cache is unavailable.
+A temporal motion-window prototype stayed bounded and completed refinement in
+three replays, but its fresh live test reached 10.31 m and jumped 9.93 m as
+VIBA 2 finished. Actual motion remained inside the desk limits. The option and
+patch were reverted, and generated experimental libraries were disabled.
+Completing refinement alone does not establish valid VIO. The normal hardware
+launcher retains the upstream reset condition; ORB initialization and delayed
+flights remain unresolved. The official EuRoC archive is currently rate limited
+and the previous local cache is unavailable.
+
 
 ## Provenance
 
