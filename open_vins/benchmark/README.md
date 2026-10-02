@@ -197,3 +197,24 @@ are not a valid matched efficiency comparison.
 
 Evidence: `results/hw290_orb_20261002_165009_S4g8Gr/analysis.json`.
 Compact replay and live measurements: [tower_initialization_20261002.json](tower_initialization_20261002.json).
+
+
+The repeat also completed both refinements without resets. It saved 69.70
+seconds of initialized poses, maximum displacement 86.6 cm, maximum step
+14.0 cm, and maximum pose interval 64 ms. It is also incomplete: the kernel
+reported the Nano CH340 USB disconnect at 17:00:26 and re-enumeration at
+17:00:28. The serial driver stopped on a disconnect/device error. This confirms
+a USB transport interruption for the repeat; its precise physical or electrical
+cause remains unverified. The movement monitor detected the failure immediately.
+Evidence: `results/hw290_orb_20261002_165802_x5vMbS/`.
+
+The tested experimental library is saved persistently in
+`benchmark/build_orb_motion_gate/`. Its SHA and all five prepared source files
+were checked against the compiled prototype. It remains separate from the
+default core; repeat physical validation after securing the USB connection.
+To select it from the OpenVINS directory:
+
+```bash
+ORB_CORE_DIR="$PWD/benchmark/build_orb_motion_gate" \
+  ../ORB_SLAM/orbslam3_hw290_vio.sh --efficient --rviz
+```

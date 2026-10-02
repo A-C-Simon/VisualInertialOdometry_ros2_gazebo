@@ -186,5 +186,48 @@
     "imu_exit_code": 1,
     "physical_bounds_confirmed": true,
     "operator_observation": "Stayed within limits; no flights or resets"
+  },
+  "live_repeat": {
+    "run": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/hw290_orb_20261002_165802_x5vMbS",
+    "bootstrap_poses_included": false,
+    "pose_count": 2092,
+    "pose_span_s": 69.69639587402344,
+    "first_pose_s_after_cue": 20.950979471206665,
+    "max_displacement_m": 0.8661113385626202,
+    "max_step_m": 0.13991726406014757,
+    "max_pose_gap_s": 0.06400012969970703,
+    "active_map_resets": 0,
+    "motion_reset_events": 0,
+    "lost_transitions": 0,
+    "recently_lost_transitions": 0,
+    "refinement_stages": [
+      "start VIBA 1",
+      "end VIBA 1",
+      "start VIBA 2",
+      "end VIBA 2"
+    ],
+    "inertial_output_transitions": [
+      "Inertial output: map=0 initialized=false timestamp=1790949534.645253420",
+      "Inertial output: map=0 initialized=true timestamp=1790949556.298653364"
+    ],
+    "finite": true,
+    "estimator_including_ros_launch_resources": {
+      "wall_seconds": 132.2240717370005,
+      "cpu_seconds": 124.45161200000001,
+      "cpu_percent_one_core": 94.12175133098287,
+      "peak_rss_mib": 666.91796875,
+      "exit_code": 0,
+      "forced_shutdown": false
+    },
+    "timing_ms": {
+      "frames": 3746,
+      "mean": 15.96848241857982,
+      "p95": 24.761
+    },
+    "scope": "Physical desk bounds only, no independent ground truth; live includes sensor drivers, recording and RViz elsewhere in run summary",
+    "complete_two_minute_test": false,
+    "sensor_failure": "Nano CH340 USB disconnected at 17:00:26, re-enumerated at 17:00:28",
+    "imu_exit_code": 1,
+    "physical_bounds_confirmed": null
   }
 }
