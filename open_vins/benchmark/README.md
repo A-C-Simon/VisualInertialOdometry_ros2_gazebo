@@ -218,3 +218,21 @@ To select it from the OpenVINS directory:
 ORB_CORE_DIR="$PWD/benchmark/build_orb_motion_gate" \
   ../ORB_SLAM/orbslam3_hw290_vio.sh --efficient --rviz
 ```
+
+
+## Local BA cap cost check after initialization fixes
+
+Sequential real-time headless replays of the final OpenVINS tower recording
+held the motion-gated core, 600 features, queue 64 and initialized-only output
+constant. Only the local inertial BA cap changed.
+
+| Local BA cap | CPU seconds | Peak MiB | TrackStereo mean ms | Max position step |
+| --- | ---: | ---: | ---: | ---: |
+| 12 | 166.13 | 755.74 | 15.66 | 2.78 cm |
+| 6 | 165.58 | 770.58 | 16.88 | 3.00 cm |
+
+Both tracked 4,869 pairs, completed both refinements, and had zero resets or
+tracking losses. The CPU reduction was only 0.33%, with higher peak memory in
+the smaller-window run. One trial each cannot resolve such a small difference,
+so the cap remains 12. Neither recording has independent ground truth; this
+is a cost and continuity check. See [the measurements](tower_ba_cost_20261002.json).

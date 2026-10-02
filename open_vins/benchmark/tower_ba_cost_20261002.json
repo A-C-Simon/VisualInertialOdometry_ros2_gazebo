@@ -1,0 +1,95 @@
+{
+  "scope": "Sequential real-time headless trials, same input and core, 600 features and depth 64; initialized poses only; no independent ground truth",
+  "trials": [
+    {
+      "profile": "native600",
+      "label": "orb_motion_gate_ba12_initialized",
+      "playback_completed": true,
+      "failure": null,
+      "debug_run": false,
+      "player_exit": 0,
+      "resources": {
+        "wall_seconds": 175.55461086799914,
+        "cpu_seconds": 166.128158,
+        "cpu_percent_one_core": 94.63047263675293,
+        "peak_rss_mib": 755.73828125,
+        "exit_code": 0,
+        "forced_shutdown": false
+      },
+      "active_map_resets": 0,
+      "insufficient_motion_messages": 0,
+      "tracking_lost_transitions": 0,
+      "recently_lost_transitions": 0,
+      "missing_imu_messages": 1,
+      "initialization_progress": [
+        "start VIBA 1",
+        "end VIBA 1",
+        "start VIBA 2",
+        "end VIBA 2"
+      ],
+      "skipped_stereo_warnings": 1,
+      "scope": "Matched recorded input, estimator process CPU/RSS including startup/shutdown; no viewer, no recorder, no independent ground truth",
+      "online_pose_count": 3688,
+      "pose_span_s": 122.830726146698,
+      "max_displacement_m": 0.5882484288670289,
+      "max_position_step_m": 0.027753570256564483,
+      "max_pose_interval_s": 0.03617382049560547,
+      "finite": true,
+      "processing_ms": {
+        "mean": 15.66492797288971,
+        "p95": 18.80606,
+        "count": 4869
+      },
+      "valid_trial": true,
+      "local_ba_cap": 12,
+      "bootstrap_poses_included": false,
+      "evidence_directory": "benchmark/results/tower_matched_20261002/orb_motion_gate_ba12_initialized"
+    },
+    {
+      "profile": "native600",
+      "label": "orb_motion_gate_ba6_initialized",
+      "playback_completed": true,
+      "failure": null,
+      "debug_run": false,
+      "player_exit": 0,
+      "resources": {
+        "wall_seconds": 176.8305030210031,
+        "cpu_seconds": 165.57561099999998,
+        "cpu_percent_one_core": 93.63520895506004,
+        "peak_rss_mib": 770.58203125,
+        "exit_code": 0,
+        "forced_shutdown": false
+      },
+      "active_map_resets": 0,
+      "insufficient_motion_messages": 0,
+      "tracking_lost_transitions": 0,
+      "recently_lost_transitions": 0,
+      "missing_imu_messages": 1,
+      "initialization_progress": [
+        "start VIBA 1",
+        "end VIBA 1",
+        "start VIBA 2",
+        "end VIBA 2"
+      ],
+      "skipped_stereo_warnings": 1,
+      "scope": "Matched recorded input, estimator process CPU/RSS including startup/shutdown; no viewer, no recorder, no independent ground truth",
+      "online_pose_count": 3687,
+      "pose_span_s": 122.79473304748535,
+      "max_displacement_m": 0.5805140899501875,
+      "max_position_step_m": 0.029955935359822033,
+      "max_pose_interval_s": 0.03617382049560547,
+      "finite": true,
+      "processing_ms": {
+        "mean": 16.881993797494353,
+        "p95": 26.17916,
+        "count": 4869
+      },
+      "valid_trial": true,
+      "local_ba_cap": 6,
+      "bootstrap_poses_included": false,
+      "evidence_directory": "benchmark/results/tower_matched_20261002/orb_motion_gate_ba6_initialized"
+    }
+  ],
+  "cpu_reduction_percent": 0.3326028571267403,
+  "decision": "Retain 12; one pair shows negligible CPU change and higher peak RSS at six. Do not claim preserved ground-truth accuracy."
+}
