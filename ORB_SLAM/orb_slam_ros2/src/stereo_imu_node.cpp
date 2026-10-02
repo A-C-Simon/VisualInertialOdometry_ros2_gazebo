@@ -3,7 +3,7 @@
 //
 // Subscribes to rectified /cam0, /cam1 (rgb8/mono8, e.g. from ov_hw290
 // stereo_splitter at 640x480) and /imu0 (HW-290 MPU6050 at 100 Hz via
-// hw290_imu.py). Runs ORB-SLAM3 System::IMU_STEREO and publishes the same
+// hw290_imu). Runs ORB-SLAM3 System::IMU_STEREO and publishes the same
 // pose/path/points/tracking-image/state topics as stereo_node.cpp.
 //
 // Sensor timestamps: camera_imu_offset shifts camera capture time into the
@@ -556,8 +556,12 @@ private:
     }
     shutdown_ = true;
     if (online_trajectory_.is_open()) online_trajectory_.close();
-    RCLCPP_INFO(get_logger(), "IMU input: received=%zu gaps_over_50ms=%zu max_gap_ms=%.3f",
-      imu_count_.load(), imu_gap_count_, max_imu_gap_s_ * 1000.);
+    {
+      // The IMU callback runs in a separate executor group.
+      std::lock_guard<std::mutex> lock(imu_mutex_);
+      RCLCPP_INFO(get_logger(), "IMU input: received=%zu gaps_over_50ms=%zu max_gap_ms=%.3f",
+        imu_count_.load(), imu_gap_count_, max_imu_gap_s_ * 1000.);
+    }
     RCLCPP_INFO(get_logger(), "Shutting down ORB-SLAM3...");
     if (!slam_->isShutDown()) {
       slam_->Shutdown();
