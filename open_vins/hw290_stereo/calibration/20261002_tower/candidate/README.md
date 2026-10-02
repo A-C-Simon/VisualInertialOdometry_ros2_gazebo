@@ -71,3 +71,19 @@ a delivery failure before the flight; it does not validate the calibration.
 An ORB replay was running in another ROS domain, so this is not an isolated
 compute measurement. Correct delivery and replay this failure recording before
 repeating live validation. Normal activation remains blocked.
+
+## Repeat with complete IMU delivery
+
+The two-minute repeat `hw290_openvins_20261002_145045_4UIsx8` received 20,503
+IMU samples without intervals above 50 ms, maximum 21.870 ms, and without
+negative covariance entries. Confirmed desk motion nevertheless produced one
+sharp 1.378 m step at 74.599 seconds after the cue, reaching 2.197 m maximum
+displacement. The remainder followed the motion without another large jump.
+
+Recorded stereo header intervals around that event stayed below 36.065 ms.
+OpenVINS camera updates instead skipped from 1790942016.308 to
+1790942018.308 seconds after a 1.429-second processing stall. Its update worker
+held the camera queue lock across tracking and visualization, blocking image
+callbacks. A change to pop a ready frame under the lock and process it after
+releasing the lock is being checked on the saved motion segment. This repeat
+still fails the desk bound; normal activation remains blocked.

@@ -42,7 +42,7 @@
     "estimator_config.yaml": "ed899a43224eae60e745aff4e17abffef2aa66900d8e97cca1d02d0e0994124c",
     "stereo_opencv.yaml": "a2d499d85a4beb8c39d9f2811377e711bd14d1d9d9fc5b774f1a7d6c84f28f69"
   },
-  "activation": "normal live operation blocked; physical test failed, IMU delivery and CAD mismatch remain unresolved",
+  "activation": "normal operation blocked: single live jump persists with clean IMU and source images; camera callback queue lock fix under validation",
   "target_ruler_confirmation": "Explicit ruler confirmation: 40 mm black tag edge, October 2",
   "openvins_replay": {
     "profile": "openvins",
@@ -156,5 +156,26 @@
     "max_displacement_m": 0.4946765694592781,
     "pose_span_s": 43.040899991989136,
     "scope": "real-time headless replay, initialization times differ from baseline; physical repeat outstanding"
+  },
+  "physical_repeat_queue1000": {
+    "run": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/hw290_openvins_20261002_145045_4UIsx8",
+    "max_displacement_m": 2.1972182195687804,
+    "maximum_position_step_m": 1.3777042247245959,
+    "maximum_step_from_cue_s": 74.59888887405396,
+    "pose_span_s": 120.33065009117126,
+    "pose_count": 3460,
+    "movement_span_s": 120.58532190322876,
+    "first_1m_from_cue_s": 74.59888887405396,
+    "first_workspace_diagonal_crossing_s": 75.09882879257202,
+    "imu_received": 20503,
+    "imu_gaps_over_50ms": 0,
+    "max_received_imu_interval_ms": 21.87,
+    "negative_covariance_messages": 0,
+    "visual_update_frames": 3460,
+    "frames_with_retained_features": 3402,
+    "activation": "physical bounds not passed; source/estimator delivery fixed, remaining trajectory error under investigation",
+    "confirmed_workspace_limits": true,
+    "camera_source_max_header_interval_near_jump_s": 0.036064863204956055,
+    "observed_estimator_camera_update_gap_s": 2.000108003616333
   }
 }
