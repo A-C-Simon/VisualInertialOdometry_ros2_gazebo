@@ -166,7 +166,9 @@ private:
     declare_parameter<std::string>("left_topic", "/cam0/image_raw");
     declare_parameter<std::string>("right_topic", "/cam1/image_raw");
     declare_parameter<std::string>("imu_topic", "/imu0");
-    declare_parameter<int>("sync_queue_size", 10);
+    // Cover the measured 1.74 s IMU receipt delay at 30 stereo pairs/s.
+    // A bounded 64-pair queue retains images until their IMU boundary arrives.
+    declare_parameter<int>("sync_queue_size", 64);
     declare_parameter<double>("max_sync_interval", 0.02);
     declare_parameter<bool>("use_viewer", false);
     declare_parameter<bool>("reliable_images", false);
@@ -605,7 +607,7 @@ private:
   std::string left_topic_;
   std::string right_topic_;
   std::string imu_topic_;
-  int sync_queue_size_{10};
+  int sync_queue_size_{64};
   double max_sync_interval_{0.02};
   int opencv_threads_{1};
   double visualization_hz_{5.0};
