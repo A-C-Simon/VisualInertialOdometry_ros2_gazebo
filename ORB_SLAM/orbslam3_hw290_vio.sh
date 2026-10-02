@@ -15,19 +15,22 @@ SHOW_RVIZ=false
 USE_VIEWER=false
 EFFICIENT=false
 DIAGNOSTICS=false
+CALIBRATION_TEST=false
 for arg in "$@"; do
   case "$arg" in
     --sensors-only) SENSORS_ONLY=true ;;
     --efficient) EFFICIENT=true ;;
     --diagnostics) DIAGNOSTICS=true ;;
+    --calibration-test) CALIBRATION_TEST=true ;;
     --rviz) SHOW_RVIZ=true ;;
     --viewer) USE_VIEWER=true ;;
     --no-rviz) SHOW_RVIZ=false ;;
     --no-viewer) USE_VIEWER=false ;;
     --help|-h)
-      echo "Usage: $0 [--sensors-only] [--efficient] [--diagnostics] [--rviz] [--viewer] [--no-rviz] [--no-viewer]"
+      echo "Usage: $0 [--sensors-only] [--efficient] [--diagnostics] [--rviz] [--viewer] [--no-rviz] [--no-viewer] [--calibration-test]"
       echo "  --efficient    use 600 features and capped local BA (validated on EuRoC)"
       echo "  --diagnostics  save sensor/pose bag and raw IMU log"
+      echo "  --calibration-test  validate a fitted profile for the current mount"
       echo "  --sensors-only  publish camera+IMU only, skip ORB-SLAM3"
       echo "  --no-rviz       skip RViz2 (default; --viewer enables Pangolin)"
       echo "  --no-viewer     disable Pangolin viewer (headless benchmark)"
@@ -45,7 +48,9 @@ CALIBRATION_EXPORTER="${VIO_ROOT}/install_vio/ov_hw290/lib/ov_hw290/export_orb_c
 MOUNT_METADATA="${HW290_DIR}/calibration/current_mount.yaml"
 MOUNT_CHECK="${VIO_ROOT}/install_vio/ov_hw290/lib/ov_hw290/check_mount_calibration"
 MOUNT_VALID=false
-if [[ -x "$MOUNT_CHECK" ]] && "$MOUNT_CHECK" "$MOUNT_METADATA" "$ESTIMATOR_CONFIG" "$CALIBRATION"; then
+MOUNT_ARGS=()
+[[ "$CALIBRATION_TEST" == false ]] || MOUNT_ARGS=(--candidate)
+if [[ -x "$MOUNT_CHECK" ]] && "$MOUNT_CHECK" "$MOUNT_METADATA" "$ESTIMATOR_CONFIG" "$CALIBRATION" "${MOUNT_ARGS[@]}"; then
   MOUNT_VALID=true
 fi
 if [[ "$SENSORS_ONLY" == false && "$MOUNT_VALID" == false ]]; then
@@ -97,6 +102,7 @@ echo "TIP: keep the rig still ~2 s, then move slowly (rotation+translation) faci
 RUN_LABEL=hw290_orb
 source "$HW290_DIR/process_helpers.sh"
 [[ ! -r "$MOUNT_METADATA" ]] || cp "$MOUNT_METADATA" "$RUN_DIR/current_mount.yaml"
+[[ "$CALIBRATION_TEST" == false ]] || touch "$RUN_DIR/calibration_test"
 printf '%s\n' "$CORE_DIR" > "$RUN_DIR/orb_core_directory.txt"
 sha256sum "$CORE_DIR/libORB_SLAM3.so" > "$RUN_DIR/orb_core_sha256.txt"
 for manifest in build_manifest.json validation_manifest.json prototype_manifest.json; do

@@ -31,8 +31,9 @@ std::string sha256(const fs::path& path) {
 }
 
 int main(int argc, char** argv) {
-  if (argc != 4) {
-    std::cerr << "Usage: check_mount_calibration CURRENT_MOUNT ESTIMATOR_CONFIG STEREO_CALIBRATION\n";
+  const bool candidate = argc == 5 && std::string(argv[4]) == "--candidate";
+  if (argc != 4 && !candidate) {
+    std::cerr << "Usage: check_mount_calibration CURRENT_MOUNT ESTIMATOR_CONFIG STEREO_CALIBRATION [--candidate]\n";
     return 2;
   }
   try {
@@ -42,7 +43,9 @@ int main(int argc, char** argv) {
     mount["mount_id"] >> id; mount["status"] >> status;
     mount["validated_chain_sha256"] >> chain_hash;
     mount["validated_stereo_sha256"] >> stereo_hash; mount["reason"] >> reason;
-    if (id.empty() || status != "validated" || chain_hash.size() != 64 || stereo_hash.size() != 64)
+    const bool approved_status = status == "validated" ||
+        (candidate && status == "fitted_pending_validation");
+    if (id.empty() || !approved_status || chain_hash.size() != 64 || stereo_hash.size() != 64)
       throw std::runtime_error("Mount " + id + " needs calibration. " + reason);
     cv::FileStorage config(argv[2], cv::FileStorage::READ);
     if (!config.isOpened()) throw std::runtime_error("Estimator config is unavailable");
@@ -52,7 +55,8 @@ int main(int argc, char** argv) {
     const auto chain = fs::path(argv[2]).parent_path() / relative_chain;
     if (sha256(chain) != chain_hash || sha256(argv[3]) != stereo_hash)
       throw std::runtime_error("Selected calibration does not match the validated mount " + id);
-    std::cout << "Validated calibration matches mount " << id << '\n';
+    std::cout << (status == "validated" ? "Validated calibration" : "Calibration validation trial")
+              << " matches mount " << id << '\n';
     return 0;
   } catch (const std::exception& error) {
     std::cerr << error.what() << '\n';
