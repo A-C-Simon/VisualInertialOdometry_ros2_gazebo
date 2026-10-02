@@ -24,7 +24,9 @@ cd /home/ac/VisualInertialOdometry_ros2_gazebo/open_vins
 
 Hold the rig still until initialization, then move. Ctrl+C saves the benchmark
 summary. Changing the mount requires repeating the documented calibration.
-ORB-SLAM3 still needs the new calibration applied and tested separately.
+The ORB hardware launcher now exports the same measured profile and timing
+offset. Its October 2 desk test stayed at desk scale but still reset during
+inertial initialization. See [ORB hardware commands and status](ORB_SLAM/README.md#use-the-same-measured-calibration-as-openvins).
 
 ## Gazebo simulation
 

@@ -211,49 +211,113 @@ grow in Map Viewer. Stop with Ctrl+C; trajectories are saved in this directory.
 
 ## HW-290 stereo-inertial live test
 
-Fused VIO with the ELP camera and the HW-290 MPU6050 on the Arduino Nano.
-Pipeline: `usb_cam` (1280x480 side-by-side) to `ov_hw290/stereo_splitter`
-(rectified 640x480 `/cam0`, `/cam1`) plus `hw290_imu.py` (`/imu0`, 100 Hz) to
-`orb_slam_ros2/stereo_imu_node` (`IMU_STEREO`) with Pangolin viewer to
-RViz2 (`/orbslam_vio/path`, points, tracking image).
+Fused VIO with the ELP camera and the HW-290 IMU on the Arduino Nano.
+This module reports WHO_AM_I 0x98; the driver treats it as an ICM-compatible
+variant rather than assuming the board label identifies an MPU6050.
+Pipeline: `usb_cam` (1280x480 side-by-side) to the C++
+`ov_hw290/stereo_splitter`, then rectified 640x480 images and the C++
+`hw290_imu` stream at about 100 Hz to `stereo_imu_node` in `IMU_STEREO` mode.
 
-Run it:
+```bash
+# From ORB_SLAM/
+./orbslam3_hw290_vio.sh --efficient --rviz
 
+# Headless run for compute measurements
+./orbslam3_hw290_vio.sh --efficient
+
+# Save stereo, IMU and online body poses for diagnosing resets
+./orbslam3_hw290_vio.sh --efficient --diagnostics --rviz
 ```
-./orbslam3_hw290_vio.sh
-```
 
-Options: `--sensors-only` (camera and IMU, no SLAM), `--no-rviz`,
-`--no-viewer` (headless benchmark). The default ROS domain is 48 and
-`DISPLAY` defaults to `:1`. Logs go to `/tmp/orb_vio_*.log`. Shutdown
-with Ctrl-C writes `vio_session.txt`, `kf_vio_session.txt`, and
-`vio_timing.txt` here and prints a benchmark summary.
+The default ROS domain is 48 unless `ROS_DOMAIN_ID` is already set.
+Pangolin and RViz are opt-in. Ctrl-C stops the nodes and prints accumulated
+CPU time, average CPU use, peak memory and per-frame processing times.
+Each run is saved under `open_vins/benchmark/results/hw290_orb_*`.
+Recording and viewers add costs, so compare headless runs on shared input.
 
-Keep the rig still for about 2 s after start, then move it as one rigid
-body with slow rotation and translation facing textured static objects
-0.5-2 m away. Moving the IMU board alone cannot move the trajectory: the
-pose comes from the camera, and inertial initialization stays uninitialized
-while the camera is static. Inertial settings live in
-`orb_slam_ros2/config/ELP_640x480_inertial.yaml`: zero-distortion rectified
-640x480 (P1/P2 from `calibration_opencv.yaml` scaled by 0.4, fx 433.106,
-baseline 0.0598957 m), `T_b_c1` and IMU noise from
-`open_vins/hw290_stereo/kalibr_imu_chain.yaml` and
-`kalibr_imucam_chain.yaml` (provisional: rotation-only estimate, zero
-translation). The 0.155 s camera-to-IMU time offset is not compensated;
-ORB-SLAM3 has no time-shift parameter.
+### Use the same measured calibration as OpenVINS
 
-Robustness: `PreintegrateIMU` needs at least 2 IMU samples spanning each
-frame interval and segfaults otherwise, so the node skips frames with fewer
-than 2 samples or with no sample older than the frame time minus 0.012 s.
-Skips are logged as warnings; the next frame reuses the kept samples.
+The launcher exports the selected OpenVINS profile into each run's
+`orb_settings.yaml` using the C++ `export_orb_calibration` utility. Its default
+is the [October 1 measured profile](../open_vins/hw290_stereo/DRIFT_FIX.md).
+The exporter checks projection matrices, dimensions, distortion, stereo
+baseline and camera/IMU transforms before starting the estimator. It supplies
+the measured +13.04046 ms camera-to-IMU timestamp shift and 59.4498 mm baseline.
+IMU noise values are still provisional. A changed mount requires recalibration.
 
-Measured on the Intel N100 desk machine (4 cores), rectified 640x480 with
-1000 ORB features: TrackStereo mean 19.8 ms, median 19.1 ms, p95 24.7 ms
-over 965 frames headless; 26-66 ms means with Pangolin and RViz2 running.
-Steady-state CPU/MEM: SLAM node 55-105% and 550-680 MB, splitter about 30%
-and 50-60 MB, usb_cam 17-22% and 110-220 MB, rviz2 about 25% and 190 MB.
-`/imu0` holds 99-100 Hz; `/cam0` delivers about 14 Hz headless and about
-6 Hz with both viewers, so keep desktop load low during a run.
+The input model is `Rectified`: the splitter already rectifies the images.
+The isolated core at `open_vins/benchmark/build_orb_core/libORB_SLAM3.so`
+fixes the Rectified camera loader, protects empty-map trajectory export and
+initializes the tracking reset window omitted by the version 1.0 loader.
+Build it with `python3 open_vins/benchmark/build_orb_core.py` from the repository
+root. The original external ORB-SLAM3 tree is kept intact.
+
+`--efficient` uses 600 features and a local inertial BA window cap of 12;
+the normal profile uses 800 features and cap 25. Loop closure is disabled.
+Local mapping and inertial refinement remain necessary for this VIO mode.
+The 600-feature/cap-12 profile has earlier EuRoC validation; the measured
+HW290 profile still needs reliable inertial initialization.
+
+The two checked-in `ELP_640x480_inertial*.yaml` files are generated snapshots.
+Direct `stereo_inertial_topics.launch.py` launches read their
+`HW290.CameraImuOffset` metadata when `camera_imu_offset:=auto` (the default).
+An explicit offset overrides it. The launch file locates the isolated core
+for Rectified profiles; `ORB_CORE_DIR` can select another compatible build.
+The hardware script generates fresh settings from `HW290_VIO_CONFIG` and
+`HW290_STEREO_CALIBRATION` overrides when supplied.
+
+### Initialization and saved evidence
+
+Keep the rig still for sensor startup, then use continuous translation and
+gentle roll/pitch changes while facing textured static objects. Tracking state
+`OK` alone does not establish completed inertial refinement. Before the second
+refinement, upstream ORB may reset when travel across two keyframe intervals
+falls below 2 cm while its accumulated motion time is below 10 seconds.
+The isolated core logs `IMU_MOTION_RESET` with the exact timestamp and distance.
+A longer low-motion grace period was tested and rejected: it reduced resets
+but produced a 5.34 m desk displacement after refinement. The upstream
+reset condition remains in place.
+
+The October 2 desk test stayed within 0.77 m maximum displacement and had no
+large flights, but logged 55 map resets and did not finish the second inertial
+refinement. The calibration transfer alone has not solved this issue.
+
+The wrapper sends each timestamped IMU acquisition once, including the sample
+that closes the camera interval. The installed core uses a 1 ms integration
+boundary margin, independent of the frequency used to scale IMU noise.
+Runs save `online_imu_poses.txt` before later map adjustments, plus tracking
+state, timing and IMU delivery diagnostics. Retrospective EuRoC exports can
+contain only the surviving map after resets; use online poses and reset counts
+when evaluating failures. Desk bounds are not independent ground truth.
+
+
+### Matched recording measurements, October 2
+
+A 161-second stereo/IMU recording was replayed at its original rate, sequentially,
+without viewers or recording. CPU is accumulated estimator user/system time,
+including startup and shutdown; 100% means one occupied core. Sensor drivers
+and the bag player are excluded. Memory is peak estimator RSS.
+
+| Estimator | Average CPU | Peak MiB | Map resets | Maximum displacement |
+|---|---:|---:|---:|---:|
+| OpenVINS, measured profile | 57.5% | 148.9 | 0 | 0.85 m |
+| ORB, Rectified, 600 features, BA cap 12 | 71.6% | 769.4 | 54 | 1.64 m |
+
+These results do not establish accuracy against ground truth. Resets change the
+origin and workload, so a small displacement alone cannot establish tracking
+quality. ORB has not become less expensive than OpenVINS.
+
+Removing the second rectification pass gave 14.42 ms mean frame processing,
+versus 16.27 ms with an additional identity rectification on the same input.
+The trials followed different reset histories, so this pair does not isolate
+the remap cost or establish equal trajectory quality.
+
+A separate temporal motion-window prototype completed both inertial refinements,
+with 10 resets and 0.62 m maximum displacement. It measures motion across roughly
+one second instead of only adjacent keyframes. It is under evaluation and is
+not enabled in the hardware launcher. An overlapping diagnostic build makes
+its CPU result unsuitable for performance ranking. The official EuRoC archive
+is currently rate limited and the previous local cache is unavailable.
 
 ## Provenance
 
