@@ -278,3 +278,26 @@ The public ROS-wrapper runner now explicitly requests reliable images, queue
 diagnostic option. The publisher is reliable in either case. The change aims
 to retain input pairs before interpreting cost reductions; completed trials
 must still verify actual tracked-pair counts and acquisition continuity.
+
+
+### Reliable delivery comparison
+
+Sequential 1x headless V1_01_easy trials used corrected ground truth, one CV
+thread, fixed calibration and the motion-gated experimental ORB core. Both
+ORB profiles tracked all 2,911 eligible stereo pairs, received all 29,120 IMU
+samples, completed both inertial refinements and had zero map resets.
+
+| Profile | CPU seconds | Peak MiB | ATE cm after 30 s | 1 s translation RPE cm | Pose coverage |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| OpenVINS fixed | 69.89 | 121.88 | 3.340 | 0.989 | 100% |
+| ORB 752 x 480, 600 features | 146.26 | 702.81 | 1.894 | 1.201 | 100% |
+| ORB 480 x 306, 600 features | 87.34 | 689.49 | 5.610 | 2.564 | 100% |
+
+The 480-pixel trial saved 40.3% ORB CPU time but worsened both trajectory
+metrics and still used 25.0% more CPU time than OpenVINS. Native resolution
+remains selected. The table uses a fixed camera-start-plus-30-second interval;
+full common-interval metrics and initialization coverage are retained in
+[euroc_reliable_20261002.json](euroc_reliable_20261002.json). CPU totals include
+estimator startup and shutdown, excluding the player and viewers. One trial
+per profile on one sequence does not establish repeatability or a general
+accuracy ranking.
