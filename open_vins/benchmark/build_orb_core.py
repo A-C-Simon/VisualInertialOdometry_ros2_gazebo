@@ -23,8 +23,8 @@ for line in flags_file.read_text().splitlines():
   key,value=line.split('=',1);flags[key.strip()]=shlex.split(value.strip())
 manifest={'original_library_sha256':hashlib.sha256((root/'lib/libORB_SLAM3.so').read_bytes()).hexdigest(),
           'flags':flags,'sources':{},'compile_commands':[]}
-patch='';objects={}
-for name in ['Optimizer.cc','Settings.cc']:
+patch='';export_patch='';objects={}
+for name in ['Optimizer.cc','Settings.cc','System.cc']:
  source=root/'src'/name;old=source.read_text();new=old
  if name=='Optimizer.cc':
   new=new.replace('#include <complex>','#include <complex>\n#include <cstdlib>')
@@ -43,7 +43,7 @@ for name in ['Optimizer.cc','Settings.cc']:
     }();
     maxOpt = std::min(maxOpt, window_cap);
 ''' + marker)
- else:
+ elif name=='Settings.cc':
   start=new.index('void Settings::readCamera2(');end=new.index('void Settings::readImageInfo(',start)
   section=new[start:end]
   marker='        else if(cameraType_ == KannalaBrandt){'
@@ -58,14 +58,38 @@ for name in ['Optimizer.cc','Settings.cc']:
         }
 ''' +marker)
   new=new[:start]+section+new[end:]
+ else:
+  # An atlas emptied by initialization resets has no map with keyframes.
+  # Both exporters otherwise dereference an uninitialized map pointer.
+  for begin,end in [('void System::SaveTrajectoryEuRoC(const string &filename)',
+                     'void System::SaveTrajectoryEuRoC(const string &filename, Map* pMap)'),
+                    ('void System::SaveKeyFrameTrajectoryEuRoC(const string &filename)',
+                     'void System::SaveKeyFrameTrajectoryEuRoC(const string &filename, Map* pMap)')]:
+   start=new.index(begin);finish=new.index(end,start);section=new[start:finish]
+   assert section.count('Map* pBiggerMap;')==1
+   section=section.replace('Map* pBiggerMap;','Map* pBiggerMap = nullptr;')
+   if begin.startswith('void System::SaveTrajectoryEuRoC('):
+    marker='    vector<KeyFrame*> vpKFs = pBiggerMap->GetAllKeyFrames();'
+    assert section.count(marker)==1
+    section=section.replace(marker,'''    if (!pBiggerMap)
+    {
+        cout << "No map with keyframes; trajectory export skipped." << endl;
+        return;
+    }
+
+'''+marker)
+   new=new[:start]+section+new[finish:]
  patched=out/name;patched.write_text(new)
  manifest['sources'][name]={'original_sha256':hashlib.sha256(old.encode()).hexdigest(),
                            'patched_sha256':hashlib.sha256(new.encode()).hexdigest()}
- patch+=''.join(difflib.unified_diff(old.splitlines(True),new.splitlines(True),fromfile='a/src/'+name,tofile='b/src/'+name))
+ source_patch=''.join(difflib.unified_diff(old.splitlines(True),new.splitlines(True),fromfile='a/src/'+name,tofile='b/src/'+name))
+ if name=='System.cc':export_patch+=source_patch
+ else:patch+=source_patch
  obj=out/(name+'.o');objects['CMakeFiles/ORB_SLAM3.dir/src/'+name+'.o']=str(obj)
  command=['/usr/bin/c++']+flags['CXX_DEFINES']+flags['CXX_INCLUDES']+flags['CXX_FLAGS']+['-c',str(patched),'-o',str(obj)]
  manifest['compile_commands'].append(command)
 (ROOT/'benchmark/patches/orb_local_ba_window.patch').write_text(patch)
+(ROOT/'benchmark/patches/orb_safe_trajectory_export.patch').write_text(export_patch)
 link=shlex.split((root/'build/CMakeFiles/ORB_SLAM3.dir/link.txt').read_text())
 link[link.index('-o')+1]=str(out/'libORB_SLAM3.so')
 link=[objects.get(arg,arg) for arg in link];manifest['link_command']=link
