@@ -1,0 +1,46 @@
+{
+  "status": "fitted_pending_review",
+  "source_capture": "benchmark/results/screen_calibration_20261002_140205_724",
+  "target_edge_m": 0.04,
+  "target_gap_m": 0.012,
+  "fit_interval_s": [
+    0,
+    60
+  ],
+  "raw_stereo_views_used_entire_capture": true,
+  "cam0_offset_s": 0.014584348645694935,
+  "cam1_offset_s": 0.014990324045671789,
+  "stereo_baseline_m": 0.057335840209653655,
+  "cam0_fitted_p_imu_m": [
+    0.0276389553264806,
+    -0.009325785902560132,
+    -0.05456692187894889
+  ],
+  "cam0_cad_board_center_m": [
+    0.03,
+    0.0,
+    -0.0317
+  ],
+  "fit_minus_cad_m": [
+    -0.0023610446735193996,
+    -0.009325785902560132,
+    -0.02286692187894889
+  ],
+  "fit_minus_cad_norm_m": 0.02480808196674413,
+  "mean_reprojection_px": [
+    0.3419603906715553,
+    0.3884373233760441
+  ],
+  "mean_gyro_residual_rad_s": 0.014492597541791994,
+  "mean_acc_residual_m_s2": 0.03649805366838505,
+  "imu_noise": "provisional, not a long stationary Allan fit",
+  "rectification_opencv_cpp": "4.5.4",
+  "hashes": {
+    "camchain_raw.yaml": "bff49f6ab4b0a78ff5b92b02ff6b1943597018257789b66311e7836b2e31561f",
+    "camchain.yaml": "5e573ea1e1a4f7056091620122e95100babe027e0b27d6b3b3ac1084406ed7c3",
+    "imu.yaml": "7ed8d99488124e87739c9c484d9a170006a67bf752c4ee488a941d1da08f0d26",
+    "estimator_config.yaml": "ed899a43224eae60e745aff4e17abffef2aa66900d8e97cca1d02d0e0994124c",
+    "stereo_opencv.yaml": "a2d499d85a4beb8c39d9f2811377e711bd14d1d9d9fc5b774f1a7d6c84f28f69"
+  },
+  "activation": "inactive; geometry review, held-out replay and physical validation outstanding"
+}
