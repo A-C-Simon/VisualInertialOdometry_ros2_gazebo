@@ -1,5 +1,5 @@
 {
-  "status": "fitted_pending_validation",
+  "status": "validated_desk_scale",
   "source_capture": "benchmark/results/screen_calibration_20261002_140205_724",
   "target_edge_m": 0.04,
   "target_gap_m": 0.012,
@@ -42,7 +42,7 @@
     "estimator_config.yaml": "ed899a43224eae60e745aff4e17abffef2aa66900d8e97cca1d02d0e0994124c",
     "stereo_opencv.yaml": "a2d499d85a4beb8c39d9f2811377e711bd14d1d9d9fc5b774f1a7d6c84f28f69"
   },
-  "activation": "normal operation blocked: single live jump persists with clean IMU and source images; camera callback queue lock fix under validation",
+  "activation": "selected for current tower after confirmed two-minute desk check; CAD lever-arm mismatch, provisional noise and independent accuracy remain open",
   "target_ruler_confirmation": "Explicit ruler confirmation: 40 mm black tag edge, October 2",
   "openvins_replay": {
     "profile": "openvins",
@@ -189,5 +189,31 @@
     "imu_gaps_over_50ms": 0,
     "maximum_imu_interval_ms": 21.852,
     "scope": "Real-time headless replay of the full saved movement interval; fresh live validation outstanding"
+  },
+  "physical_validation_with_both_delivery_fixes": {
+    "run": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/hw290_openvins_20261002_150426_Rg52ai",
+    "movement_span_s": 120.05211281776428,
+    "pose_count": 3654,
+    "pose_span_s": 121.69466996192932,
+    "max_displacement_m": 0.8932811936327777,
+    "final_displacement_m": 0.15920973499130006,
+    "max_position_step_m": 0.04777201365862655,
+    "max_pose_interval_s": 0.036170005798339844,
+    "imu_received": 15706,
+    "imu_gaps_over_50ms": 0,
+    "imu_nonpositive_intervals": 0,
+    "max_received_imu_interval_ms": 21.974,
+    "negative_covariance_messages": 0,
+    "physical_confirmation": "Stayed within 1.40 x 0.80 x 0.60 m workspace; no flights",
+    "scope": "Two-minute continuous desk motion, no independent ground truth; includes drivers, RViz and recording",
+    "recorded_imu": {
+      "count": 16071,
+      "span_s": 162.29077291488647,
+      "hz": 99.01980076481566,
+      "max_dt_ms": 21.973848342895508,
+      "gaps_over_25ms": 0,
+      "nonpositive_intervals": 0
+    },
+    "validation_scope": "Passed gross desk divergence check only, not independent trajectory accuracy"
   }
 }

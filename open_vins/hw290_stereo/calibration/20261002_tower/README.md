@@ -1,7 +1,8 @@
 # Current HW290 tower mount, October 2
 
 The camera, IMU and Nano now share the rigid printed tower described in
-[vio_rig_stand_simple.scad](../../vio_rig_stand_simple.scad). The previous
+[vio_rig_stand_simple.scad](../../vio_rig_stand_simple.scad). The [selected tower profile](candidate/README.md) passed a confirmed two-minute
+desk check after both ROS delivery fixes. The previous
 October 1 camera/IMU fit belongs to a different mount. It is retained as
 historical calibration and must not be used for live VIO on this tower.
 
@@ -48,10 +49,9 @@ baseline with the CAD value. Inspect IMU continuity and held-out motion, then
 repeat a fresh continuous movement test before activation.
 
 [current_mount.yaml](../current_mount.yaml) currently says
-`fitted_pending_validation` for the [new candidate](candidate/README.md).
-Both hardware launchers reject normal live VIO until that
-file is marked `validated` with SHA256 fingerprints of the selected camera/IMU
-chain and stereo calibration. The C++ checker verifies those files at startup.
+`validated` for the [selected profile](candidate/README.md), with SHA256
+fingerprints of its camera/IMU chain and stereo calibration.
+Both hardware launchers reject normal live VIO with mismatching files. The C++ checker verifies those files at startup.
 After inspecting a fresh fit, set `fitted_pending_validation` and its matching
 chain/stereo fingerprints. Use the explicit validation mode for the desk test:
 

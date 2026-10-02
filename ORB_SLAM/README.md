@@ -211,8 +211,9 @@ grow in Map Viewer. Stop with Ctrl+C; trajectories are saved in this directory.
 
 ## HW-290 stereo-inertial live test
 
-**The mount changed to a rigid tower on October 2. Its camera/IMU rotation and
-time shift need a fresh fit. [Current mount status and recording steps](../open_vins/hw290_stereo/calibration/20261002_tower/README.md).**
+**The current rigid tower uses the [October 2 measured profile](../open_vins/hw290_stereo/calibration/20261002_tower/candidate/README.md).
+It passed the OpenVINS desk check after both delivery fixes; ORB initialization
+resets remain unresolved.**
 Both hardware launchers verify the selected calibration against the current
 mount fingerprints before live VIO. The commands below require a validated
 profile; `--sensors-only` remains available while calibration is pending.
@@ -245,10 +246,10 @@ Recording and viewers add costs, so compare headless runs on shared input.
 
 The launcher exports the selected OpenVINS profile into each run's
 `orb_settings.yaml` using the C++ `export_orb_calibration` utility. Its default
-is the [October 1 measured profile](../open_vins/hw290_stereo/DRIFT_FIX.md).
+is the [October 2 tower profile](../open_vins/hw290_stereo/calibration/20261002_tower/candidate/README.md).
 The exporter checks projection matrices, dimensions, distortion, stereo
 baseline and camera/IMU transforms before starting the estimator. It supplies
-the measured +13.04046 ms camera-to-IMU timestamp shift and 59.4498 mm baseline.
+the measured +14.58435 ms camera-to-IMU timestamp shift and 57.3358 mm baseline.
 IMU noise values are still provisional. A changed mount requires recalibration.
 
 The input model is `Rectified`: the splitter already rectifies the images.

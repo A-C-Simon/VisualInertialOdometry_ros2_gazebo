@@ -1,4 +1,26 @@
-# Start here: the calibration that stopped the large OpenVINS flights
+# HW290 calibration and delivery fixes
+
+## Current tower, October 2
+
+The [selected tower profile](calibration/20261002_tower/candidate/README.md)
+passed two minutes of confirmed desk motion with no flights, maximum
+displacement 0.893 m. The successful run also required the ROS 2 IMU queue
+change from 5 to 1,000 samples and releasing the camera queue lock before
+tracking/visualization. Calibration alone passed replay but failed live.
+Preserve all three changes when reproducing the result.
+
+The camera fit uses ruler-confirmed 40 mm tags, measured stereo geometry,
+fitted camera/IMU rotation and translation, and +14.584 ms cam0 timing. It is
+specific to the rigid tower. The CAD board-center mismatch and provisional
+noise remain limitations. This is a bounded desk check, not independent
+accuracy against ground truth. ORB receives the same profile but still resets.
+
+```bash
+./hw290_stereo/run_hw290_openvins.sh
+../ORB_SLAM/orbslam3_hw290_vio.sh --efficient --rviz
+```
+
+## Previous mount: calibration correction on October 1
 
 **The mount changed to a rigid tower on October 2. The previous fit is invalid
 for live camera/IMU alignment on that tower. Start with

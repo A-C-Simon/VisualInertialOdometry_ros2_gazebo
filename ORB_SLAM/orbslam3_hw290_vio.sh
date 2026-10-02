@@ -42,7 +42,7 @@ done
 ORB_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VIO_ROOT="/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins"
 HW290_DIR="${VIO_ROOT}/hw290_stereo"
-CALIBRATION="${HW290_STEREO_CALIBRATION:-${HW290_DIR}/calibration/20261001/stereo_opencv.yaml}"
+CALIBRATION="${HW290_STEREO_CALIBRATION:-${HW290_DIR}/calibration/20261002_tower/candidate/stereo_opencv.yaml}"
 ESTIMATOR_CONFIG="${HW290_VIO_CONFIG:-${HW290_DIR}/estimator_config.yaml}"
 CALIBRATION_EXPORTER="${VIO_ROOT}/install_vio/ov_hw290/lib/ov_hw290/export_orb_calibration"
 MOUNT_METADATA="${HW290_DIR}/calibration/current_mount.yaml"

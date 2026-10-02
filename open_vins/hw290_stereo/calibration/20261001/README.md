@@ -7,7 +7,7 @@ Git reference: `hw290-openvins-drift-fix-20261001` (`0c9cf22`).
 
 This is the historical profile for the mount tested on October 1. The
 [current tower](../20261002_tower/README.md) needs a new camera/IMU fit.
-The live launchers reject this profile until the current mount is validated.
+The live launchers reject this profile on the current tower.
 The following command applies to the earlier unchanged mount only.
 Run from `open_vins`:
 

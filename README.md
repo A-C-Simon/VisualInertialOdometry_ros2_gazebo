@@ -5,16 +5,22 @@ and documentation are kept in [`open_vins/`](open_vins/).
 
 ## HW290 hardware: current tower mount
 
-The camera, IMU and Nano moved into a rigid printed tower on October 2.
-[Current geometry and calibration status](open_vins/hw290_stereo/calibration/20261002_tower/README.md)
-record the actual OpenSCAD output. Camera/IMU rotation is unverified and 20 ms
-is only a timing starting estimate. Both hardware launchers require a fitted,
-validated chain for this mount before live VIO. Record new raw calibration data:
+The camera, IMU and Nano share the rigid tower assembled on October 2.
+The [selected tower profile](open_vins/hw290_stereo/calibration/20261002_tower/candidate/README.md)
+passed a confirmed two-minute desk check with no flights, maximum displacement
+0.893 m. Reproduction requires the measured camera/IMU fit, the 1,000-message
+IMU queue and the camera queue lock release before visual processing.
+Both launchers check the selected calibration against the current mount.
 
 ```bash
 cd /home/ac/VisualInertialOdometry_ros2_gazebo/open_vins
-./hw290_stereo/run_hw290_openvins.sh --calibration-screen
+./hw290_stereo/run_hw290_openvins.sh
+../ORB_SLAM/orbslam3_hw290_vio.sh --efficient --rviz
 ```
+
+ORB uses the same measured profile but still has initialization resets.
+The desk check is not independent trajectory accuracy. Changing the mount
+requires repeating [calibration and validation](open_vins/hw290_stereo/calibration/20261002_tower/README.md).
 
 ## Previous mount: calibration that stopped the large drift
 

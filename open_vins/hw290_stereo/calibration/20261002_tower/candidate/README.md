@@ -1,9 +1,11 @@
 # Tower calibration candidate, October 2
 
-This fitted profile **failed its first physical validation**. It passed the recorded
-OpenVINS consistency check below. Normal live VIO remains blocked; explicit
-`--calibration-test` accepts the matching fingerprints for a validation run.
-Do not treat small fitting residuals as trajectory validation.
+This is the **selected calibration for the current tower**, following a
+confirmed two-minute physical desk check with both ROS delivery fixes.
+The directory name records its origin as a candidate. Earlier failed tests
+remain documented below. Validation covers this mount and bounded desk motion;
+independent accuracy, provisional IMU noise and the CAD lever-arm mismatch
+remain open.
 
 Source: `benchmark/results/screen_calibration_20261002_140205_724/`.
 The restarted recording includes 95 seconds, 2,856 raw frames per camera and
@@ -87,3 +89,31 @@ held the camera queue lock across tracking and visualization, blocking image
 callbacks. A change to pop a ready frame under the lock and process it after
 releasing the lock is being checked on the saved motion segment. This repeat
 still fails the desk bound; normal activation remains blocked.
+
+## Final physical check passed
+
+`hw290_openvins_20261002_150426_Rg52ai` completed 120.052 seconds of continuous
+movement within the confirmed 1.40 x 0.80 x 0.60 m workspace, with no flights.
+OpenVINS saved 3,654 poses over 121.695 seconds, maximum displacement 0.89328 m,
+maximum consecutive position change 0.04777 m and maximum pose interval
+36.170 ms. The estimator received 15,706 IMU samples with no intervals above
+50 ms; maximum interval was 21.974 ms. The recording contains 16,071 samples
+at 99.020 Hz with no intervals above 25 ms. Startup/shutdown account for the
+different stream lifetimes. There was no covariance failure.
+
+The run included drivers, RViz, recording and debug logging. Estimator CPU
+averaged 75.1% of one core, peak RSS 456.0 MiB, mean tracking/update time 18.75 ms
+and p95 25.50 ms. These are this diagnostic run's costs, not an isolated
+OpenVINS/ORB comparison. A 1.904-second processing stall occurred without
+another large trajectory jump, supporting the queue delivery correction.
+
+Normal launch commands now select this camera/IMU chain and splitter profile:
+
+```bash
+./hw290_stereo/run_hw290_openvins.sh
+../ORB_SLAM/orbslam3_hw290_vio.sh --efficient --rviz
+```
+
+ORB receives this measured calibration through the C++ exporter. Its earlier
+tower replay remained bounded but reset 26 times; stable ORB initialization
+and a ground-truth compute/accuracy benchmark remain outstanding.

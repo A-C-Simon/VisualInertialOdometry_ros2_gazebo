@@ -2,8 +2,9 @@
 
 **Start with [the tested drift correction and repeatable method](../DRIFT_FIX.md).**
 
-The [current tower mount](20261002_tower/README.md) requires a fresh spatial/time
-fit. Both launchers check `current_mount.yaml` and refuse live VIO with a chain
+The [current tower mount](20261002_tower/README.md) uses the October 2
+[measured profile](20261002_tower/candidate/README.md), which passed desk motion
+after both estimator delivery fixes. Both launchers check `current_mount.yaml` and refuse live VIO with a chain
 from the previous mount. Raw recording remains available. The
 [October 1 profile](20261001/README.md) passed earlier-mount desk checks;
 ORB received that profile on October 2, before the tower change. IMU noise
