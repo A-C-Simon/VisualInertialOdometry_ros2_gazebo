@@ -177,5 +177,17 @@
     "confirmed_workspace_limits": true,
     "camera_source_max_header_interval_near_jump_s": 0.036064863204956055,
     "observed_estimator_camera_update_gap_s": 2.000108003616333
+  },
+  "camera_lock_fix_replay": {
+    "run": "benchmark/results/hw290_openvins_20261002_145045_4UIsx8/replay_validation/camera_lock_release",
+    "max_displacement_m": 0.8675729862541826,
+    "maximum_pose_interval_s": 0.03614997863769531,
+    "maximum_position_step_m": 0.0903020885251277,
+    "pose_span_s": 120.29865002632141,
+    "pose_count": 3612,
+    "received_imu_count": 12932,
+    "imu_gaps_over_50ms": 0,
+    "maximum_imu_interval_ms": 21.852,
+    "scope": "Real-time headless replay of the full saved movement interval; fresh live validation outstanding"
   }
 }

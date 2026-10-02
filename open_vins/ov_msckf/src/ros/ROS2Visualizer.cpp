@@ -498,13 +498,13 @@ void ROS2Visualizer::callback_inertial(const sensor_msgs::msg::Imu::SharedPtr ms
   // The callback's local measurement is destroyed on return. Its timestamp
   // must be owned by the worker, not captured by reference.
   update_thread = std::thread([this, timestamp = message.timestamp] {
-    // Lock on the queue (prevents new images from appending)
-    std::lock_guard<std::mutex> lck(camera_queue_mtx);
-
     // Count how many unique image streams
     std::map<int, bool> unique_cam_ids;
-    for (const auto &cam_msg : camera_queue) {
-      unique_cam_ids[cam_msg.sensor_ids.at(0)] = true;
+    {
+      std::lock_guard<std::mutex> lck(camera_queue_mtx);
+      for (const auto &cam_msg : camera_queue) {
+        unique_cam_ids[cam_msg.sensor_ids.at(0)] = true;
+      }
     }
 
     // If we do not have enough unique cameras then we need to wait
@@ -516,12 +516,22 @@ void ROS2Visualizer::callback_inertial(const sensor_msgs::msg::Imu::SharedPtr ms
       // Loop through our queue and see if we are able to process any of our camera measurements
       // We are able to process if we have at least one IMU measurement greater than the camera time
       double timestamp_imu_inC = timestamp - _app->get_state()->_calib_dt_CAMtoIMU->value()(0);
-      while (!camera_queue.empty() && camera_queue.at(0).timestamp < timestamp_imu_inC) {
+      while (!stop_requested) {
+        ov_core::CameraData camera_message;
+        {
+          // Remove one ready frame while holding the queue lock, then release
+          // it before tracking and visualization. Otherwise a slow update
+          // blocks image callbacks and overflows their DDS histories.
+          std::lock_guard<std::mutex> lck(camera_queue_mtx);
+          if (camera_queue.empty() || camera_queue.front().timestamp >= timestamp_imu_inC)
+            break;
+          camera_message = std::move(camera_queue.front());
+          camera_queue.pop_front();
+        }
         auto rT0_1 = boost::posix_time::microsec_clock::local_time();
-        double update_dt = 100.0 * (timestamp_imu_inC - camera_queue.at(0).timestamp);
-        _app->feed_measurement_camera(camera_queue.at(0));
+        double update_dt = 100.0 * (timestamp_imu_inC - camera_message.timestamp);
+        _app->feed_measurement_camera(camera_message);
         visualize();
-        camera_queue.pop_front();
         auto rT0_2 = boost::posix_time::microsec_clock::local_time();
         double time_total = (rT0_2 - rT0_1).total_microseconds() * 1e-6;
         PRINT_INFO(BLUE "[TIME]: %.4f seconds total (%.1f hz, %.2f ms behind)\n" RESET, time_total, 1.0 / time_total, update_dt);

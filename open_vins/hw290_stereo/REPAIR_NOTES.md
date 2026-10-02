@@ -231,3 +231,26 @@ it is incomplete and excluded. The valid trial startup explicitly logged
 `queue depth 1000`. Build and install the library before validating runtime
 changes: `cmake --build build_vio/ov_msckf --target run_subscribe_msckf -j2`,
 then `cmake --install build_vio/ov_msckf`.
+
+### Camera callback blocking, 2026-10-02
+
+After the IMU queue change, a two-minute live test received 20,503 IMU samples
+with no large gaps or covariance failure. One sharp 1.378 m position step at
+74.599 seconds nevertheless reached 2.197 m. The source stereo frames remain
+continuous below 36.065 ms near the event, but estimator camera updates skip
+two seconds after a 1.429-second processing stall.
+
+The ROS 2 update worker held camera_queue_mtx throughout tracking and
+visualization. Image callbacks also need that lock, and share a callback group
+with IMU reception. The worker now removes one eligible camera message under
+the lock and releases it before processing. Queue ordering and the requirement
+for IMU coverage beyond camera time are preserved, with one update worker.
+
+Real-time replay of the full saved movement interval now saves 3,612 poses over
+120.299 seconds, maximum displacement 0.86757 m, maximum pose interval 36.150 ms
+and maximum position step 0.09030 m. It passes the original jump interval
+without another large step. The replay is headless and has no independent
+ground truth; fresh physical validation remains necessary.
+
+Evidence: `hw290_openvins_20261002_145045_4UIsx8/` under benchmark/results,
+including camera_gap_check.json and replay_validation/camera_lock_release.
