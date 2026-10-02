@@ -21,11 +21,13 @@ p.add_argument('--check-translation-invariance',type=Path,metavar='ORB_SETTINGS'
                help='Build and run the native visual/inertial edge check with these settings')
 p.add_argument('--keyframe-interval-s',type=float,default=0.,
                help='Experimental minimum interval for healthy initialized stereo-inertial keyframes (0 to 0.5 s)')
+p.add_argument('--motion-gated-initialization',action='store_true',
+               help='Experimental: require measured translation before inertial initialization and wait during quiet intervals')
 a=p.parse_args()
 root=a.orb_root.resolve();out=a.output.resolve()
 if not 0 <= a.keyframe_interval_s <= .5:
  p.error('Keyframe interval must be between 0 and 0.5 seconds')
-if (a.preserve_inertial_origin or a.keyframe_interval_s) and out == (ROOT/'benchmark/build_orb_core').resolve():
+if (a.preserve_inertial_origin or a.keyframe_interval_s or a.motion_gated_initialization) and out == (ROOT/'benchmark/build_orb_core').resolve():
  p.error('Use a separate --output directory for experimental core changes')
 if a.check_translation_invariance and (a.prepare_only or not a.check_translation_invariance.is_file()):
  p.error('Translation check requires an existing settings file and a compiled build')
@@ -37,6 +39,7 @@ for line in flags_file.read_text().splitlines():
   key,value=line.split('=',1);flags[key.strip()]=shlex.split(value.strip())
 manifest={'preserve_inertial_origin':a.preserve_inertial_origin,
           'keyframe_interval_s':a.keyframe_interval_s,
+          'motion_gated_initialization':a.motion_gated_initialization,
           'original_library_sha256':hashlib.sha256((root/'lib/libORB_SLAM3.so').read_bytes()).hexdigest(),
           'flags':flags,'sources':{},'compile_commands':[]}
 patch='';export_patch='';tracking_patch='';motion_patch='';objects={}
@@ -136,6 +139,11 @@ for name in ['Optimizer.cc','Settings.cc','System.cc','Tracking.cc','LocalMappin
   subprocess.run(['patch','--silent','--fuzz=0',str(patched),
                   str(ROOT/'benchmark/patches/orb_inertial_origin.patch')],check=True)
   new=patched.read_text()
+ if name=='LocalMapping.cc' and a.motion_gated_initialization:
+  policy=ROOT/'benchmark/patches/orb_motion_gated_initialization.patch'
+  subprocess.run(['patch','--silent','--fuzz=0',str(patched),str(policy)],check=True)
+  new=patched.read_text()
+  manifest['motion_gate_patch_sha256']=hashlib.sha256(policy.read_bytes()).hexdigest()
  manifest['sources'][name]={'original_sha256':hashlib.sha256(old.encode()).hexdigest(),
                            'patched_sha256':hashlib.sha256(new.encode()).hexdigest()}
  source_patch=''.join(difflib.unified_diff(old.splitlines(True),new.splitlines(True),fromfile='a/src/'+name,tofile='b/src/'+name))
@@ -150,7 +158,10 @@ for name in ['Optimizer.cc','Settings.cc','System.cc','Tracking.cc','LocalMappin
   if a.keyframe_interval_s:
    (out/'orb_keyframe_interval.patch').write_text(source_patch)
   else:tracking_patch+=source_patch
- elif name=='LocalMapping.cc':motion_patch+=source_patch
+ elif name=='LocalMapping.cc':
+  if a.motion_gated_initialization:
+   (out/'orb_motion_gate.patch').write_text(source_patch)
+  else:motion_patch+=source_patch
  else:patch+=source_patch
  obj=out/(name+'.o');objects['CMakeFiles/ORB_SLAM3.dir/src/'+name+'.o']=str(obj)
  command=['/usr/bin/c++']+flags['CXX_DEFINES']+flags['CXX_INCLUDES']+flags['CXX_FLAGS']+['-c',str(patched),'-o',str(obj)]
@@ -159,7 +170,8 @@ for name in ['Optimizer.cc','Settings.cc','System.cc','Tracking.cc','LocalMappin
 (ROOT/'benchmark/patches/orb_safe_trajectory_export.patch').write_text(export_patch)
 if not a.keyframe_interval_s:
  (ROOT/'benchmark/patches/orb_tracking_reset_window.patch').write_text(tracking_patch)
-(ROOT/'benchmark/patches/orb_initialization_diagnostics.patch').write_text(motion_patch)
+if not a.motion_gated_initialization:
+ (ROOT/'benchmark/patches/orb_initialization_diagnostics.patch').write_text(motion_patch)
 link=shlex.split((root/'build/CMakeFiles/ORB_SLAM3.dir/link.txt').read_text())
 link[link.index('-o')+1]=str(out/'libORB_SLAM3.so')
 link=[objects.get(arg,arg) for arg in link];manifest['link_command']=link

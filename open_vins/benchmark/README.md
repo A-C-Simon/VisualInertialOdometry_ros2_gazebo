@@ -115,3 +115,46 @@ rate, but limits redundant keyframe insertion while tracking has at least 50
 inliers. Weak tracking and loss retain urgent insertion. The initial ten-keyframe
 bootstrap, motion-reset thresholds and full inertial refinement are unchanged.
 The interval defaults to zero and cannot be enabled in the default core directory.
+
+## Experimental motion-gated initialization
+
+The current tower's continuous-movement test still reset despite keyframe
+spacing. Its adjacent-keyframe translation fell below the upstream 2 cm reset
+threshold. A one-second translation window reduced the resets to three, but
+still discarded a map during a quiet interval after the first refinement.
+
+The motion-gated experiment waits through quiet intervals. It advances the
+motion clock only when the two translation segments over roughly one second
+sum to more than 5 cm. First inertial fitting requires two accumulated motion
+seconds; the existing five- and fifteen-second refinement gates remain. Map
+age no longer supplies the initial motion clock. Timestamp and tracking-loss
+checks remain active. This policy has only been tested with stereo-inertial
+input; low translation can leave the system waiting in stereo tracking.
+
+```bash
+python3 benchmark/build_orb_core.py \
+  --output benchmark/build_orb_motion_gate \
+  --preserve-inertial-origin --keyframe-interval-s 0.25 \
+  --motion-gated-initialization
+```
+
+This option requires a separate output directory and defaults off. The generated
+LocalMapping, Tracking and Optimizer sources were byte-identical to the compiled
+prototype used for the following sequential, real-time, headless replays:
+
+| Recording | Active resets | Refinements | Max displacement | CPU seconds | Peak MiB |
+| --- | ---: | --- | ---: | ---: | ---: |
+| Failed live ORB tower test | 0 | Both completed | 0.879 m | 157.01 | 692.13 |
+| Final OpenVINS tower test | 0 | Both completed | 0.811 m | 168.77 | 755.50 |
+
+These runs retain 600 features, the 12-keyframe local BA cap and queue depth 64.
+Online poses include preliminary stereo tracking. They have initialization
+steps of 25.9 and 34.1 cm, respectively. In the first recording, the 25.9 cm
+step coincides with a 90.03 degree orientation change; compensating that common
+rotation leaves 4.7 mm of position change. This is consistent with world-frame
+gravity alignment. It does not establish independent trajectory accuracy.
+A fresh physical test and ground-truth verification remain required. ORB is
+still more expensive than OpenVINS on the matched recording.
+
+Evidence: `results/tower_live_replay_20261002/orb_motion_gate/` and
+`results/tower_matched_20261002/orb_motion_gate/`.
