@@ -6,6 +6,7 @@ find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(OpenCV REQUIRED COMPONENTS core imgproc calib3d)
 find_package(Eigen3 REQUIRED)
+find_package(OpenSSL REQUIRED)
 find_package(Qt5 REQUIRED COMPONENTS Widgets)
 
 file(GLOB KALIBR_TAG_SOURCES CONFIGURE_DEPENDS third_party/ethz_apriltag2/src/*.cc)
@@ -40,7 +41,13 @@ target_link_libraries(export_orb_calibration ${OpenCV_LIBS})
 target_compile_features(export_orb_calibration PUBLIC cxx_std_17)
 target_compile_options(export_orb_calibration PRIVATE -O2 -Wall -Wextra)
 
-install(TARGETS hw290_imu stereo_splitter calibration_screen export_orb_calibration DESTINATION lib/${PROJECT_NAME})
+add_executable(check_mount_calibration src/check_mount_calibration.cpp)
+target_include_directories(check_mount_calibration PRIVATE ${OpenCV_INCLUDE_DIRS})
+target_link_libraries(check_mount_calibration ${OpenCV_LIBS} OpenSSL::Crypto)
+target_compile_features(check_mount_calibration PUBLIC cxx_std_17)
+target_compile_options(check_mount_calibration PRIVATE -O2 -Wall -Wextra)
+
+install(TARGETS hw290_imu stereo_splitter calibration_screen export_orb_calibration check_mount_calibration DESTINATION lib/${PROJECT_NAME})
 install(FILES third_party/ethz_apriltag2/LICENSE third_party/ethz_apriltag2/README.md
         DESTINATION share/${PROJECT_NAME}/third_party/ethz_apriltag2)
 ament_package()

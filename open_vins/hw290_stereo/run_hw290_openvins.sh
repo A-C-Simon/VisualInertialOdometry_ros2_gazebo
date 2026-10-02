@@ -59,6 +59,16 @@ SPLITTER="${ROOT}/../install_vio/ov_hw290/lib/ov_hw290/stereo_splitter"
 ESTIMATOR="${ROOT}/../install_vio/ov_msckf/lib/ov_msckf/run_subscribe_msckf"
 CALIBRATION="${HW290_STEREO_CALIBRATION:-${ROOT}/calibration/20261001/stereo_opencv.yaml}"
 ESTIMATOR_CONFIG="${HW290_VIO_CONFIG:-${ROOT}/estimator_config.yaml}"
+MOUNT_METADATA="${ROOT}/calibration/current_mount.yaml"
+MOUNT_CHECK="${ROOT}/../install_vio/ov_hw290/lib/ov_hw290/check_mount_calibration"
+MOUNT_VALID=false
+if [[ -x "$MOUNT_CHECK" ]] && "$MOUNT_CHECK" "$MOUNT_METADATA" "$ESTIMATOR_CONFIG" "$CALIBRATION"; then
+  MOUNT_VALID=true
+fi
+if [[ "$SENSORS_ONLY" == false && "$MOUNT_VALID" == false ]]; then
+  echo "VIO stopped before sensor startup: calibrate the current mount with --calibration-screen. Build ov_hw290 if its mount checker is missing." >&2
+  exit 2
+fi
 if [[ "$IMU_ALLAN" == false ]]; then
   [[ -x "$CAMERA_NODE" ]] || { echo "Build the corrected camera driver: hw290_stereo/build_camera_driver.sh" >&2; exit 1; }
   [[ -x "$SPLITTER" && -x "$ESTIMATOR" ]] || { echo "Build ov_hw290 and ov_msckf first" >&2; exit 1; }
@@ -78,6 +88,7 @@ HW290_DIR="$ROOT"
 RUN_LABEL=hw290_openvins
 [[ "$IMU_ALLAN" == true ]] && RUN_LABEL=hw290_imu_allan
 source "$ROOT/process_helpers.sh"
+[[ ! -r "$MOUNT_METADATA" ]] || cp "$MOUNT_METADATA" "$RUN_DIR/current_mount.yaml"
 if [[ "$IMU_ALLAN" == true ]]; then
   cp "$ROOT/record_qos.yaml" "$RUN_DIR/record_qos.yaml"
   start_node recorder /tmp/hw290_recorder.log ros2 bag record --qos-profile-overrides-path "$RUN_DIR/record_qos.yaml" -o "$RUN_DIR/imu_bag" /imu0
@@ -115,11 +126,15 @@ if ! wait_for_imu /tmp/hw290_imu.log; then
   IMU_READY=false
   echo "Starting RViz in sensor view; VIO is unavailable until the IMU connection is restored and this launcher is restarted." >&2
 fi
+if [[ "$MOUNT_VALID" == true ]]; then
 for camera in cam0 cam1; do
   HW290_TF_OUTPUT=$(python3 "$ROOT/static_transform_args.py" "$camera" --estimator-config "$ESTIMATOR_CONFIG")
   mapfile -t TF_ARGS <<< "$HW290_TF_OUTPUT"
   start_node "tf_$camera" "/tmp/hw290_tf_${camera}.log" /opt/ros/humble/lib/tf2_ros/static_transform_publisher "${TF_ARGS[@]}"
 done
+else
+  echo "Recording sensor frames only; camera-to-IMU TF is unverified for this mount." >&2
+fi
 if [[ "$SENSORS_ONLY" == false && "$IMU_READY" == true ]]; then
   echo "Using the selected camera/IMU calibration. IMU noise remains provisional; see hw290_stereo/calibration/README.md." >&2
   sleep 2

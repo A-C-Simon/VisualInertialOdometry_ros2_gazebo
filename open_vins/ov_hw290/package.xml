@@ -11,5 +11,6 @@
   <depend>libopencv-dev</depend>
   <depend>eigen</depend>
   <depend>qtbase5-dev</depend>
+  <depend>openssl</depend>
   <export><build_type>ament_cmake</build_type></export>
 </package>

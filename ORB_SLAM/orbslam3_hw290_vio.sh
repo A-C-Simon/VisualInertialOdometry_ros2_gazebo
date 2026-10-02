@@ -42,6 +42,16 @@ HW290_DIR="${VIO_ROOT}/hw290_stereo"
 CALIBRATION="${HW290_STEREO_CALIBRATION:-${HW290_DIR}/calibration/20261001/stereo_opencv.yaml}"
 ESTIMATOR_CONFIG="${HW290_VIO_CONFIG:-${HW290_DIR}/estimator_config.yaml}"
 CALIBRATION_EXPORTER="${VIO_ROOT}/install_vio/ov_hw290/lib/ov_hw290/export_orb_calibration"
+MOUNT_METADATA="${HW290_DIR}/calibration/current_mount.yaml"
+MOUNT_CHECK="${VIO_ROOT}/install_vio/ov_hw290/lib/ov_hw290/check_mount_calibration"
+MOUNT_VALID=false
+if [[ -x "$MOUNT_CHECK" ]] && "$MOUNT_CHECK" "$MOUNT_METADATA" "$ESTIMATOR_CONFIG" "$CALIBRATION"; then
+  MOUNT_VALID=true
+fi
+if [[ "$SENSORS_ONLY" == false && "$MOUNT_VALID" == false ]]; then
+  echo "VIO stopped: current mount requires spatial/time calibration. Use open_vins/hw290_stereo/run_hw290_openvins.sh --calibration-screen." >&2
+  exit 2
+fi
 
 source /opt/ros/humble/setup.bash
 # Underlay with the C++ splitter, then the local ORB-SLAM workspace last so its
@@ -86,6 +96,7 @@ echo "TIP: keep the rig still ~2 s, then move slowly (rotation+translation) faci
 
 RUN_LABEL=hw290_orb
 source "$HW290_DIR/process_helpers.sh"
+[[ ! -r "$MOUNT_METADATA" ]] || cp "$MOUNT_METADATA" "$RUN_DIR/current_mount.yaml"
 printf '%s\n' "$CORE_DIR" > "$RUN_DIR/orb_core_directory.txt"
 sha256sum "$CORE_DIR/libORB_SLAM3.so" > "$RUN_DIR/orb_core_sha256.txt"
 for manifest in build_manifest.json validation_manifest.json prototype_manifest.json; do
@@ -115,13 +126,15 @@ if ! wait_for_imu /tmp/orb_vio_imu.log; then
   IMU_READY=false
   echo "Starting RViz in sensor view; VIO unavailable until IMU is restored and launcher restarted." >&2
 fi
+if [[ "$MOUNT_VALID" == true ]]; then
 for camera in cam0 cam1; do
   HW290_TF_OUTPUT=$(python3 "$HW290_DIR/static_transform_args.py" "$camera" --estimator-config "$ESTIMATOR_CONFIG")
   mapfile -t TF_ARGS <<< "$HW290_TF_OUTPUT"
   start_node "tf_$camera" "/tmp/orb_vio_tf_${camera}.log" /opt/ros/humble/lib/tf2_ros/static_transform_publisher "${TF_ARGS[@]}"
 done
-
-
+else
+  echo "Camera-to-IMU TF is unverified for the current mount." >&2
+fi
 
 if [[ "$SENSORS_ONLY" == false && "$IMU_READY" == true ]]; then
   HW290_TF_OUTPUT=$(python3 "$HW290_DIR/static_transform_args.py" orb_imu --estimator-config "$ESTIMATOR_CONFIG")
