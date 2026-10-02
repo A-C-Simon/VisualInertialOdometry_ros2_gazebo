@@ -31,6 +31,8 @@ def main():
     p.add_argument('--threads', type=int)
     p.add_argument('--core-library-dir', type=Path)
     p.add_argument('--local-ba-window', type=int)
+    p.add_argument('--best-effort-images', action='store_true',
+                   help='Diagnostic only: allow ORB image delivery without retransmission')
     p.add_argument('--orb-executable', type=Path, default=ROOT.parent/'ORB_SLAM/install/orb_slam_ros2/lib/orb_slam_ros2/stereo_imu_node')
     args = p.parse_args()
     out = args.output.resolve()
@@ -51,6 +53,8 @@ def main():
     elif args.method == 'orb_ros':
         command = [str(args.orb_executable.resolve()), '--ros-args',
                    '-r', '__ns:=/orbslam_vio', '-p', 'use_viewer:=false',
+                   '-p', 'reliable_images:='+('false' if args.best_effort_images else 'true'),
+                   '-p', 'sync_queue_size:=64', '-p', 'publish_bootstrap_poses:=false',
                    '-p', 'settings_path:='+str(config),
                    '-p', 'vocabulary_path:=/home/ac/ORB_SLAM3/Vocabulary/ORBvoc.txt',
                    '-p', 'trajectory_path:='+str(out/'retrospective.txt'),
@@ -65,7 +69,8 @@ def main():
         command = ['/tmp/orb_online_build/euroc_online', '/home/ac/ORB_SLAM3/Vocabulary/ORBvoc.txt',
                    str(config), str(dataset), str(times), 'trial']
     (out/'invocation.json').write_text(json.dumps({'command':command,'threads':args.threads,
-        'dataset':str(dataset),'config':str(config),'core_library_dir':str(args.core_library_dir),'local_ba_window':args.local_ba_window},indent=2))
+        'dataset':str(dataset),'config':str(config),'core_library_dir':str(args.core_library_dir),'local_ba_window':args.local_ba_window,
+        'orb_images_reliable':not args.best_effort_images if args.method == 'orb_ros' else None},indent=2))
     start = time.monotonic()
     player_return = None
     with (out/'estimator.log').open('w') as log:

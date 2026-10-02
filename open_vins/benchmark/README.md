@@ -253,3 +253,28 @@ member CRC checks passed; every camera CSV filename exists. The cache has
 provenance are recorded in [euroc_dataset_provenance_20261002.json](euroc_dataset_provenance_20261002.json).
 CRC matching checks integrity; the recorded SHA256 is a local fingerprint,
 not a separately published official SHA256.
+
+
+## Fresh public-sequence checks, October 2
+
+Fresh runs use the [upstream corrected V1_01 ground truth](https://github.com/rpng/open_vins/blob/master/ov_data/euroc_mav/V1_01_easy.csv).
+[OpenVINS documents the original file's orientation issue](https://docs.openvins.com/gs-datasets.html).
+`ov_data/euroc_mav/V1_01_easy.csv` is already present in this checkout. Both full
+common-interval and camera-start-plus-30-second metrics are retained, with no
+scale fitting. These intervals must be labeled separately; later-refinement
+accuracy cannot stand in for startup behavior.
+
+Preliminary best-effort ORB runs processed only 2,786 of 2,912 input pairs at
+native resolution and 2,867 at 480 x 306. The 480-pixel run reduced estimator
+CPU from 129.63 to 84.81 seconds, but post-initialization ATE increased from
+2.01 to 5.26 cm and full common-interval error also increased. This is a rejected
+quality tradeoff for now, with incomplete image coverage. OpenVINS used
+69.89 CPU seconds and had 100% post-initialization pose coverage.
+[Preliminary measurements](euroc_preliminary_20261002.json) retain the coverage
+and timing limits; they are not the final performance comparison.
+
+The public ROS-wrapper runner now explicitly requests reliable images, queue
+64 and initialized-only poses. `--best-effort-images` remains an explicit
+diagnostic option. The publisher is reliable in either case. The change aims
+to retain input pairs before interpreting cost reductions; completed trials
+must still verify actual tracked-pair counts and acquisition continuity.
