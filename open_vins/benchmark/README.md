@@ -236,3 +236,20 @@ tracking losses. The CPU reduction was only 0.33%, with higher peak memory in
 the smaller-window run. One trial each cannot resolve such a small difference,
 so the cap remains 12. Neither recording has independent ground truth; this
 is a cost and continuity check. See [the measurements](tower_ba_cost_20261002.json).
+
+
+## Verified local EuRoC cache
+
+`V1_01_easy` is saved under `benchmark/datasets/euroc/V1_01_easy`, with its ZIP
+beside it. The dataset directory is ignored by Git. Pass that directory with
+`--dataset` to the public benchmark runner; it is independent of `/tmp` cleanup.
+
+The official ETH archive still returned HTTP 429 on October 2. The public
+[Hugging Face mirror](https://huggingface.co/datasets/pepijn223/euroc-mirror/tree/main)
+provided the sequence. Its 1,149,702,102-byte size and CRC32 `1abe6a0d` matched
+the entry in the previously cached official ZIP directory. All inner ZIP
+member CRC checks passed; every camera CSV filename exists. The cache has
+2,912 frames per camera, 29,120 IMU rows and 28,712 ground-truth rows. SHA256 and retrieval
+provenance are recorded in [euroc_dataset_provenance_20261002.json](euroc_dataset_provenance_20261002.json).
+CRC matching checks integrity; the recorded SHA256 is a local fingerprint,
+not a separately published official SHA256.

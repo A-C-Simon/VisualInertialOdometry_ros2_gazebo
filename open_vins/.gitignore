@@ -16,6 +16,7 @@ __pycache__/
 # Local builds and large benchmark artifacts
 install_camera/
 benchmark/results/
+benchmark/datasets/
 symlink_install_manifest.txt
 # Generated isolated ORB variants; source builders and patches stay tracked.
 benchmark/build_orb_*/
