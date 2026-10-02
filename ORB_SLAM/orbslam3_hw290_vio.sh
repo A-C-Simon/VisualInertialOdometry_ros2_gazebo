@@ -62,8 +62,10 @@ CAMERA_NODE="$CAMERA_PREFIX/lib/usb_cam/usb_cam_node_exe"
 export LD_LIBRARY_PATH="$CAMERA_PREFIX/lib:${LD_LIBRARY_PATH:-}"
 FEATURES=800
 # The isolated core supplies the Rectified camera loader fix and safe export.
-CORE_DIR="${VIO_ROOT}/benchmark/build_orb_core"
+CORE_DIR="${ORB_CORE_DIR:-${VIO_ROOT}/benchmark/build_orb_core}"
 [[ -r "$CORE_DIR/libORB_SLAM3.so" ]] || { echo "Run python3 open_vins/benchmark/build_orb_core.py first" >&2; exit 1; }
+CORE_DIR="$(cd "$CORE_DIR" && pwd)"
+export ORB_CORE_DIR="$CORE_DIR"
 export LD_LIBRARY_PATH="$CORE_DIR:${LD_LIBRARY_PATH:-}"
 if [[ "$EFFICIENT" == true ]]; then
   export ORB_LOCAL_BA_WINDOW="${ORB_LOCAL_BA_WINDOW:-12}"
@@ -84,6 +86,12 @@ echo "TIP: keep the rig still ~2 s, then move slowly (rotation+translation) faci
 
 RUN_LABEL=hw290_orb
 source "$HW290_DIR/process_helpers.sh"
+printf '%s\n' "$CORE_DIR" > "$RUN_DIR/orb_core_directory.txt"
+sha256sum "$CORE_DIR/libORB_SLAM3.so" > "$RUN_DIR/orb_core_sha256.txt"
+for manifest in build_manifest.json validation_manifest.json prototype_manifest.json; do
+  [[ ! -r "$CORE_DIR/$manifest" ]] || cp "$CORE_DIR/$manifest" "$RUN_DIR/orb_core_$manifest"
+done
+echo "ORB core: $CORE_DIR"
 SETTINGS_PATH="$RUN_DIR/orb_settings.yaml"
 CALIBRATED_OFFSET=$("$CALIBRATION_EXPORTER" "$ESTIMATOR_CONFIG" "$CALIBRATION" "$SETTINGS_PATH" "$FEATURES")
 cp "$CALIBRATION" "$RUN_DIR/stereo_opencv.yaml"
