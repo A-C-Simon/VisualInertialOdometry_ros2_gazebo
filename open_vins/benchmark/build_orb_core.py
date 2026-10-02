@@ -23,8 +23,8 @@ for line in flags_file.read_text().splitlines():
   key,value=line.split('=',1);flags[key.strip()]=shlex.split(value.strip())
 manifest={'original_library_sha256':hashlib.sha256((root/'lib/libORB_SLAM3.so').read_bytes()).hexdigest(),
           'flags':flags,'sources':{},'compile_commands':[]}
-patch='';export_patch='';tracking_patch='';objects={}
-for name in ['Optimizer.cc','Settings.cc','System.cc','Tracking.cc']:
+patch='';export_patch='';tracking_patch='';motion_patch='';objects={}
+for name in ['Optimizer.cc','Settings.cc','System.cc','Tracking.cc','LocalMapping.cc']:
  source=root/'src'/name;old=source.read_text();new=old
  if name=='Optimizer.cc':
   new=new.replace('#include <complex>','#include <complex>\n#include <cstdlib>')
@@ -69,6 +69,16 @@ for name in ['Optimizer.cc','Settings.cc','System.cc','Tracking.cc']:
         // Tracking and inertial optimization must use a deterministic window.
         mnFramesToResetIMU = mMaxFrames;
     }''')
+ elif name=='LocalMapping.cc':
+  marker='''                                cout << "Not enough motion for initializing. Reseting..." << endl;'''
+  assert new.count(marker)==1
+  new=new.replace(marker,'''                                cout << "Not enough motion for initializing. Reseting..." << endl;
+                                cout << "IMU_MOTION_RESET timestamp=" << mpCurrentKeyFrame->mTimeStamp
+                                     << " distance_m=" << dist << " motion_time_s=" << mTinit
+                                     << " keyframes=" << mpCurrentKeyFrame->GetMap()->KeyFramesInMap()
+                                     << " refinement1=" << mpCurrentKeyFrame->GetMap()->GetIniertialBA1()
+                                     << " refinement2=" << mpCurrentKeyFrame->GetMap()->GetIniertialBA2()
+                                     << endl;''')
  else:
   # An atlas emptied by initialization resets has no map with keyframes.
   # Both exporters otherwise dereference an uninitialized map pointer.
@@ -96,6 +106,7 @@ for name in ['Optimizer.cc','Settings.cc','System.cc','Tracking.cc']:
  source_patch=''.join(difflib.unified_diff(old.splitlines(True),new.splitlines(True),fromfile='a/src/'+name,tofile='b/src/'+name))
  if name=='System.cc':export_patch+=source_patch
  elif name=='Tracking.cc':tracking_patch+=source_patch
+ elif name=='LocalMapping.cc':motion_patch+=source_patch
  else:patch+=source_patch
  obj=out/(name+'.o');objects['CMakeFiles/ORB_SLAM3.dir/src/'+name+'.o']=str(obj)
  command=['/usr/bin/c++']+flags['CXX_DEFINES']+flags['CXX_INCLUDES']+flags['CXX_FLAGS']+['-c',str(patched),'-o',str(obj)]
@@ -103,6 +114,7 @@ for name in ['Optimizer.cc','Settings.cc','System.cc','Tracking.cc']:
 (ROOT/'benchmark/patches/orb_local_ba_window.patch').write_text(patch)
 (ROOT/'benchmark/patches/orb_safe_trajectory_export.patch').write_text(export_patch)
 (ROOT/'benchmark/patches/orb_tracking_reset_window.patch').write_text(tracking_patch)
+(ROOT/'benchmark/patches/orb_initialization_diagnostics.patch').write_text(motion_patch)
 link=shlex.split((root/'build/CMakeFiles/ORB_SLAM3.dir/link.txt').read_text())
 link[link.index('-o')+1]=str(out/'libORB_SLAM3.so')
 link=[objects.get(arg,arg) for arg in link];manifest['link_command']=link
