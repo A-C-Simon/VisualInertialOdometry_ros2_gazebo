@@ -366,3 +366,30 @@ python3 benchmark/build_orb_core.py \
   --preserve-inertial-origin --motion-gated-initialization \
   --keyframe-interval-s 0.25 --refined-keyframe-interval-s 0.5
 ```
+
+
+## Exact stereo patch arithmetic trial, October 3
+
+`--fast-stereo-patches` is an isolated, unselected experiment. It reduces row
+table reservation, stores 11 correlation distances on the stack, and computes
+the original grayscale L1 sum directly. The shared native helper matched
+OpenCV on 330,004 random and extreme comparisons with odd row strides.
+The arithmetic is unchanged: the maximum 11 x 11 uint8 sum is 30,855, which
+is represented exactly by both int and float. Build the native check with:
+
+```bash
+c++ -O3 -march=native -std=c++14 -I/usr/include/opencv4 -Ibenchmark \
+  benchmark/stereo_patch_cost_check.cc -lopencv_core -o /tmp/stereo_patch_cost_check
+/tmp/stereo_patch_cost_check
+```
+
+A same-day headless EuRoC reference used 139.64 CPU seconds versus 136.70 for
+the experiment (2.1% reduction), with nearly equal peak memory near 695 MiB.
+Both retained all 2,911 eligible stereo pairs and completed refinements without
+resets. Post-30-second ATE was 1.893 versus 1.771 cm; translation RPE 1.191
+versus 1.220 cm. Full common-interval ATE was 1.971 versus 7.825 cm. This
+startup-quality difference prevents selecting the optimization on the basis
+of late accuracy. A separate constructor-baseline investigation is underway.
+[Full evidence](euroc_stereo_cost_20261003.json) preserves both intervals and
+the single-trial limit. The approximately fivefold isolated patch speedup is
+not a whole-pipeline speedup.

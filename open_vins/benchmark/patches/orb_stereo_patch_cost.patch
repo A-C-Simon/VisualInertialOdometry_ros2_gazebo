@@ -1,0 +1,43 @@
+--- a/src/Frame.cc
++++ b/src/Frame.cc
+@@ -27,6 +27,8 @@
+ #include "GeometricCamera.h"
+ 
+ #include <thread>
++#include <array>
++#include "stereo_patch_distance.hpp"
+ #include <include/CameraModels/Pinhole.h>
+ #include <include/CameraModels/KannalaBrandt8.h>
+ 
+@@ -821,7 +823,7 @@
+     vector<vector<size_t> > vRowIndices(nRows,vector<size_t>());
+ 
+     for(int i=0; i<nRows; i++)
+-        vRowIndices[i].reserve(200);
++        vRowIndices[i].reserve(16);
+ 
+     const int Nr = mvKeysRight.size();
+ 
+@@ -910,8 +912,7 @@
+             int bestDist = INT_MAX;
+             int bestincR = 0;
+             const int L = 5;
+-            vector<float> vDists;
+-            vDists.resize(2*L+1);
++            std::array<float, 2*L+1> vDists{};
+ 
+             const float iniu = scaleduR0+L-w;
+             const float endu = scaleduR0+L+w+1;
+@@ -920,9 +921,9 @@
+ 
+             for(int incR=-L; incR<=+L; incR++)
+             {
+-                cv::Mat IR = mpORBextractorRight->mvImagePyramid[kpL.octave].rowRange(scaledvL-w,scaledvL+w+1).colRange(scaleduR0+incR-w,scaleduR0+incR+w+1);
+-
+-                float dist = cv::norm(IL,IR,cv::NORM_L1);
++                const cv::Mat &right = mpORBextractorRight->mvImagePyramid[kpL.octave];
++                float dist = detail::stereo_patch_l1(IL, right,
++                    static_cast<int>(scaleduR0)+incR-w, static_cast<int>(scaledvL)-w);
+                 if(dist<bestDist)
+                 {
+                     bestDist =  dist;

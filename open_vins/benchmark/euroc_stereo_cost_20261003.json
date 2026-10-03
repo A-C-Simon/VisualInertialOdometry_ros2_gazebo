@@ -1,0 +1,132 @@
+{
+  "dataset": "EuRoC V1_01_easy",
+  "resources": [
+    {
+      "trial": "euroc_20261002_openvins_fixed_cached",
+      "cpu_seconds": 69.89,
+      "peak_rss_mib": 121.875,
+      "completion": {
+        "elapsed_s": 151.82102380100696,
+        "estimator_exit": 0,
+        "player_exit": 0
+      }
+    },
+    {
+      "trial": "euroc_20261003_orb_reference_r1",
+      "cpu_seconds": 139.64,
+      "peak_rss_mib": 694.97265625,
+      "completion": {
+        "elapsed_s": 156.7215522970073,
+        "estimator_exit": 0,
+        "player_exit": 0
+      }
+    },
+    {
+      "trial": "euroc_20261003_orb_fast_stereo_reliable",
+      "cpu_seconds": 136.7,
+      "peak_rss_mib": 694.85546875,
+      "completion": {
+        "elapsed_s": 157.18098892099806,
+        "estimator_exit": 0,
+        "player_exit": 0
+      }
+    }
+  ],
+  "post_initialization": {
+    "common_start_s": 1403715303.262143,
+    "common_end_s": 1403715417.962143,
+    "alignment": "SE(3), no scale; GT position interpolated",
+    "results": [
+      {
+        "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261002_openvins_fixed_cached/online.txt",
+        "poses": 2295,
+        "duration_s": 114.70000004768372,
+        "approximate_20hz_coverage": 0.9999999995844556,
+        "max_pose_gap_s": 0.05000019073486328,
+        "ate_rmse_m": 0.033395816919724354,
+        "ate_p95_m": 0.04718543991177807,
+        "rpe_1s_translation_rmse_m": 0.009888085038859786
+      },
+      {
+        "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261003_orb_reference_r1/online.txt",
+        "poses": 2295,
+        "duration_s": 114.70000004768372,
+        "approximate_20hz_coverage": 0.9999999995844556,
+        "max_pose_gap_s": 0.05000019073486328,
+        "ate_rmse_m": 0.01893356890606608,
+        "ate_p95_m": 0.03134883111935843,
+        "rpe_1s_translation_rmse_m": 0.011906130380531135
+      },
+      {
+        "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261003_orb_fast_stereo_reliable/online.txt",
+        "poses": 2295,
+        "duration_s": 114.70000004768372,
+        "approximate_20hz_coverage": 0.9999999995844556,
+        "max_pose_gap_s": 0.05000019073486328,
+        "ate_rmse_m": 0.017708181743562132,
+        "ate_p95_m": 0.028321606731101748,
+        "rpe_1s_translation_rmse_m": 0.012201551484770045
+      }
+    ]
+  },
+  "full_common_interval": {
+    "common_start_s": 1403715280.762143,
+    "common_end_s": 1403715417.962143,
+    "alignment": "SE(3), no scale; GT position interpolated",
+    "results": [
+      {
+        "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261002_openvins_fixed_cached/online.txt",
+        "poses": 2745,
+        "duration_s": 137.20000004768372,
+        "approximate_20hz_coverage": 0.9999999996525777,
+        "max_pose_gap_s": 0.05000019073486328,
+        "ate_rmse_m": 0.04336297110747532,
+        "ate_p95_m": 0.08561582284069995,
+        "rpe_1s_translation_rmse_m": 0.01001719899372996
+      },
+      {
+        "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261003_orb_reference_r1/online.txt",
+        "poses": 2745,
+        "duration_s": 137.20000004768372,
+        "approximate_20hz_coverage": 0.9999999996525777,
+        "max_pose_gap_s": 0.05000019073486328,
+        "ate_rmse_m": 0.01970538353856606,
+        "ate_p95_m": 0.031213961672130548,
+        "rpe_1s_translation_rmse_m": 0.013217474363161518
+      },
+      {
+        "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261003_orb_fast_stereo_reliable/online.txt",
+        "poses": 2745,
+        "duration_s": 137.20000004768372,
+        "approximate_20hz_coverage": 0.9999999996525777,
+        "max_pose_gap_s": 0.05000019073486328,
+        "ate_rmse_m": 0.07825425346239041,
+        "ate_p95_m": 0.2220080144889145,
+        "rpe_1s_translation_rmse_m": 0.03956502666570373
+      }
+    ]
+  },
+  "status": "Experimental, not selected: exact patch arithmetic established but whole-pipeline startup quality remains unverified",
+  "ground_truth": {
+    "path": "ov_data/euroc_mav/V1_01_easy.csv",
+    "sha256": "16543952bf69f3fb886008a26cc21d3c552deca8fa06087f0bc329c09d7fcbe3"
+  },
+  "protocol": {
+    "tracked_pairs_each": 2911,
+    "imu_samples_each": 29120,
+    "resets_each": 0,
+    "refinement_stages_each": [
+      1,
+      2
+    ],
+    "same_day_orb_reference": true,
+    "repeats_each": 1
+  },
+  "native_distance_check": {
+    "output": "equal_patch_distances=330004 baseline_seconds=0.809186 pointer_seconds=0.180515 ratio=0.223083 checksum=45411925520",
+    "source_sha256": "7ad9fe2c8b7d8ce44af57db1e17ace4a8448007d28808f94f0b92fe7ae35cb21",
+    "helper_sha256": "8b4c86fc43d171ec40596d93a636496f28fa8c3a91e4b6c49bbc61a30db31856"
+  },
+  "candidate_library_sha256": "dc18e7b4f4d166f349b54d415cd198ba80a38184728c00ba2b156463e4d91fa2",
+  "cpu_reduction_percent": 2.1054139215124557
+}
