@@ -393,3 +393,21 @@ of late accuracy. A separate constructor-baseline investigation is underway.
 [Full evidence](euroc_stereo_cost_20261003.json) preserves both intervals and
 the single-trial limit. The approximately fivefold isolated patch speedup is
 not a whole-pipeline speedup.
+
+
+## Stereo baseline initialization defect
+
+The stereo `Frame` constructor called `ComputeStereoMatches()` before assigning
+`mb`. Matching uses `mb` to limit disparity search. The isolated builder now
+initializes it from `bf / K(0,0)` in the constructor's initializer list, before
+matching reads it. This uses current-frame intrinsics and does not rely on the
+static camera parameters assigned later in the body.
+
+A native constructor fixture supplies identical synthetic stereo images and
+seeds only the raw baseline storage differently. The old library returned 141
+valid depths for one seed and 69 for the other. The corrected library returned
+141 for both. The fixture uses the core's native compiler flags and correctly
+aligned `Frame` storage. This establishes a real initialization defect; full
+replay must still check whether it explains the observed startup variation.
+[Native evidence and commands](stereo_baseline_initialization_20261003.json)
+keep this fix separate from the unselected patch-cost experiment.

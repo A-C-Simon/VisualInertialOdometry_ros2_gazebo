@@ -53,7 +53,7 @@ manifest={'preserve_inertial_origin':a.preserve_inertial_origin,
           'original_library_sha256':hashlib.sha256((root/'lib/libORB_SLAM3.so').read_bytes()).hexdigest(),
           'flags':flags,'sources':{},'compile_commands':[]}
 patch='';export_patch='';tracking_patch='';motion_patch='';objects={}
-for name in ['Optimizer.cc','Settings.cc','System.cc','Tracking.cc','LocalMapping.cc'] + (['Frame.cc'] if a.fast_stereo_patches else []):
+for name in ['Optimizer.cc','Settings.cc','System.cc','Tracking.cc','LocalMapping.cc','Frame.cc']:
  source=root/'src'/name;old=source.read_text();new=old
  if name=='Optimizer.cc':
   new=new.replace('#include <complex>','#include <complex>\n#include <cstdlib>')
@@ -124,6 +124,16 @@ for name in ['Optimizer.cc','Settings.cc','System.cc','Tracking.cc','LocalMappin
                                      << " refinement1=" << mpCurrentKeyFrame->GetMap()->GetIniertialBA1()
                                      << " refinement2=" << mpCurrentKeyFrame->GetMap()->GetIniertialBA2()
                                      << endl;''')
+ elif name=='Frame.cc':
+  # Stereo matching reads mb before the constructor body computes static fx.
+  # Use this frame's intrinsics rather than uninitialized object storage.
+  start=new.index('Frame::Frame(const cv::Mat &imLeft, const cv::Mat &imRight,')
+  end=new.index('Frame::Frame(const cv::Mat &imGray, const cv::Mat &imDepth,',start)
+  section=new[start:end]
+  marker='mbf(bf), mThDepth(thDepth)'
+  assert section.count(marker)==1
+  section=section.replace(marker,'mbf(bf), mb(bf / K.at<float>(0,0)), mThDepth(thDepth)')
+  new=new[:start]+section+new[end:]
  elif name=='System.cc':
   # An atlas emptied by initialization resets has no map with keyframes.
   # Both exporters otherwise dereference an uninitialized map pointer.
@@ -157,15 +167,19 @@ for name in ['Optimizer.cc','Settings.cc','System.cc','Tracking.cc','LocalMappin
   new=patched.read_text()
   manifest['motion_gate_patch_sha256']=hashlib.sha256(policy.read_bytes()).hexdigest()
  if name=='Frame.cc':
-  section=new[new.index('void Frame::ComputeStereoMatches()'):new.index('void Frame::ComputeStereoFromRGBD(')]
-  assert 'const int w = 5;' in section and 'const int L = 5;' in section
-  policy=ROOT/'benchmark/patches/orb_stereo_patch_cost.patch'
-  subprocess.run(['patch','--silent','--fuzz=0',str(patched),str(policy)],check=True)
-  new=patched.read_text()
-  header=ROOT/'benchmark/stereo_patch_distance.hpp'
-  (out/header.name).write_bytes(header.read_bytes())
-  manifest['stereo_patch_sha256']=hashlib.sha256(policy.read_bytes()).hexdigest()
-  manifest['stereo_patch_header_sha256']=hashlib.sha256(header.read_bytes()).hexdigest()
+  baseline_patch=''.join(difflib.unified_diff(old.splitlines(True),new.splitlines(True),
+                          fromfile='a/src/Frame.cc',tofile='b/src/Frame.cc'))
+  (ROOT/'benchmark/patches/orb_stereo_baseline_initialization.patch').write_text(baseline_patch)
+  if a.fast_stereo_patches:
+   section=new[new.index('void Frame::ComputeStereoMatches()'):new.index('void Frame::ComputeStereoFromRGBD(')]
+   assert 'const int w = 5;' in section and 'const int L = 5;' in section
+   policy=ROOT/'benchmark/patches/orb_stereo_patch_cost.patch'
+   subprocess.run(['patch','--silent','--fuzz=0',str(patched),str(policy)],check=True)
+   new=patched.read_text()
+   header=ROOT/'benchmark/stereo_patch_distance.hpp'
+   (out/header.name).write_bytes(header.read_bytes())
+   manifest['stereo_patch_sha256']=hashlib.sha256(policy.read_bytes()).hexdigest()
+   manifest['stereo_patch_header_sha256']=hashlib.sha256(header.read_bytes()).hexdigest()
  manifest['sources'][name]={'original_sha256':hashlib.sha256(old.encode()).hexdigest(),
                            'patched_sha256':hashlib.sha256(new.encode()).hexdigest()}
  source_patch=''.join(difflib.unified_diff(old.splitlines(True),new.splitlines(True),fromfile='a/src/'+name,tofile='b/src/'+name))
