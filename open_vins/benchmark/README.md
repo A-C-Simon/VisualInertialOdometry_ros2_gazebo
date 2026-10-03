@@ -411,3 +411,12 @@ aligned `Frame` storage. This establishes a real initialization defect; full
 replay must still check whether it explains the observed startup variation.
 [Native evidence and commands](stereo_baseline_initialization_20261003.json)
 keep this fix separate from the unselected patch-cost experiment.
+
+
+The first complete fixed-baseline public replay retained all eligible inputs
+and completed both refinements without resets or tracking losses. It used
+140.04 CPU seconds and 694.12 MiB. Post-30-second ATE was 2.061 cm and
+translation RPE 1.237 cm; full common-interval ATE was 4.039 cm. This removes
+the confirmed constructor read but does not establish elimination of all
+startup variation or a compute saving. The exact patch-cost variant will be
+compared against this corrected constructor.

@@ -157,5 +157,93 @@
     "unfixed": "d35f227f89c82f948829543a92f5cbbb6df4afb0687f537e3b7169c2080cb571",
     "fixed": "78b1a328a0723771fdd0b2e51dbf4d88d3b7c063a3c7e7d4208c433efd9ca513"
   },
-  "interpretation": "Before the fix, valid depth count depends on raw object storage (141 versus 69). Initializing mb from bf and this frame K before matching gives 141 for both. This proves a constructor defect; it does not yet prove that it explains all observed VIO startup variation."
+  "interpretation": "Before the fix, valid depth count depends on raw object storage (141 versus 69). Initializing mb from bf and this frame K before matching gives 141 for both. This proves a constructor defect; it does not yet prove that it explains all observed VIO startup variation.",
+  "public_replay": {
+    "dataset": "EuRoC V1_01_easy",
+    "resources": [
+      {
+        "trial": "euroc_20261003_orb_reference_r1",
+        "cpu_seconds": 139.64,
+        "peak_rss_mib": 694.97265625,
+        "completion": {
+          "elapsed_s": 156.7215522970073,
+          "estimator_exit": 0,
+          "player_exit": 0
+        }
+      },
+      {
+        "trial": "euroc_20261003_orb_baseline_initialized_r1",
+        "cpu_seconds": 140.04,
+        "peak_rss_mib": 694.0703125,
+        "completion": {
+          "elapsed_s": 156.81802613299806,
+          "estimator_exit": 0,
+          "player_exit": 0
+        }
+      }
+    ],
+    "post_initialization": {
+      "common_start_s": 1403715303.262143,
+      "common_end_s": 1403715417.962143,
+      "alignment": "SE(3), no scale; GT position interpolated",
+      "results": [
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261003_orb_reference_r1/online.txt",
+          "poses": 2295,
+          "duration_s": 114.70000004768372,
+          "approximate_20hz_coverage": 0.9999999995844556,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.01893356890606608,
+          "ate_p95_m": 0.03134883111935843,
+          "rpe_1s_translation_rmse_m": 0.011906130380531135
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261003_orb_baseline_initialized_r1/online.txt",
+          "poses": 2295,
+          "duration_s": 114.70000004768372,
+          "approximate_20hz_coverage": 0.9999999995844556,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.02061023061546664,
+          "ate_p95_m": 0.03397975985406584,
+          "rpe_1s_translation_rmse_m": 0.012373953892806027
+        }
+      ]
+    },
+    "full_common_interval": {
+      "common_start_s": 1403715280.762143,
+      "common_end_s": 1403715417.962143,
+      "alignment": "SE(3), no scale; GT position interpolated",
+      "results": [
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261003_orb_reference_r1/online.txt",
+          "poses": 2745,
+          "duration_s": 137.20000004768372,
+          "approximate_20hz_coverage": 0.9999999996525777,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.01970538353856606,
+          "ate_p95_m": 0.031213961672130548,
+          "rpe_1s_translation_rmse_m": 0.013217474363161518
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261003_orb_baseline_initialized_r1/online.txt",
+          "poses": 2745,
+          "duration_s": 137.20000004768372,
+          "approximate_20hz_coverage": 0.9999999996525777,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.04038916489786217,
+          "ate_p95_m": 0.1044209329312401,
+          "rpe_1s_translation_rmse_m": 0.021114164513863852
+        }
+      ]
+    },
+    "input_validation": {
+      "eligible_pairs": 2911,
+      "imu_samples": 29120,
+      "both_refinements_completed": true,
+      "map_resets": 0,
+      "lost_transitions": 0,
+      "pose_coverage_after_30_seconds": 1.0
+    },
+    "interpretation": "Complete input and no resets; corrected constructor does not eliminate all startup trajectory variation. No cost reduction claimed for this bug fix."
+  }
 }
