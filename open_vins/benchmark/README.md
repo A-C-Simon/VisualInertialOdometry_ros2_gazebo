@@ -415,8 +415,28 @@ keep this fix separate from the unselected patch-cost experiment.
 
 The first complete fixed-baseline public replay retained all eligible inputs
 and completed both refinements without resets or tracking losses. It used
-140.04 CPU seconds and 694.12 MiB. Post-30-second ATE was 2.061 cm and
+140.04 CPU seconds and 694.07 MiB. Post-30-second ATE was 2.061 cm and
 translation RPE 1.237 cm; full common-interval ATE was 4.039 cm. This removes
 the confirmed constructor read but does not establish elimination of all
 startup variation or a compute saving. The exact patch-cost variant will be
 compared against this corrected constructor.
+
+
+## Corrected stereo-cost comparison reviewed October 5
+
+The completed October 3 trial combines the initialized-baseline constructor
+with `--fast-stereo-patches`. Against the corrected reference, CPU fell from
+140.04 to 129.54 seconds (7.5%), with peak RSS 694.07 versus 692.11 MiB.
+Both processed all 2,911 eligible stereo pairs, completed both inertial
+refinements and had no resets or tracking-loss transitions. Post-30-second
+ATE was 2.061 versus 1.791 cm; full common-interval ATE was 4.039 versus
+3.815 cm. Each trial used reliable images, queue 64, one OpenCV thread,
+native resolution, 600 features and a local BA window of 12. CPU includes
+estimator startup and shutdown; drivers, recording and RViz are excluded.
+
+This is one sequential pair, so the candidate remains experimental pending
+repeated public trials and the successful tower recording. Earlier unchanged
+reference runs showed startup variation. OpenVINS still used less CPU and
+memory in the matched public protocol: 69.89 seconds and 121.88 MiB.
+[Protocol, core hashes and both accuracy intervals](euroc_fixed_stereo_cost_20261005.json)
+retain these limitations. Reports remain outside this repository.
