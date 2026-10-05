@@ -783,3 +783,32 @@ including rectification and other work. A revised exact FAST detector was
 unselected. Instrumentation and a short prototype compilation near the end
 make this replay unsuitable as a final cost comparison.
 [Scope timings and limitations](orb_packed_cpu_profile_20261005.json).
+
+
+## Exact grayscale rectification experiment
+
+`build_orb_core.py --fast-rectification` is an isolated option for raw stereo
+images with immutable settings maps. On AVX2 and OpenCV 4.5.4 it caches map
+coordinates and computes the same Q5 bilinear interpolation with constant-zero
+borders. Other inputs, versions and overlapping buffers use `cv::remap`.
+Map ownership and per-thread cache keys retain safe lifetimes and layouts.
+
+The native check matched 115,507,200 dataset pixels and 8,648,178 random pixels,
+including odd strides, borders, cache replacement, two threads and fallbacks.
+Median kernel time fell 32.5%, from 1.13838 to 0.767863 seconds. These are
+800 rectifications per repeat, five alternating timing pairs, excluding map
+preparation. Full estimator CPU and trajectory comparisons are still pending.
+The tower's splitter already rectifies its images, so this core change alone
+does not reduce its live processing cost.
+[Native check evidence](orb_rectification_native_20261005.json).
+
+Reproduce with an image-list file containing one native grayscale path per line:
+
+```bash
+c++ -O3 -march=native -std=c++14 -pthread benchmark/orb_remap_check.cc \
+  -o /tmp/orb_remap_check $(pkg-config --cflags --libs opencv4)
+/tmp/orb_remap_check benchmark/configs/orb_euroc_600_no_loop.yaml IMAGE_LIST
+```
+
+Use a separate output directory with `--fast-rectification`; all other policy
+flags must match the reference. Default core and hardware settings are unchanged.

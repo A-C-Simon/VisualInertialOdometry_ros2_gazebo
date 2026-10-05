@@ -1,0 +1,42 @@
+{
+  "scope": "Standalone pixel equivalence and median kernel wall time; not full estimator CPU savings.",
+  "status": "experimental; full sequence comparisons running",
+  "opencv": "4.5.4",
+  "compiler_flags": [
+    "-O3",
+    "-march=native",
+    "-std=c++14",
+    "-pthread"
+  ],
+  "header_sha256": "9949afbb27cd8a4d3d07c0802a12c801ec718803e3daace5558c8665da437824",
+  "check_source_sha256": "2506f0873fd087d3aca402dd8bf8fcfff678f3550ca5a28ea352ca20b6b3125d",
+  "image_list_sha256": "6d9f359dd7b02df756f62dd325e6faff1a763c902d97ff8c1f01b1019077b047",
+  "image_list_selection": "160 native V1_01_easy grayscale images sampled across the sequence, each checked with both rectification maps.",
+  "exact_rectified_images": 320,
+  "exact_dataset_pixels": 115507200,
+  "random_cases": 1000,
+  "exact_random_pixels": 8648178,
+  "additional_checks": [
+    "odd-stride source ROIs",
+    "identity and out-of-bounds maps",
+    "source dimensions down to one pixel",
+    "color fallback",
+    "alias fallback",
+    "external-map fallback",
+    "fixed-map fallback",
+    "two concurrent independent thread caches",
+    "build without AVX2"
+  ],
+  "kernel_timing": {
+    "repeats": 5,
+    "rectifications_per_repeat": 800,
+    "statistic": "median of alternating reference/candidate timings",
+    "reference_seconds": 1.13838,
+    "candidate_seconds": 0.767863,
+    "reported_percent_decrease": 32.5477,
+    "limits": "Console durations rounded; percentages calculated within the check before formatting. Kernel timing excludes plan creation and is not process CPU."
+  },
+  "core_library_sha256": "4d47a5974ba2fb61ef9f345acf6c1744a630b3d801568cbadbe54d14bfcbba03",
+  "fallback_build": "All identical pixel checks passed without AVX2; timings are not claimed as savings.",
+  "limits": "Only immutable owned maps are cached. API falls back for other versions, processors, layouts or overlapping buffers. The hardware splitter already rectifies images, so this System change does not speed the current tower configuration."
+}

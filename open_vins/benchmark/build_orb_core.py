@@ -34,6 +34,8 @@ p.add_argument('--reuse-pyramid',action='store_true',
                help='Experimental: retain image pyramid allocations when dimensions match')
 p.add_argument('--packed-vocabulary',action='store_true',
                help='Experimental: parse valid ORB vocabulary nodes into shared descriptor storage')
+p.add_argument('--fast-rectification',action='store_true',
+               help='Experimental: exact grayscale rectification on AVX2 with OpenCV 4.5.4')
 p.add_argument('--profile-cpu',action='store_true',
                help='Diagnostic only: collect inclusive per-stage thread CPU with ORB_PROFILE_OUTPUT')
 a=p.parse_args()
@@ -44,7 +46,7 @@ if not 0 <= a.refined_keyframe_interval_s <= .5:
  p.error('Refined keyframe interval must be between 0 and 0.5 seconds')
 if a.refined_keyframe_interval_s and a.refined_keyframe_interval_s < a.keyframe_interval_s:
  p.error('Refined keyframe interval must not shorten the initial interval')
-if (a.preserve_inertial_origin or a.keyframe_interval_s or a.refined_keyframe_interval_s or a.motion_gated_initialization or a.fast_stereo_patches or a.fast_gaussian or a.reuse_pyramid or a.packed_vocabulary or a.profile_cpu) and out == (ROOT/'benchmark/build_orb_core').resolve():
+if (a.preserve_inertial_origin or a.keyframe_interval_s or a.refined_keyframe_interval_s or a.motion_gated_initialization or a.fast_stereo_patches or a.fast_gaussian or a.reuse_pyramid or a.packed_vocabulary or a.fast_rectification or a.profile_cpu) and out == (ROOT/'benchmark/build_orb_core').resolve():
  p.error('Use a separate --output directory for experimental core changes')
 if a.check_translation_invariance and (a.prepare_only or not a.check_translation_invariance.is_file()):
  p.error('Translation check requires an existing settings file and a compiled build')
@@ -62,6 +64,7 @@ manifest={'preserve_inertial_origin':a.preserve_inertial_origin,
           'fast_gaussian':a.fast_gaussian,
           'reuse_pyramid':a.reuse_pyramid,
           'packed_vocabulary':a.packed_vocabulary,
+          'fast_rectification':a.fast_rectification,
           'profile_cpu':a.profile_cpu,
           'original_library_sha256':hashlib.sha256((root/'lib/libORB_SLAM3.so').read_bytes()).hexdigest(),
           'flags':flags,'sources':{},'compile_commands':[]}
@@ -222,6 +225,21 @@ for name in source_names:
   new='#include "orb_packed_vocabulary.hpp"\n'+new
   (out/'orb_packed_vocabulary.patch').write_text(''.join(difflib.unified_diff(
       patched.read_text().splitlines(True),new.splitlines(True),
+      fromfile='a/src/System.cc',tofile='b/src/System.cc')))
+  patched.write_text(new)
+ if name=='System.cc' and a.fast_rectification:
+  before_rectification=new
+  header=ROOT/'benchmark/orb_remap8u.hpp'
+  (out/header.name).write_bytes(header.read_bytes())
+  manifest['rectification_header_sha256']=hashlib.sha256(header.read_bytes()).hexdigest()
+  for side in ['Left','Right']:
+   camera='l' if side=='Left' else 'r'
+   marker='cv::remap(im'+side+', im'+side+'ToFeed, M1'+camera+', M2'+camera+', cv::INTER_LINEAR);'
+   assert new.count(marker)==1,marker
+   new=new.replace(marker,'orb_fast::rectifyImmutableMaps(im'+side+', im'+side+'ToFeed, M1'+camera+', M2'+camera+');')
+  new='#include "orb_remap8u.hpp"\n'+new
+  (out/'orb_rectification.patch').write_text(''.join(difflib.unified_diff(
+      before_rectification.splitlines(True),new.splitlines(True),
       fromfile='a/src/System.cc',tofile='b/src/System.cc')))
   patched.write_text(new)
  if name=='ORBextractor.cc' and a.fast_gaussian:
