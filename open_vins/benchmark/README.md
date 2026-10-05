@@ -850,3 +850,21 @@ The ORB authors identify multithreading, RANSAC and keyframe selection as
 sources of variation between runs in [their reproducibility discussion](https://github.com/UZ-SLAMLab/ORB_SLAM3/issues/307).
 This supports repeating matched trials; it does not establish that the observed
 error increase is harmless or caused by one particular source.
+
+
+## Final persistent extraction worker trial
+
+Two persistent workers matched 191,340 keypoints and descriptors over 160
+stereo pairs, including pyramid and overlap outputs. Synchronous completion,
+exception recovery, concurrent callers and shutdown were checked. Standalone
+extraction CPU fell 6.1% from 5.421 to 5.089 seconds.
+
+The final full easy replay used 88.48 CPU seconds versus the three-reference
+mean of 88.97, only a 0.6% decrease. It retained all 2,911 eligible frames and
+29,120 IMU samples, both refinements and complete late pose coverage, without
+active resets. Late ATE increased 5.2% from 1.804 to 1.897 cm; full ATE
+decreased 22.7% from 2.779 to 2.147 cm. Peak RSS increased 1.6%.
+It remains unselected: the small full-run saving and absence of a live check
+do not justify replacing the proven tower configuration.
+No further worker trials are planned.
+[Full comparison, percentage changes and checks](orb_workers_trial_20261005.json).

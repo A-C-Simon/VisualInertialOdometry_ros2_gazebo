@@ -36,6 +36,8 @@ p.add_argument('--packed-vocabulary',action='store_true',
                help='Experimental: parse valid ORB vocabulary nodes into shared descriptor storage')
 p.add_argument('--fast-rectification',action='store_true',
                help='Experimental: exact grayscale rectification on AVX2 with OpenCV 4.5.4')
+p.add_argument('--persistent-stereo-workers',action='store_true',
+               help='Experimental: retain two extraction workers per tracking thread')
 p.add_argument('--profile-cpu',action='store_true',
                help='Diagnostic only: collect inclusive per-stage thread CPU with ORB_PROFILE_OUTPUT')
 a=p.parse_args()
@@ -46,7 +48,7 @@ if not 0 <= a.refined_keyframe_interval_s <= .5:
  p.error('Refined keyframe interval must be between 0 and 0.5 seconds')
 if a.refined_keyframe_interval_s and a.refined_keyframe_interval_s < a.keyframe_interval_s:
  p.error('Refined keyframe interval must not shorten the initial interval')
-if (a.preserve_inertial_origin or a.keyframe_interval_s or a.refined_keyframe_interval_s or a.motion_gated_initialization or a.fast_stereo_patches or a.fast_gaussian or a.reuse_pyramid or a.packed_vocabulary or a.fast_rectification or a.profile_cpu) and out == (ROOT/'benchmark/build_orb_core').resolve():
+if (a.preserve_inertial_origin or a.keyframe_interval_s or a.refined_keyframe_interval_s or a.motion_gated_initialization or a.fast_stereo_patches or a.fast_gaussian or a.reuse_pyramid or a.packed_vocabulary or a.fast_rectification or a.persistent_stereo_workers or a.profile_cpu) and out == (ROOT/'benchmark/build_orb_core').resolve():
  p.error('Use a separate --output directory for experimental core changes')
 if a.check_translation_invariance and (a.prepare_only or not a.check_translation_invariance.is_file()):
  p.error('Translation check requires an existing settings file and a compiled build')
@@ -65,6 +67,7 @@ manifest={'preserve_inertial_origin':a.preserve_inertial_origin,
           'reuse_pyramid':a.reuse_pyramid,
           'packed_vocabulary':a.packed_vocabulary,
           'fast_rectification':a.fast_rectification,
+          'persistent_stereo_workers':a.persistent_stereo_workers,
           'profile_cpu':a.profile_cpu,
           'original_library_sha256':hashlib.sha256((root/'lib/libORB_SLAM3.so').read_bytes()).hexdigest(),
           'flags':flags,'sources':{},'compile_commands':[]}
@@ -218,6 +221,27 @@ for name in source_names:
    (out/header.name).write_bytes(header.read_bytes())
    manifest['stereo_patch_sha256']=hashlib.sha256(policy.read_bytes()).hexdigest()
    manifest['stereo_patch_header_sha256']=hashlib.sha256(header.read_bytes()).hexdigest()
+ if name=='Frame.cc' and a.persistent_stereo_workers:
+  before_workers=new
+  header=ROOT/'benchmark/orb_stereo_workers.hpp'
+  (out/header.name).write_bytes(header.read_bytes())
+  manifest['workers_header_sha256']=hashlib.sha256(header.read_bytes()).hexdigest()
+  pattern=r'    thread threadLeft\(&Frame::ExtractORB,this,0,imLeft,(.*?)\);\n    thread threadRight\(&Frame::ExtractORB,this,1,imRight,(.*?)\);\n    threadLeft.join\(\);\n    threadRight.join\(\);'
+  def worker_pair(m):
+   return ('    FrameExtraction left{this,0,&imLeft,'+m[1]+'};\n'
+           '    FrameExtraction right{this,1,&imRight,'+m[2]+'};\n'
+           '    extractionWorkers().run({FrameExtraction::call,&left},\n'
+           '                            {FrameExtraction::call,&right});')
+  new,count=re.subn(pattern,worker_pair,new)
+  assert count==2,count
+  helper='\nnamespace {\nstruct FrameExtraction {\n    ORB_SLAM3::Frame* frame;\n    int side;\n    const cv::Mat* image;\n    int x0,x1;\n    static void call(void* opaque) {\n        auto& job=*static_cast<FrameExtraction*>(opaque);\n        job.frame->ExtractORB(job.side,*job.image,job.x0,job.x1);\n    }\n};\norb_fast::StereoWorkers& extractionWorkers() {\n    static thread_local orb_fast::StereoWorkers workers;\n    return workers;\n}\n}\n'
+  marker='namespace ORB_SLAM3'
+  assert new.count(marker)==1
+  new='#include "orb_stereo_workers.hpp"\n'+new.replace(marker,helper+'\n'+marker,1)
+  (out/'orb_stereo_workers.patch').write_text(''.join(difflib.unified_diff(
+      before_workers.splitlines(True),new.splitlines(True),
+      fromfile='a/src/Frame.cc',tofile='b/src/Frame.cc')))
+  patched.write_text(new)
  if name=='System.cc' and a.packed_vocabulary:
   header=ROOT/'benchmark/orb_packed_vocabulary.hpp'
   (out/header.name).write_bytes(header.read_bytes())
