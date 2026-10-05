@@ -643,3 +643,23 @@ with 1.4 spacing (11.57% lower). Late ATE was 1.955/1.805 cm and RPE
 1.174/1.214 cm, with complete coverage in both. The small RPE increase
 and repeatability still need checking before selecting the spacing change.
 A 1.6/five-level trial is next, using the same corrected core.
+
+The 1.6/five-level run used 100.44 CPU seconds, late ATE 1.699 cm and RPE
+1.203 cm. It retained every eligible pair and IMU sample, both refinements
+and complete pose coverage, with no resets. Against the same corrected
+reference, CPU fell 15.70%, ATE improved and RPE rose slightly (1.174 to
+1.203 cm). This remains an experimental single-sequence result. A 500-feature
+trial is measuring a smaller budget at the same native resolution and
+pyramid spacing; it changes feature selection and requires trajectory checks.
+
+Fixed-point rectification maps matched all 115,507,200 pixels across 320
+rectifications, but 800 local remaps took 1.213 seconds versus 1.166 with
+float maps on the installed OpenCV 4.5.4. The suggested map conversion is
+not integrated because it did not reduce local cost.
+
+At the same 1.6/five-level spacing, the 500-feature trial used 92.86 CPU
+seconds and 685.0 MiB peak RSS versus 100.44 seconds and 699.1 MiB at 600
+features. Late ATE improved from 1.699 to 1.592 cm and RPE from 1.203 to
+1.181 cm. Both retained complete inputs and pose coverage, both refinements
+and no resets. This is a first operating-point trial on one sequence; no
+hardware profile is changed and repeat/live validation remains necessary.

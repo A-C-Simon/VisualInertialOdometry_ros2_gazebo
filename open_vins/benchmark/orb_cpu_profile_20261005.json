@@ -439,5 +439,16 @@
       "whole_pipeline_cost_or_accuracy_claim": false,
       "location": "/tmp/orb_fast_level.hpp"
     }
-  ]
+  ],
+  "rejected_fixed_rectification_maps": {
+    "scope": "OpenCV 4.5.4 native calibration, 320 rectifications of 160 EuRoC images, separate microbenchmark of 800 remaps",
+    "exact_rectified_images": 320,
+    "exact_pixels": 115507200,
+    "float_map_seconds": 1.16581,
+    "fixed_map_seconds": 1.21345,
+    "selection": "not integrated; conversion produced identical pixels but no local speedup",
+    "whole_estimator_cost_or_accuracy_claim": false,
+    "prototype_location": "/tmp/check_remap.cc",
+    "primary_source": "https://docs.opencv.org/4.13.0/da/d54/group__imgproc__transform.html"
+  }
 }

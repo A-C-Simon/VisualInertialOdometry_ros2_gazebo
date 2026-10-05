@@ -176,5 +176,228 @@
     },
     "matched_cpu_reduction_percent": 11.574618096357232
   },
-  "limits": "Same corrected core for the matched comparison. Spacing changes feature locations and octave distribution. One sequence and one spacing run do not establish repeatability or hardware accuracy. Relative error increased slightly in this pair."
+  "limits": "Same corrected core for the matched comparison. Spacing changes feature locations and octave distribution. One sequence and one spacing run do not establish repeatability or hardware accuracy. Relative error increased slightly in this pair.",
+  "pyramid16": {
+    "spacing": 1.6,
+    "levels": 5,
+    "requested_features": 600,
+    "resolution": [
+      752,
+      480
+    ],
+    "config_sha256": "6f49f23945e059d38f53bd787a2f3c31e6244e67462cd2d4aa27f0fd5e76c29e",
+    "first_comparison": {
+      "dataset": "EuRoC V1_01_easy",
+      "resources": [
+        {
+          "trial": "euroc_20261005_safe_gaussian_reference_r1",
+          "cpu_seconds": 119.13999999999999,
+          "peak_rss_mib": 691.19140625,
+          "completion": {
+            "elapsed_s": 156.22672441700706,
+            "estimator_exit": 0,
+            "player_exit": 0
+          }
+        },
+        {
+          "trial": "euroc_20261005_safe_pyramid14_r1",
+          "cpu_seconds": 105.35,
+          "peak_rss_mib": 694.39453125,
+          "completion": {
+            "elapsed_s": 156.31223543098895,
+            "estimator_exit": 0,
+            "player_exit": 0
+          }
+        },
+        {
+          "trial": "euroc_20261005_safe_pyramid16_r1",
+          "cpu_seconds": 100.44000000000001,
+          "peak_rss_mib": 699.09765625,
+          "completion": {
+            "elapsed_s": 156.17475268099224,
+            "estimator_exit": 0,
+            "player_exit": 0
+          }
+        }
+      ],
+      "post_initialization": {
+        "common_start_s": 1403715303.262143,
+        "common_end_s": 1403715417.962143,
+        "alignment": "SE(3), no scale; GT position interpolated",
+        "results": [
+          {
+            "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_safe_gaussian_reference_r1/online.txt",
+            "poses": 2295,
+            "duration_s": 114.70000004768372,
+            "approximate_20hz_coverage": 0.9999999995844556,
+            "max_pose_gap_s": 0.05000019073486328,
+            "ate_rmse_m": 0.019554571911716744,
+            "ate_p95_m": 0.032517973899753354,
+            "rpe_1s_translation_rmse_m": 0.011744241879092933
+          },
+          {
+            "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_safe_pyramid14_r1/online.txt",
+            "poses": 2295,
+            "duration_s": 114.70000004768372,
+            "approximate_20hz_coverage": 0.9999999995844556,
+            "max_pose_gap_s": 0.05000019073486328,
+            "ate_rmse_m": 0.018047011910790216,
+            "ate_p95_m": 0.02814954530188479,
+            "rpe_1s_translation_rmse_m": 0.012136479827011519
+          },
+          {
+            "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_safe_pyramid16_r1/online.txt",
+            "poses": 2295,
+            "duration_s": 114.70000004768372,
+            "approximate_20hz_coverage": 0.9999999995844556,
+            "max_pose_gap_s": 0.05000019073486328,
+            "ate_rmse_m": 0.016994420070153924,
+            "ate_p95_m": 0.02693638195198641,
+            "rpe_1s_translation_rmse_m": 0.01203011313772967
+          }
+        ]
+      },
+      "full_common_interval": {
+        "common_start_s": 1403715280.762143,
+        "common_end_s": 1403715417.962143,
+        "alignment": "SE(3), no scale; GT position interpolated",
+        "results": [
+          {
+            "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_safe_gaussian_reference_r1/online.txt",
+            "poses": 2745,
+            "duration_s": 137.20000004768372,
+            "approximate_20hz_coverage": 0.9999999996525777,
+            "max_pose_gap_s": 0.05000019073486328,
+            "ate_rmse_m": 0.0636900988151035,
+            "ate_p95_m": 0.17563652792831017,
+            "rpe_1s_translation_rmse_m": 0.0320219537003262
+          },
+          {
+            "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_safe_pyramid14_r1/online.txt",
+            "poses": 2745,
+            "duration_s": 137.20000004768372,
+            "approximate_20hz_coverage": 0.9999999996525777,
+            "max_pose_gap_s": 0.05000019073486328,
+            "ate_rmse_m": 0.022188178810030212,
+            "ate_p95_m": 0.04125422210593108,
+            "rpe_1s_translation_rmse_m": 0.014268561932378472
+          },
+          {
+            "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_safe_pyramid16_r1/online.txt",
+            "poses": 2745,
+            "duration_s": 137.20000004768372,
+            "approximate_20hz_coverage": 0.9999999996525777,
+            "max_pose_gap_s": 0.05000019073486328,
+            "ate_rmse_m": 0.021358057712862102,
+            "ate_p95_m": 0.03968992617036532,
+            "rpe_1s_translation_rmse_m": 0.014024949229686471
+          }
+        ]
+      }
+    },
+    "input_validation": {
+      "eligible_stereo_pairs": 2911,
+      "imu_received": 29120,
+      "map_resets": 0,
+      "viba1_completed": true,
+      "viba2_completed": true
+    }
+  },
+  "pyramid16_500": {
+    "requested_features": 500,
+    "spacing": 1.6,
+    "levels": 5,
+    "resolution": [
+      752,
+      480
+    ],
+    "config_sha256": "703b0bf4a9efc07ac8aa0b65666c2843fe48466ab9de7b953790f9803754405f",
+    "first_comparison": {
+      "dataset": "EuRoC V1_01_easy",
+      "resources": [
+        {
+          "trial": "euroc_20261005_safe_pyramid16_r1",
+          "cpu_seconds": 100.44000000000001,
+          "peak_rss_mib": 699.09765625,
+          "completion": {
+            "elapsed_s": 156.17475268099224,
+            "estimator_exit": 0,
+            "player_exit": 0
+          }
+        },
+        {
+          "trial": "euroc_20261005_safe_pyramid16_500_r1",
+          "cpu_seconds": 92.86,
+          "peak_rss_mib": 684.953125,
+          "completion": {
+            "elapsed_s": 156.37438162002945,
+            "estimator_exit": 0,
+            "player_exit": 0
+          }
+        }
+      ],
+      "post_initialization": {
+        "common_start_s": 1403715303.262143,
+        "common_end_s": 1403715417.962143,
+        "alignment": "SE(3), no scale; GT position interpolated",
+        "results": [
+          {
+            "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_safe_pyramid16_r1/online.txt",
+            "poses": 2295,
+            "duration_s": 114.70000004768372,
+            "approximate_20hz_coverage": 0.9999999995844556,
+            "max_pose_gap_s": 0.05000019073486328,
+            "ate_rmse_m": 0.016994420070153924,
+            "ate_p95_m": 0.02693638195198641,
+            "rpe_1s_translation_rmse_m": 0.01203011313772967
+          },
+          {
+            "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_safe_pyramid16_500_r1/online.txt",
+            "poses": 2295,
+            "duration_s": 114.70000004768372,
+            "approximate_20hz_coverage": 0.9999999995844556,
+            "max_pose_gap_s": 0.05000019073486328,
+            "ate_rmse_m": 0.01591593988058138,
+            "ate_p95_m": 0.025305426120081683,
+            "rpe_1s_translation_rmse_m": 0.011806266303513458
+          }
+        ]
+      },
+      "full_common_interval": {
+        "common_start_s": 1403715280.762143,
+        "common_end_s": 1403715417.962143,
+        "alignment": "SE(3), no scale; GT position interpolated",
+        "results": [
+          {
+            "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_safe_pyramid16_r1/online.txt",
+            "poses": 2745,
+            "duration_s": 137.20000004768372,
+            "approximate_20hz_coverage": 0.9999999996525777,
+            "max_pose_gap_s": 0.05000019073486328,
+            "ate_rmse_m": 0.021358057712862102,
+            "ate_p95_m": 0.03968992617036532,
+            "rpe_1s_translation_rmse_m": 0.014024949229686471
+          },
+          {
+            "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_safe_pyramid16_500_r1/online.txt",
+            "poses": 2745,
+            "duration_s": 137.20000004768372,
+            "approximate_20hz_coverage": 0.9999999996525777,
+            "max_pose_gap_s": 0.05000019073486328,
+            "ate_rmse_m": 0.024153547399579162,
+            "ate_p95_m": 0.05673122939734686,
+            "rpe_1s_translation_rmse_m": 0.019053372508168843
+          }
+        ]
+      }
+    },
+    "input_validation": {
+      "eligible_stereo_pairs": 2911,
+      "imu_received": 29120,
+      "map_resets": 0,
+      "viba1_completed": true,
+      "viba2_completed": true
+    },
+    "selection": "experimental; single sequence, first budget trial. Repeated and tower validation pending."
+  }
 }
