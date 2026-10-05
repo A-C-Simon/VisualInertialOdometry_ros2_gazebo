@@ -434,9 +434,9 @@ ATE was 2.061 versus 1.791 cm; full common-interval ATE was 4.039 versus
 native resolution, 600 features and a local BA window of 12. CPU includes
 estimator startup and shutdown; drivers, recording and RViz are excluded.
 
-This is one sequential pair, so the candidate remains experimental pending
-repeated public trials and the successful tower recording. Earlier unchanged
-reference runs showed startup variation. OpenVINS still used less CPU and
+The first pair alone did not establish repeatability. The October 5 repeat
+and saved tower replay below retain the candidate as experimental. Earlier
+unchanged reference runs showed startup variation. OpenVINS still used less CPU and
 memory in the matched public protocol: 69.89 seconds and 121.88 MiB.
 [Protocol, core hashes and both accuracy intervals](euroc_fixed_stereo_cost_20261005.json)
 retain these limitations. Reports remain outside this repository.
@@ -457,6 +457,27 @@ more, with peak RSS 721.16 versus 715.54 MiB. However, tracked pairs differed
 14,639 recorded). This is a diagnostic stability comparison with unequal
 delivery, so it establishes no tower cost saving. The original recording
 starts its IMU after the cameras and retains bursty receipt timing. The
-public protocol is being repeated to check the earlier single-pair saving.
+public protocol repeat below checks the earlier single-pair saving.
 The cost variant remains experimental.
 [Input counts, gaps, resource measurements and agreement](tower_stereo_cost_20261005.json).
+
+
+### Repeated corrected public comparison
+
+A second sequential pair used 140.42 versus 133.07 CPU seconds, a 5.2% saving,
+with peak RSS 698.95 versus 694.92 MiB. All four ORB trials retained 2,911
+eligible stereo pairs and 29,120 IMU samples, completed both refinements, and
+had no map resets. Both profiles kept complete pose coverage after startup.
+
+| Pair | Reference CPU s | Candidate CPU s | Saving | Full ATE cm, reference / candidate | Post-30 s ATE cm, reference / candidate |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| October 3 | 140.04 | 129.54 | 7.5% | 4.039 / 3.815 | 2.061 / 1.791 |
+| October 5 | 140.42 | 133.07 | 5.2% | 5.310 / 4.936 | 2.104 / 2.131 |
+
+In the second pair, post-30-second translation RPE was 1.221 versus 1.222 cm;
+full-interval RPE was 2.735 versus 2.539 cm. The repeated candidate retains
+comparable trajectory quality on this sequence and saves estimator CPU in
+both pairs. Startup error still varies, and the original tower replay does
+not establish a hardware saving. The working hardware profile remains
+selected. [Both pairs, coverage and accuracy intervals](euroc_fixed_stereo_cost_20261005.json)
+keep the repeat separate from a general performance or accuracy claim.

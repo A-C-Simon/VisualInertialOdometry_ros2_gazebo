@@ -162,6 +162,230 @@
     }
   },
   "cpu_reduction_percent": 7.497857754927164,
-  "selection": "experimental; repeat public pair and saved tower replay required",
-  "interpretation": "One sequential pair shows 7.5% less estimator CPU with comparable full and late trajectory errors and complete eligible stereo input. It does not establish repeatability, a live hardware improvement, or lower cost than OpenVINS."
+  "selection": "experimental; hardware delivery and fresh live validation still required",
+  "interpretation": "One sequential pair shows 7.5% less estimator CPU with comparable full and late trajectory errors and complete eligible stereo input. It does not establish repeatability, a live hardware improvement, or lower cost than OpenVINS.",
+  "repeat_verification": {
+    "dataset": "EuRoC V1_01_easy",
+    "resources": [
+      {
+        "trial": "euroc_20261002_openvins_fixed_cached",
+        "cpu_seconds": 69.89,
+        "peak_rss_mib": 121.875,
+        "completion": {
+          "elapsed_s": 151.82102380100696,
+          "estimator_exit": 0,
+          "player_exit": 0
+        }
+      },
+      {
+        "trial": "euroc_20261003_orb_baseline_initialized_r1",
+        "cpu_seconds": 140.04,
+        "peak_rss_mib": 694.0703125,
+        "completion": {
+          "elapsed_s": 156.81802613299806,
+          "estimator_exit": 0,
+          "player_exit": 0
+        }
+      },
+      {
+        "trial": "euroc_20261003_orb_baseline_fixed_fast_r1",
+        "cpu_seconds": 129.54,
+        "peak_rss_mib": 692.11328125,
+        "completion": {
+          "elapsed_s": 156.90360439399956,
+          "estimator_exit": 0,
+          "player_exit": 0
+        }
+      },
+      {
+        "trial": "euroc_20261005_orb_baseline_fixed_r2",
+        "cpu_seconds": 140.42000000000002,
+        "peak_rss_mib": 698.9453125,
+        "completion": {
+          "elapsed_s": 156.9502130849869,
+          "estimator_exit": 0,
+          "player_exit": 0
+        }
+      },
+      {
+        "trial": "euroc_20261005_orb_baseline_fixed_fast_r2",
+        "cpu_seconds": 133.07,
+        "peak_rss_mib": 694.91796875,
+        "completion": {
+          "elapsed_s": 157.12435854005162,
+          "estimator_exit": 0,
+          "player_exit": 0
+        }
+      }
+    ],
+    "post_initialization": {
+      "common_start_s": 1403715303.262143,
+      "common_end_s": 1403715417.962143,
+      "alignment": "SE(3), no scale; GT position interpolated",
+      "results": [
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261002_openvins_fixed_cached/online.txt",
+          "poses": 2295,
+          "duration_s": 114.70000004768372,
+          "approximate_20hz_coverage": 0.9999999995844556,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.033395816919724354,
+          "ate_p95_m": 0.04718543991177807,
+          "rpe_1s_translation_rmse_m": 0.009888085038859786
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261003_orb_baseline_initialized_r1/online.txt",
+          "poses": 2295,
+          "duration_s": 114.70000004768372,
+          "approximate_20hz_coverage": 0.9999999995844556,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.02061023061546664,
+          "ate_p95_m": 0.03397975985406584,
+          "rpe_1s_translation_rmse_m": 0.012373953892806027
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261003_orb_baseline_fixed_fast_r1/online.txt",
+          "poses": 2295,
+          "duration_s": 114.70000004768372,
+          "approximate_20hz_coverage": 0.9999999995844556,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.017908798565342682,
+          "ate_p95_m": 0.028699602417575378,
+          "rpe_1s_translation_rmse_m": 0.011952551642578382
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_orb_baseline_fixed_r2/online.txt",
+          "poses": 2295,
+          "duration_s": 114.70000004768372,
+          "approximate_20hz_coverage": 0.9999999995844556,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.02104000177459641,
+          "ate_p95_m": 0.033363499655632935,
+          "rpe_1s_translation_rmse_m": 0.01221275856396507
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_orb_baseline_fixed_fast_r2/online.txt",
+          "poses": 2295,
+          "duration_s": 114.70000004768372,
+          "approximate_20hz_coverage": 0.9999999995844556,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.021305271634905545,
+          "ate_p95_m": 0.037042829516838204,
+          "rpe_1s_translation_rmse_m": 0.012220389999900978
+        }
+      ]
+    },
+    "full_common_interval": {
+      "common_start_s": 1403715280.762143,
+      "common_end_s": 1403715417.962143,
+      "alignment": "SE(3), no scale; GT position interpolated",
+      "results": [
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261002_openvins_fixed_cached/online.txt",
+          "poses": 2745,
+          "duration_s": 137.20000004768372,
+          "approximate_20hz_coverage": 0.9999999996525777,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.04336297110747532,
+          "ate_p95_m": 0.08561582284069995,
+          "rpe_1s_translation_rmse_m": 0.01001719899372996
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261003_orb_baseline_initialized_r1/online.txt",
+          "poses": 2745,
+          "duration_s": 137.20000004768372,
+          "approximate_20hz_coverage": 0.9999999996525777,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.04038916489786217,
+          "ate_p95_m": 0.1044209329312401,
+          "rpe_1s_translation_rmse_m": 0.021114164513863852
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261003_orb_baseline_fixed_fast_r1/online.txt",
+          "poses": 2745,
+          "duration_s": 137.20000004768372,
+          "approximate_20hz_coverage": 0.9999999996525777,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.03814816464784056,
+          "ate_p95_m": 0.10358905127762515,
+          "rpe_1s_translation_rmse_m": 0.02059326256975851
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_orb_baseline_fixed_r2/online.txt",
+          "poses": 2745,
+          "duration_s": 137.20000004768372,
+          "approximate_20hz_coverage": 0.9999999996525777,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.05310432974076487,
+          "ate_p95_m": 0.14343905788131578,
+          "rpe_1s_translation_rmse_m": 0.027348578035142217
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_orb_baseline_fixed_fast_r2/online.txt",
+          "poses": 2745,
+          "duration_s": 137.20000004768372,
+          "approximate_20hz_coverage": 0.9999999996525777,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.049364214779554785,
+          "ate_p95_m": 0.12139696472123798,
+          "rpe_1s_translation_rmse_m": 0.02538687768394084
+        }
+      ]
+    },
+    "pairs": [
+      {
+        "reference": "euroc_20261003_orb_baseline_initialized_r1",
+        "candidate": "euroc_20261003_orb_baseline_fixed_fast_r1",
+        "cpu_reduction_percent": 7.497857754927164
+      },
+      {
+        "reference": "euroc_20261005_orb_baseline_fixed_r2",
+        "candidate": "euroc_20261005_orb_baseline_fixed_fast_r2",
+        "cpu_reduction_percent": 5.234297108673994
+      }
+    ],
+    "input_validation": {
+      "euroc_20261003_orb_baseline_initialized_r1": {
+        "processed_eligible_stereo_pairs": 2911,
+        "received_imu": 29120,
+        "max_source_imu_gap_ms": 5.0,
+        "map_resets": 0,
+        "lost_transitions": 0,
+        "recently_lost_transitions": 0,
+        "viba1_completed": true,
+        "viba2_completed": true
+      },
+      "euroc_20261003_orb_baseline_fixed_fast_r1": {
+        "processed_eligible_stereo_pairs": 2911,
+        "received_imu": 29120,
+        "max_source_imu_gap_ms": 5.0,
+        "map_resets": 0,
+        "lost_transitions": 0,
+        "recently_lost_transitions": 0,
+        "viba1_completed": true,
+        "viba2_completed": true
+      },
+      "euroc_20261005_orb_baseline_fixed_r2": {
+        "processed_eligible_stereo_pairs": 2911,
+        "received_imu": 29120,
+        "max_source_imu_gap_ms": 5.0,
+        "map_resets": 0,
+        "lost_transitions": 0,
+        "recently_lost_transitions": 0,
+        "viba1_completed": true,
+        "viba2_completed": true
+      },
+      "euroc_20261005_orb_baseline_fixed_fast_r2": {
+        "processed_eligible_stereo_pairs": 2911,
+        "received_imu": 29120,
+        "max_source_imu_gap_ms": 5.0,
+        "map_resets": 0,
+        "lost_transitions": 0,
+        "recently_lost_transitions": 0,
+        "viba1_completed": true,
+        "viba2_completed": true
+      }
+    },
+    "scope": "Two sequential pairs, executed October 3 and October 5. Estimator startup/shutdown included, drivers/recording/viewers excluded. Same cores, configs, native image size, reliable stereo delivery and fixed post-30-second interval. Two repeats on one sequence do not establish general accuracy or cost rankings."
+  }
 }
