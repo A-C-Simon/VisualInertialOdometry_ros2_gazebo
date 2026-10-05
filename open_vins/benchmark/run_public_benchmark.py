@@ -75,23 +75,43 @@ def main():
         'orb_images_reliable':not args.best_effort_images if args.method == 'orb_ros' else None},indent=2))
     start = time.monotonic()
     player_return = None
+    failure = None
+    player = None
     with (out/'estimator.log').open('w') as log:
         proc = subprocess.Popen(time_cmd+command,cwd=out,env=env,stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
         try:
             if args.method in ('openvins', 'orb_ros'):
                 with (out/'player.log').open('w') as player_log:
-                    player = subprocess.run(['/usr/bin/python3',str(ROOT/'benchmark/euroc_player.py'),
+                    player = subprocess.Popen(['/usr/bin/python3',str(ROOT/'benchmark/euroc_player.py'),
                         str(dataset),'--trajectory',str(out/'online.txt'),'--post-roll','3'] + (['--orb'] if args.method == 'orb_ros' else []),
-                        env=env,stdout=player_log,stderr=subprocess.STDOUT,timeout=200)
+                        env=env,stdout=player_log,stderr=subprocess.STDOUT,start_new_session=True)
+                    deadline = time.monotonic() + 200
+                    while player.poll() is None:
+                        if proc.poll() is not None:
+                            failure = 'Estimator exited before dataset playback completed'
+                            stop(player)
+                            break
+                        if time.monotonic() >= deadline:
+                            failure = 'Dataset playback timed out'
+                            stop(player)
+                            break
+                        try:
+                            player.wait(timeout=0.25)
+                        except subprocess.TimeoutExpired:
+                            pass
                     player_return=player.returncode
                 stop(proc)
             else:
                 proc.wait(timeout=240)
         finally:
+            if player is not None:
+                stop(player)
             stop(proc)
     result={'elapsed_s':time.monotonic()-start,'estimator_exit':proc.returncode,'player_exit':player_return}
+    if failure:
+        result['failure'] = failure
     (out/'completion.json').write_text(json.dumps(result,indent=2))
     print(json.dumps(result),flush=True)
-    if proc.returncode not in (0,130) or player_return not in (None,0): raise SystemExit(1)
+    if failure or proc.returncode not in (0,130) or player_return not in (None,0): raise SystemExit(1)
 
 if __name__=='__main__': main()

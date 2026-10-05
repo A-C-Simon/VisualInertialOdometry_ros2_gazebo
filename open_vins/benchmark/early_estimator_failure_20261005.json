@@ -1,0 +1,11 @@
+{
+  "scope": "Known crashing offline configuration; diagnostic failure handling, not a performance comparison",
+  "prior_elapsed_seconds": 156.39276740897913,
+  "checked_completion": {
+    "elapsed_s": 8.76987396395998,
+    "estimator_exit": 139,
+    "player_exit": 1,
+    "failure": "Estimator exited before dataset playback completed"
+  },
+  "result": "Runner stopped owned playback after estimator exit and returned failure. No valid trajectory or cost ranking from the crashed run."
+}
