@@ -797,7 +797,7 @@ The native check matched 115,507,200 dataset pixels and 8,648,178 random pixels,
 including odd strides, borders, cache replacement, two threads and fallbacks.
 Median kernel time fell 32.5%, from 1.13838 to 0.767863 seconds. These are
 800 rectifications per repeat, five alternating timing pairs, excluding map
-preparation. Full estimator CPU and trajectory comparisons are still pending.
+preparation. Repeated full estimator comparisons are recorded below; quality preservation remains unproven.
 The tower's splitter already rectifies its images, so this core change alone
 does not reduce its live processing cost.
 [Native check evidence](orb_rectification_native_20261005.json).
@@ -814,20 +814,39 @@ Use a separate output directory with `--fast-rectification`; all other policy
 flags must match the reference. Default core and hardware settings are unchanged.
 
 
-## First full rectification comparisons
+## Repeated full rectification comparisons
 
-The matched 500-feature medium trial reduced CPU 7.8% from 50.91 to 46.96
-seconds. Late ATE fell 7.9% from 3.227 to 2.971 cm, full ATE fell 27.6%
-from 8.305 to 6.014 cm, late RPE increased 0.6%, and peak RSS increased
-3.5% from 437.0 to 452.2 MiB. Its CPU was 0.5% above the same-sequence
-OpenVINS measurement of 46.71 seconds.
+The policy stays at 500 features, scale 1.6/five levels, BA window 12 and
+0.25-second healthy keyframe spacing. Only rectification changes. Three easy
+references and two candidates give mean CPU of 88.97 and 85.27 seconds, a
+4.2% decrease. Late ATE increased 5.3% from 1.804 to 1.899 cm; full ATE
+decreased 10.7% from 2.779 to 2.482 cm. Late RPE increased 1.7% and full RPE
+decreased 4.9%. RSS increased 2.6% from 487.4 to 500.2 MiB.
 
-On easy, CPU decreased 3.7% from the two-reference mean of 88.72 to 85.47
-seconds, while late ATE increased 13.1% from 1.740 to 1.968 cm and full ATE
-increased 59.2% from 1.857 to 2.956 cm. Peak RSS increased 2.6% to 500.0 MiB.
-All eligible stereo frames and IMU samples were retained on both sequences,
-both inertial refinements completed, and there were no active resets.
-The candidate remains experimental and unselected while repeats check the
-error change. Identical rectified pixels do not prove identical trajectories
-when tracking and mapping run asynchronously.
-[Matched intervals, exact values and percentage changes](orb_rectification_public_20261005.json).
+The easy reference itself varied: full ATE was 1.777, 1.937 and 4.623 cm;
+candidates were 2.956 and 2.008 cm. Late reference ATE ranged from 1.737 to
+1.932 cm, candidates from 1.831 to 1.968 cm. These small samples do not prove
+statistical equivalence or explain away the mean late-error increase.
+
+One medium reference and two candidates give mean CPU of 50.91 and 46.59
+seconds, an 8.5% decrease. Candidate CPU was 46.96 and 46.22 seconds, versus
+the same-sequence OpenVINS run's 46.71. The mean gap is -0.3%; more repetitions
+would be needed to establish a cost advantage. Late ATE decreased 13.3% from
+3.227 to 2.798 cm, but full ATE increased 3.9% from 8.305 to 8.627 cm and
+full RPE increased 16.8% from 4.880 to 5.700 cm. Peak RSS increased 3.6%
+from 437.0 to 452.7 MiB. The wider-pyramid profile also retains its separate
+late-error regression versus the 600-feature narrow-pyramid reference.
+
+All eligible stereo frames and IMU samples were retained, both refinements
+completed, and there were no active resets in these trials. Late pose coverage
+was 100%. The candidate remains experimental and unselected because quality
+preservation is unproven. Easy CPU remains 22.0% above the matched OpenVINS
+measurement. The tower rectifies upstream, so this System kernel establishes
+no live tower saving.
+[Matched intervals, exact values, ranges and percentages](orb_rectification_public_20261005.json).
+
+
+The ORB authors identify multithreading, RANSAC and keyframe selection as
+sources of variation between runs in [their reproducibility discussion](https://github.com/UZ-SLAMLab/ORB_SLAM3/issues/307).
+This supports repeating matched trials; it does not establish that the observed
+error increase is harmless or caused by one particular source.

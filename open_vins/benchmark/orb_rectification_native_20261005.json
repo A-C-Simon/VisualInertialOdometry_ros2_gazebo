@@ -1,6 +1,6 @@
 {
   "scope": "Standalone pixel equivalence and median kernel wall time; not full estimator CPU savings.",
-  "status": "experimental; full sequence comparisons running",
+  "status": "pixel equivalence verified; CPU savings measured on two sequences; quality-preserving selection unproven",
   "opencv": "4.5.4",
   "compiler_flags": [
     "-O3",
