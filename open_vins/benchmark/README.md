@@ -525,3 +525,8 @@ optimizations are insufficient. Such a change requires complete trajectory
 validation. [Official OpenCV guidance](https://docs.opencv.org/4.13.0/da/d54/group__imgproc__transform.html)
 also describes faster fixed-point rectification maps; pixel equality and
 local cost must be checked before adopting them.
+
+An AVX2/FMA descriptor prototype matched 100,000 descriptors byte for byte on
+an odd-stride image ROI. Its isolated kernel saved only about 11% in two
+microbenchmarks, so it was not integrated. The unused prototype is retained
+under `/tmp`, and its measurements are in the CPU-profile evidence above.

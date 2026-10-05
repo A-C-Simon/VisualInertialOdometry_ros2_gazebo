@@ -201,5 +201,18 @@
       "role": "Official fixed-point remap optimization guidance, requires local pixel-equivalence and cost checks"
     }
   ],
-  "next_action": "Target the measured extractor cost before changing solver iteration counts. Explore equivalent CPU arithmetic, then verify complete-input trajectories; no cost or quality claim from literature alone."
+  "next_action": "Target the measured extractor cost before changing solver iteration counts. Explore equivalent CPU arithmetic, then verify complete-input trajectories; no cost or quality claim from literature alone.",
+  "rejected_descriptor_prototype": {
+    "scope": "Standalone AVX2/FMA descriptor kernel, synthetic grayscale ROI with odd stride, compiled with the native GCC flags",
+    "descriptors_compared": 100000,
+    "exact_byte_agreement": true,
+    "scalar_seconds_for_300000_descriptors": 0.247247,
+    "simd_seconds_for_300000_descriptors": 0.219277,
+    "kernel_reduction_percent": 11.312574065610502,
+    "repeat_ratio": 0.895321,
+    "header_sha256": "8690fc311ab3231e0bdcb9b114c90885b36419d891736e37999f69c0621807f6",
+    "selection": "not integrated; kernel gain too small to prioritize before the dominant detector and blur costs",
+    "whole_pipeline_cost_or_accuracy_claim": false,
+    "prototype_location": "/tmp/orb_descriptor_simd.hpp"
+  }
 }
