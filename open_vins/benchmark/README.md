@@ -563,3 +563,12 @@ python3 benchmark/build_orb_core.py \
   --preserve-inertial-origin --motion-gated-initialization \
   --keyframe-interval-s 0.25 --fast-stereo-patches --fast-gaussian
 ```
+
+The first full blur replay used 118.57 CPU seconds and 692.3 MiB peak RSS,
+compared with the preceding stereo-optimized run's 133.07 seconds and
+694.9 MiB. All 2,911 eligible pairs and 29,120 IMU samples were retained,
+with both inertial refinements, no resets and complete initialized coverage.
+Late ATE was 2.063 versus 2.131 cm; full common-interval ATE was 2.333
+versus 4.936 cm. The change alters scheduling despite identical extraction
+results. A fresh paired repeat is running, and the hardware cost/quality
+gate remains open.
