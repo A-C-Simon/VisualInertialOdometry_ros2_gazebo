@@ -663,3 +663,17 @@ features. Late ATE improved from 1.699 to 1.592 cm and RPE from 1.203 to
 1.181 cm. Both retained complete inputs and pose coverage, both refinements
 and no resets. This is a first operating-point trial on one sequence; no
 hardware profile is changed and repeat/live validation remains necessary.
+
+## Packed vocabulary loading experiment
+
+`--packed-vocabulary` specializes the existing text loader without changing
+the vocabulary class layout. It removes repeated descriptor stringstreams
+and stores the valid descriptor bytes in shared row storage. The ordinary
+loader's extra invalid node after the final newline is omitted.
+
+All 1,082,073 valid nodes matched their IDs, parent links, weights, descriptor
+bytes and valid children. The same 124,315 random and dataset descriptor
+queries produced identical word IDs. Native loader CPU fell from 4.941 to
+0.567 seconds and check-executable peak RSS from 457.3 to 258.9 MiB. These
+are vocabulary-check measurements; the full estimator replay is pending.
+[Loader checks and limits](orb_packed_vocabulary_20261005.json).

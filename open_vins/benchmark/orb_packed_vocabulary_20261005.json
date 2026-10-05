@@ -1,0 +1,29 @@
+{
+  "status": "experimental; equivalent native vocabulary checks passed, pipeline replay pending",
+  "change": "Parse valid text nodes without repeated descriptor stringstreams and retain descriptor bytes in one shared cv::Mat allocation. Vocabulary class layout is unchanged.",
+  "native_checks": {
+    "valid_nodes": 1082073,
+    "valid_node_sha256": "9b015cd59c8306b11b6d8371247b48a973e3a2e1c6aa482153f6d62c9b4946e5",
+    "hash_scope": "All valid node IDs, parent IDs, weights, descriptor bytes and valid child IDs",
+    "query_count": 124315,
+    "query_sha256": "16f679d40827780e829bb0fa2198231120b3d1799880f6f1246ef97e1ad42898",
+    "query_scope": "30000 seeded random descriptors plus ORB descriptors from 160 dataset images",
+    "reference_loader_cpu_seconds": 4.94061,
+    "packed_loader_cpu_seconds": 0.566761,
+    "reference_peak_rss_mib": 457.312,
+    "packed_peak_rss_mib": 258.938,
+    "scope": "Native vocabulary check executable, not full estimator"
+  },
+  "eof_correction": {
+    "reference_nodes": 1082074,
+    "packed_nodes": 1082073,
+    "reference_words": 971815,
+    "packed_words": 971814,
+    "explanation": "The legacy while-not-eof loop creates an extra invalid node after the final newline. The reader retains every valid text node and omits that artifact."
+  },
+  "header_sha256": "e1915733b40ee5c499ec4ab457178d9c7a6f349f95e91fa5019fa497189edad6",
+  "vocabulary_sha256": "f8dd027f7a6cb88129821341194d7f2c75b77b3394257ddd0d2229863d1a3570",
+  "limits": "Valid nodes and sampled word lookups match; the invalid EOF node is intentionally removed. Native loader time/RSS do not establish whole-pipeline savings or trajectory equivalence. Full replay and hardware validation remain.",
+  "tracked_candidate_check": "valid_node_sha256=9b015cd59c8306b11b6d8371247b48a973e3a2e1c6aa482153f6d62c9b4946e5\nquery_sha256=16f679d40827780e829bb0fa2198231120b3d1799880f6f1246ef97e1ad42898\nnodes=1082073 words=971814 queries=124315 loader_cpu_seconds=0.556252 peak_rss_mib=259.062\n",
+  "core_library_sha256": "49e8e0ef3b18bafc3924f689e27274a963519ddfbb2c2c883c2d23ffb643fbe9"
+}
