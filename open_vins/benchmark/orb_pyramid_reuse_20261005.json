@@ -1,5 +1,5 @@
 {
-  "status": "experimental; full replay pending",
+  "status": "not selected; one full replay showed no whole-estimator CPU saving",
   "inspiration": "OpenVINS saves previous/current pyramids and shares them between detection and temporal matching. Its current pyramid is constructed in a fresh vector; the allocation cache here is a separate ORB experiment.",
   "change": "Reuse existing bordered image allocation only if size, type, full parent size and ROI offset match. Preserve resize and border operations. No class layout changes.",
   "native_check": {
@@ -10,5 +10,92 @@
   },
   "core_library_sha256": "b47cf72e11a7d81f617db8e9c5ed02dbb825818504d6fb784f53999a2fde45fa",
   "patch_sha256": "ad0e00d15b2e09dc3a4ba436845c5b05d148d41f6a4f72239a45bdfb3968e177",
-  "limits": "Native equality does not establish a whole-estimator CPU saving. Variant adds only buffer reuse to the fixed-point blur candidate."
+  "limits": "Native equality does not establish a whole-estimator CPU saving. Variant adds only buffer reuse to the fixed-point blur candidate.",
+  "replay": {
+    "dataset": "EuRoC V1_01_easy",
+    "resources": [
+      {
+        "trial": "euroc_20261005_fixed_gaussian_r2",
+        "cpu_seconds": 119.08,
+        "peak_rss_mib": 695.92578125,
+        "completion": {
+          "elapsed_s": 156.18915246397955,
+          "estimator_exit": 0,
+          "player_exit": 0
+        }
+      },
+      {
+        "trial": "euroc_20261005_gaussian_pyramid_reuse_r1",
+        "cpu_seconds": 119.12,
+        "peak_rss_mib": 695.20703125,
+        "completion": {
+          "elapsed_s": 156.2016152209835,
+          "estimator_exit": 0,
+          "player_exit": 0
+        }
+      }
+    ],
+    "post_initialization": {
+      "common_start_s": 1403715303.262143,
+      "common_end_s": 1403715417.962143,
+      "alignment": "SE(3), no scale; GT position interpolated",
+      "results": [
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_fixed_gaussian_r2/online.txt",
+          "poses": 2295,
+          "duration_s": 114.70000004768372,
+          "approximate_20hz_coverage": 0.9999999995844556,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.01856632638428204,
+          "ate_p95_m": 0.029748138447297744,
+          "rpe_1s_translation_rmse_m": 0.011930487794684157
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_gaussian_pyramid_reuse_r1/online.txt",
+          "poses": 2295,
+          "duration_s": 114.70000004768372,
+          "approximate_20hz_coverage": 0.9999999995844556,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.019768431778800517,
+          "ate_p95_m": 0.031411389479000254,
+          "rpe_1s_translation_rmse_m": 0.01195589740194387
+        }
+      ]
+    },
+    "full_common_interval": {
+      "common_start_s": 1403715280.762143,
+      "common_end_s": 1403715417.962143,
+      "alignment": "SE(3), no scale; GT position interpolated",
+      "results": [
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_fixed_gaussian_r2/online.txt",
+          "poses": 2745,
+          "duration_s": 137.20000004768372,
+          "approximate_20hz_coverage": 0.9999999996525777,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.03164047522192056,
+          "ate_p95_m": 0.07824318026472221,
+          "rpe_1s_translation_rmse_m": 0.01719891152316815
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_gaussian_pyramid_reuse_r1/online.txt",
+          "poses": 2745,
+          "duration_s": 137.20000004768372,
+          "approximate_20hz_coverage": 0.9999999996525777,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.08613215798524286,
+          "ate_p95_m": 0.24314904313797922,
+          "rpe_1s_translation_rmse_m": 0.04260876693626153
+        }
+      ]
+    }
+  },
+  "cpu_change_percent": 0.03359086328519168,
+  "input_validation": {
+    "eligible_stereo_pairs": 2911,
+    "imu_received": 29120,
+    "map_resets": 0,
+    "viba1_completed": true,
+    "viba2_completed": true
+  }
 }

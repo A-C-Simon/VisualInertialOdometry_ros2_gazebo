@@ -582,7 +582,7 @@ the same, and no extractor class layout changes are introduced. This is an alloc
 pyramids across detection and matching. OpenVINS constructs each current
 pyramid in a fresh vector; it does not implement this allocation cache. The complete
 extractor check matched all pyramid pixels, keypoints and descriptors on
-160 native/resized EuRoC inputs. Whole-estimator CPU savings are pending.
+160 native/resized EuRoC inputs. The complete replay measured no additional CPU saving.
 [Reuse checks](orb_pyramid_reuse_20261005.json).
 
 A fresh reference and blur repeat used 127.78 and 119.08 CPU seconds (6.81%
@@ -598,3 +598,34 @@ cell detector matched 1,160,740 corners but gave no microbenchmark saving,
 and full-level detection with exact cell-boundary suppression matched
 836,536 corners but cost more. Their evidence is in the profiling JSON;
 unused implementations remain under `/tmp`.
+
+The buffer-reuse replay used 119.12 CPU seconds versus the blur reference's
+119.08, with late ATE 1.977 versus 1.857 cm and similar RPE. Inputs and
+initialized coverage were complete, with both refinements and no resets.
+The experiment is not selected because no estimator CPU saving was measured.
+The parameter trial changes pyramid spacing from 1.2/eight levels to
+1.4/six levels while retaining native resolution and a requested 600
+features. It changes feature scales and requires ground-truth validation;
+it is not covered by the exact-feature arithmetic checks.
+
+## Stop playback after an estimator failure
+
+The public runner monitors the estimator while playing a dataset. Unexpected
+estimator exit or playback timeout stops the owned player and writes an
+explicit failure reason in `completion.json`. A known crashing configuration
+returned estimator status 139 and was stopped in 8.77 seconds; the earlier
+runner kept replaying for 156.39 seconds. Failed runs remain excluded from
+trajectory and compute comparisons.
+[Failure handling check](early_estimator_failure_20261005.json).
+
+## Disabled place-recognition queue safety
+
+GDB reproduced a SIGSEGV in `LoopClosing::Run` with `loopClosing: 0`. The
+upstream disabled detector returns before consuming queued keyframes. The
+worker then copies its uninitialized current keyframe pointer into the last
+pointer and dereferences it on the next iteration. The isolated builder now
+initializes that pointer and prevents queuing disabled place-recognition
+work. Active-loop handling is unchanged. The formerly crashing wider-pyramid
+configuration is replaying with the correction. This diagnosis does not
+establish the cause of historical hardware resets.
+[Diagnosis and validation](orb_disabled_loop_queue_20261005.json).

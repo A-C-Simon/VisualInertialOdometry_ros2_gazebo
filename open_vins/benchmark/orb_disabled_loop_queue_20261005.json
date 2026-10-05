@@ -1,0 +1,18 @@
+{
+  "scope": "Disabled place-recognition queue safety fix; no active-loop algorithm change",
+  "diagnosis": {
+    "run": "benchmark/results/euroc_20261005_pyramid14_debug",
+    "signal": "SIGSEGV",
+    "top_frame": "ORB_SLAM3::LoopClosing::Run()",
+    "gdb_log_sha256": "5bf42bbfb5db542a822708df9d7d3a85679c6dddab61f1d80c913e08358f54b5",
+    "source_path": "/home/ac/ORB_SLAM3/src/LoopClosing.cc",
+    "source_sha256": "00646de5da317e268534ffe556786e51e71e46d52ab142c17bab0b42e7287785",
+    "defect": "NewDetectCommonRegions returns before dequeuing when mbActiveLC=false. Run assigns uninitialized mpCurrentKF to mpLastCurrentKF, then dereferences it on the next iteration."
+  },
+  "fix": "Initialize mpCurrentKF to nullptr and do not enqueue place-recognition keyframes when mbActiveLC is false. Active-loop queue handling is retained.",
+  "patch_sha256": "e6a052e38f7324073785ae114cee23f12dd7ef23d0aefcc6a1fba0537dad7920",
+  "core_library_sha256": "c1c46cfe07602da52a328e597d8a3b69297420b368d7cce12218ade3238b1ee6",
+  "status": "full corrected replay running",
+  "primary_source": "https://github.com/UZ-SLAMLab/ORB_SLAM3/blob/master/src/LoopClosing.cc",
+  "limits": "Does not establish a new cost saving or explain historical resets; the failure was reproduced under the experimental spacing configuration."
+}

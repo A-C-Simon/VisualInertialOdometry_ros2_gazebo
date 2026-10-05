@@ -63,7 +63,7 @@ manifest={'preserve_inertial_origin':a.preserve_inertial_origin,
           'original_library_sha256':hashlib.sha256((root/'lib/libORB_SLAM3.so').read_bytes()).hexdigest(),
           'flags':flags,'sources':{},'compile_commands':[]}
 patch='';export_patch='';tracking_patch='';motion_patch='';objects={}
-source_names=['Optimizer.cc','Settings.cc','System.cc','Tracking.cc','LocalMapping.cc','Frame.cc']
+source_names=['Optimizer.cc','Settings.cc','System.cc','Tracking.cc','LocalMapping.cc','Frame.cc','LoopClosing.cc']
 if a.profile_cpu or a.fast_gaussian or a.reuse_pyramid:
  source_names.append('ORBextractor.cc')
 if a.profile_cpu:
@@ -142,6 +142,20 @@ for name in source_names:
                                      << " refinement1=" << mpCurrentKeyFrame->GetMap()->GetIniertialBA1()
                                      << " refinement2=" << mpCurrentKeyFrame->GetMap()->GetIniertialBA2()
                                      << endl;''')
+ elif name=='LoopClosing.cc':
+  marker='    mpLastCurrentKF = static_cast<KeyFrame*>(NULL);'
+  assert new.count(marker)==1
+  new=new.replace(marker,'    mpCurrentKF = nullptr;\n'+marker)
+  marker='''void LoopClosing::InsertKeyFrame(KeyFrame *pKF)
+{
+    unique_lock<mutex> lock(mMutexLoopQueue);'''
+  assert new.count(marker)==1
+  new=new.replace(marker,'''void LoopClosing::InsertKeyFrame(KeyFrame *pKF)
+{
+    // Disabled place recognition returns before consuming this queue. Do
+    // not enqueue work that would read an uninitialized current keyframe.
+    if (!mbActiveLC) return;
+    unique_lock<mutex> lock(mMutexLoopQueue);''')
  elif name=='Frame.cc':
   # Stereo matching reads mb before the constructor body computes static fx.
   # Use this frame's intrinsics rather than uninitialized object storage.
@@ -287,6 +301,8 @@ for name in source_names:
   if a.motion_gated_initialization:
    (out/'orb_motion_gate.patch').write_text(source_patch)
   else:motion_patch+=source_patch
+ elif name=='LoopClosing.cc':
+  (ROOT/'benchmark/patches/orb_disabled_loop_queue.patch').write_text(source_patch)
  elif name not in ('Frame.cc','ORBextractor.cc'):patch+=source_patch
  obj=out/(name+'.o');objects['CMakeFiles/ORB_SLAM3.dir/src/'+name+'.o']=str(obj)
  command=['/usr/bin/c++']+flags['CXX_DEFINES']+flags['CXX_INCLUDES']+flags['CXX_FLAGS']+['-c',str(patched),'-o',str(obj)]
