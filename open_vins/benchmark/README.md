@@ -481,3 +481,26 @@ both pairs. Startup error still varies, and the original tower replay does
 not establish a hardware saving. The working hardware profile remains
 selected. [Both pairs, coverage and accuracy intervals](euroc_fixed_stereo_cost_20261005.json)
 keep the repeat separate from a general performance or accuracy claim.
+
+
+## CPU stage profiling
+
+When Linux performance events are unavailable, `--profile-cpu` builds an
+isolated diagnostic core with inclusive thread CPU timers. Set
+`ORB_PROFILE_OUTPUT` to an absolute CSV path before running a replay. It
+measures feature-extraction workers, tracking stages, local mapping and
+optimization separately. Sleeping and work on other threads are excluded
+from each scope. Parent and child scopes overlap, so do not sum every row.
+The public runner records whether profiling was enabled. Instrumented trials
+identify bottlenecks; use an uninstrumented core for final cost comparisons.
+
+```bash
+python3 benchmark/build_orb_core.py \
+  --output benchmark/build_orb_cpu_profile \
+  --preserve-inertial-origin --motion-gated-initialization \
+  --keyframe-interval-s 0.25 --fast-stereo-patches --profile-cpu
+```
+
+A native check spanning two translation units and two concurrent workers
+reported both 20 ms CPU loops together and excluded an 80 ms sleep. Output
+is written at normal process shutdown; forced termination can omit it.

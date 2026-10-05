@@ -8,6 +8,7 @@ import difflib
 import hashlib
 import json
 from pathlib import Path
+import re
 import shlex
 import subprocess
 
@@ -27,6 +28,8 @@ p.add_argument('--motion-gated-initialization',action='store_true',
                help='Experimental: require measured translation before inertial initialization and wait during quiet intervals')
 p.add_argument('--fast-stereo-patches',action='store_true',
                help='Experimental: retain exact stereo L1 distances while reducing temporary allocations')
+p.add_argument('--profile-cpu',action='store_true',
+               help='Diagnostic only: collect inclusive per-stage thread CPU with ORB_PROFILE_OUTPUT')
 a=p.parse_args()
 root=a.orb_root.resolve();out=a.output.resolve()
 if not 0 <= a.keyframe_interval_s <= .5:
@@ -35,7 +38,7 @@ if not 0 <= a.refined_keyframe_interval_s <= .5:
  p.error('Refined keyframe interval must be between 0 and 0.5 seconds')
 if a.refined_keyframe_interval_s and a.refined_keyframe_interval_s < a.keyframe_interval_s:
  p.error('Refined keyframe interval must not shorten the initial interval')
-if (a.preserve_inertial_origin or a.keyframe_interval_s or a.refined_keyframe_interval_s or a.motion_gated_initialization or a.fast_stereo_patches) and out == (ROOT/'benchmark/build_orb_core').resolve():
+if (a.preserve_inertial_origin or a.keyframe_interval_s or a.refined_keyframe_interval_s or a.motion_gated_initialization or a.fast_stereo_patches or a.profile_cpu) and out == (ROOT/'benchmark/build_orb_core').resolve():
  p.error('Use a separate --output directory for experimental core changes')
 if a.check_translation_invariance and (a.prepare_only or not a.check_translation_invariance.is_file()):
  p.error('Translation check requires an existing settings file and a compiled build')
@@ -50,10 +53,18 @@ manifest={'preserve_inertial_origin':a.preserve_inertial_origin,
           'refined_keyframe_interval_s':a.refined_keyframe_interval_s,
           'motion_gated_initialization':a.motion_gated_initialization,
           'fast_stereo_patches':a.fast_stereo_patches,
+          'profile_cpu':a.profile_cpu,
           'original_library_sha256':hashlib.sha256((root/'lib/libORB_SLAM3.so').read_bytes()).hexdigest(),
           'flags':flags,'sources':{},'compile_commands':[]}
 patch='';export_patch='';tracking_patch='';motion_patch='';objects={}
-for name in ['Optimizer.cc','Settings.cc','System.cc','Tracking.cc','LocalMapping.cc','Frame.cc']:
+source_names=['Optimizer.cc','Settings.cc','System.cc','Tracking.cc','LocalMapping.cc','Frame.cc']
+if a.profile_cpu:
+ source_names.append('ORBextractor.cc')
+ profile_header=ROOT/'benchmark/orb_cpu_profile.hpp'
+ (out/profile_header.name).write_bytes(profile_header.read_bytes())
+ manifest['cpu_profile_header_sha256']=hashlib.sha256(profile_header.read_bytes()).hexdigest()
+ manifest['cpu_profile_scopes']={}
+for name in source_names:
  source=root/'src'/name;old=source.read_text();new=old
  if name=='Optimizer.cc':
   new=new.replace('#include <complex>','#include <complex>\n#include <cstdlib>')
@@ -180,9 +191,27 @@ for name in ['Optimizer.cc','Settings.cc','System.cc','Tracking.cc','LocalMappin
    (out/header.name).write_bytes(header.read_bytes())
    manifest['stereo_patch_sha256']=hashlib.sha256(policy.read_bytes()).hexdigest()
    manifest['stereo_patch_header_sha256']=hashlib.sha256(header.read_bytes()).hexdigest()
+ policy_new=new
+ if a.profile_cpu:
+  scope_names={
+   'Frame.cc':['ExtractORB','ComputeStereoMatches','ComputeBoW','AssignFeaturesToGrid'],
+   'Tracking.cc':['GrabImageStereo','Track','PreintegrateIMU','TrackLocalMap','SearchLocalPoints','TrackWithMotionModel','TrackReferenceKeyFrame','UpdateLocalMap','CreateNewKeyFrame'],
+   'LocalMapping.cc':['Run','ProcessNewKeyFrame','CreateNewMapPoints','SearchInNeighbors','MapPointCulling','KeyFrameCulling','InitializeIMU','ScaleRefinement'],
+   'Optimizer.cc':['PoseOptimization','PoseInertialOptimizationLastFrame','PoseInertialOptimizationLastKeyFrame','LocalInertialBA','LocalBundleAdjustment','FullInertialBA','InertialOptimization'],
+   'ORBextractor.cc':['ComputePyramid','ComputeKeyPointsOctTree','DistributeOctTree']}
+  if name in scope_names:
+   cls=name[:-3]
+   new='#include "orb_cpu_profile.hpp"\n'+new
+   for function in scope_names[name]:
+    label=cls+'::'+function
+    pattern=r'(^[^\n;{}]*\b'+re.escape(label)+r'\s*\([^;{}]*\)\s*\n\s*\{)'
+    new,count=re.subn(pattern,lambda m:m[0]+'\n    ORB_CPU_SCOPE('+json.dumps(label)+');',new,flags=re.M)
+    assert count>0,label
+    manifest['cpu_profile_scopes'][label]=count
+   patched.write_text(new)
  manifest['sources'][name]={'original_sha256':hashlib.sha256(old.encode()).hexdigest(),
                            'patched_sha256':hashlib.sha256(new.encode()).hexdigest()}
- source_patch=''.join(difflib.unified_diff(old.splitlines(True),new.splitlines(True),fromfile='a/src/'+name,tofile='b/src/'+name))
+ source_patch=''.join(difflib.unified_diff(old.splitlines(True),policy_new.splitlines(True),fromfile='a/src/'+name,tofile='b/src/'+name))
  if name=='Optimizer.cc' and a.preserve_inertial_origin:
   # Keep the default local-BA patch independent of the experimental change.
   origin_patch=(ROOT/'benchmark/patches/orb_inertial_origin.patch').read_text()

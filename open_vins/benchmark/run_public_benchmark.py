@@ -70,6 +70,8 @@ def main():
                    str(config), str(dataset), str(times), 'trial']
     (out/'invocation.json').write_text(json.dumps({'command':command,'threads':args.threads,
         'dataset':str(dataset),'config':str(config),'core_library_dir':str(args.core_library_dir),'local_ba_window':args.local_ba_window,
+        'cpu_profile_output':env.get('ORB_PROFILE_OUTPUT'),
+        'diagnostic_cpu_profile':bool(env.get('ORB_PROFILE_OUTPUT')),
         'orb_images_reliable':not args.best_effort_images if args.method == 'orb_ros' else None},indent=2))
     start = time.monotonic()
     player_return = None
