@@ -1,5 +1,5 @@
 {
-  "status": "experimental; first full replay passed, fresh paired repeat and tower validation pending",
+  "status": "experimental; repeated public CPU saving with exact native extraction, hardware validation pending",
   "scope": "Exact descriptor blur arithmetic, retaining feature counts, detection, resolution and pyramid scales",
   "installed_opencv": "4.5.4",
   "native_image_checks": 600,
@@ -22,7 +22,7 @@
     "candidate_seconds": 0.411141,
     "selection": "scalar path correct but slower; native AVX2 host is the optimization target"
   },
-  "limits": "Exact agreement covers the tested native images and synthetic borders/strides. Final CPU and trajectory comparison still requires complete uninstrumented replay. Full-extractor comparison changes input size on every third image.",
+  "limits": "Exact agreement covers the tested native images and synthetic borders/strides. Final CPU and trajectory comparison still requires complete uninstrumented replay. Full-extractor comparison changes input size on every third image. Fresh late ATE was 1.731 cm reference and 1.857 cm candidate; RPE 1.198/1.193 cm. Initialization and mapping remain asynchronous; exact feature equality does not imply identical trajectories.",
   "source_url": "https://raw.githubusercontent.com/opencv/opencv/4.5.4/modules/imgproc/src/smooth.dispatch.cpp",
   "orb_gaussian7.hpp_sha256": "d0ac6e1622d2c6ce52f1b688265ff2ce0fd0f8fc532b1b778690fd8bb4b504c3",
   "orb_gaussian7_check.cc_sha256": "0f333c45962011adcceafa46fdfc00497989407db7c5a5520f704005591565b4",
@@ -115,5 +115,103 @@
       "viba2_completed": true
     }
   },
-  "first_cpu_reduction_from_previous_stereo_optimized_percent": 10.896520628240776
+  "first_cpu_reduction_from_previous_stereo_optimized_percent": 10.896520628240776,
+  "fresh_pair_repeat": {
+    "dataset": "EuRoC V1_01_easy",
+    "resources": [
+      {
+        "trial": "euroc_20261005_gaussian_reference_r2",
+        "cpu_seconds": 127.78,
+        "peak_rss_mib": 694.06640625,
+        "completion": {
+          "elapsed_s": 156.3366315520252,
+          "estimator_exit": 0,
+          "player_exit": 0
+        }
+      },
+      {
+        "trial": "euroc_20261005_fixed_gaussian_r2",
+        "cpu_seconds": 119.08,
+        "peak_rss_mib": 695.92578125,
+        "completion": {
+          "elapsed_s": 156.18915246397955,
+          "estimator_exit": 0,
+          "player_exit": 0
+        }
+      }
+    ],
+    "post_initialization": {
+      "common_start_s": 1403715303.262143,
+      "common_end_s": 1403715417.962143,
+      "alignment": "SE(3), no scale; GT position interpolated",
+      "results": [
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_gaussian_reference_r2/online.txt",
+          "poses": 2295,
+          "duration_s": 114.70000004768372,
+          "approximate_20hz_coverage": 0.9999999995844556,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.017308392909783313,
+          "ate_p95_m": 0.02604437820265797,
+          "rpe_1s_translation_rmse_m": 0.011982584281441853
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_fixed_gaussian_r2/online.txt",
+          "poses": 2295,
+          "duration_s": 114.70000004768372,
+          "approximate_20hz_coverage": 0.9999999995844556,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.01856632638428204,
+          "ate_p95_m": 0.029748138447297744,
+          "rpe_1s_translation_rmse_m": 0.011930487794684157
+        }
+      ]
+    },
+    "full_common_interval": {
+      "common_start_s": 1403715280.762143,
+      "common_end_s": 1403715417.962143,
+      "alignment": "SE(3), no scale; GT position interpolated",
+      "results": [
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_gaussian_reference_r2/online.txt",
+          "poses": 2745,
+          "duration_s": 137.20000004768372,
+          "approximate_20hz_coverage": 0.9999999996525777,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.05938846395313068,
+          "ate_p95_m": 0.17006135402240394,
+          "rpe_1s_translation_rmse_m": 0.029552965840968608
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_fixed_gaussian_r2/online.txt",
+          "poses": 2745,
+          "duration_s": 137.20000004768372,
+          "approximate_20hz_coverage": 0.9999999996525777,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.03164047522192056,
+          "ate_p95_m": 0.07824318026472221,
+          "rpe_1s_translation_rmse_m": 0.01719891152316815
+        }
+      ]
+    },
+    "input_validation": {
+      "euroc_20261005_gaussian_reference_r2": {
+        "eligible_stereo_pairs": 2911,
+        "imu_received": 29120,
+        "max_source_imu_gap_ms": 5.0,
+        "map_resets": 0,
+        "viba1_completed": true,
+        "viba2_completed": true
+      },
+      "euroc_20261005_fixed_gaussian_r2": {
+        "eligible_stereo_pairs": 2911,
+        "imu_received": 29120,
+        "max_source_imu_gap_ms": 5.0,
+        "map_resets": 0,
+        "viba1_completed": true,
+        "viba2_completed": true
+      }
+    },
+    "cpu_reduction_percent": 6.8085772421349215
+  }
 }

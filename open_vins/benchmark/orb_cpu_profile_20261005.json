@@ -418,5 +418,26 @@
     },
     "detector_remainder_cpu_seconds": 31.027714207,
     "detector_remainder_scope": "FAST cell detection, cell vector work and setup; not an individually timed FAST-only scope"
-  }
+  },
+  "rejected_fast_prototypes": [
+    {
+      "scope": "5000 synthetic FAST cells, random/constant images, varied thresholds and odd strides",
+      "exact_corners": 1160740,
+      "reference_seconds": 0.506278,
+      "candidate_seconds": 0.514037,
+      "selection": "native cell detector not integrated, no microbenchmark saving",
+      "whole_pipeline_cost_or_accuracy_claim": false,
+      "location": "/tmp/orb_fast9.hpp"
+    },
+    {
+      "scope": "190 native/synthetic images, single full-level FAST pass with cell-boundary NMS recomputation",
+      "exact_cells": 45600,
+      "exact_corners": 836536,
+      "reference_seconds": 0.311544,
+      "candidate_seconds": 0.583184,
+      "selection": "not integrated; preserving cell boundaries costs more than original cell calls",
+      "whole_pipeline_cost_or_accuracy_claim": false,
+      "location": "/tmp/orb_fast_level.hpp"
+    }
+  ]
 }

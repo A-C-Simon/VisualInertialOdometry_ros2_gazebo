@@ -1,6 +1,6 @@
 {
   "status": "experimental; full replay pending",
-  "inspiration": "OpenVINS retains image pyramid storage between camera frames",
+  "inspiration": "OpenVINS saves previous/current pyramids and shares them between detection and temporal matching. Its current pyramid is constructed in a fresh vector; the allocation cache here is a separate ORB experiment.",
   "change": "Reuse existing bordered image allocation only if size, type, full parent size and ROI offset match. Preserve resize and border operations. No class layout changes.",
   "native_check": {
     "images": 160,

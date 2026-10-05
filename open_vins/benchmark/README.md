@@ -578,8 +578,23 @@ gate remains open.
 `--reuse-pyramid` retains the previous bordered pyramid allocation when
 its dimensions, type, parent dimensions and ROI offset match. Input size
 changes allocate fresh storage. Resize and reflected borders remain exactly
-the same, and no extractor class layout changes are introduced. This follows
-OpenVINS' practice of retaining pyramid storage between images. The complete
+the same, and no extractor class layout changes are introduced. This is an allocation experiment inspired by OpenVINS' reuse of saved
+pyramids across detection and matching. OpenVINS constructs each current
+pyramid in a fresh vector; it does not implement this allocation cache. The complete
 extractor check matched all pyramid pixels, keypoints and descriptors on
 160 native/resized EuRoC inputs. Whole-estimator CPU savings are pending.
 [Reuse checks](orb_pyramid_reuse_20261005.json).
+
+A fresh reference and blur repeat used 127.78 and 119.08 CPU seconds (6.81%
+lower), with 694.1 and 695.9 MiB peak RSS. Both retained complete inputs and
+pose coverage, completed both refinements and had no resets. Late ATE was
+1.731/1.857 cm and RPE 1.198/1.193 cm; full common ATE was 5.939/3.164 cm.
+Initialization and mapping are asynchronous, so feature equality does not
+imply identical paths. The two blur candidates used 118.57 and 119.08 CPU
+seconds. Tower selection remains pending.
+
+Two detector prototypes were rejected before pipeline integration: a native
+cell detector matched 1,160,740 corners but gave no microbenchmark saving,
+and full-level detection with exact cell-boundary suppression matched
+836,536 corners but cost more. Their evidence is in the profiling JSON;
+unused implementations remain under `/tmp`.
