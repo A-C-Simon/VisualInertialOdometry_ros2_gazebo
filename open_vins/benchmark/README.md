@@ -777,8 +777,8 @@ failure is excluded from cost comparison.
 
 The diagnostic replay attributes 32.7% of process CPU to extraction, 30.3%
 to tracking and 24.1% to mapping. Nested scopes overlap and must not be added
-together. Tracking outside image processing accounted for 9.90 CPU seconds,
-including rectification and other work. A revised exact FAST detector was
+together. The outer tracking wrapper outside `GrabImageStereo` accounted for 9.90 CPU
+seconds, including rectification and other work. A revised exact FAST detector was
 30.2% slower in its standalone check (0.492 to 0.641 seconds) and remains
 unselected. Instrumentation and a short prototype compilation near the end
 make this replay unsuitable as a final cost comparison.
@@ -812,3 +812,22 @@ c++ -O3 -march=native -std=c++14 -pthread benchmark/orb_remap_check.cc \
 
 Use a separate output directory with `--fast-rectification`; all other policy
 flags must match the reference. Default core and hardware settings are unchanged.
+
+
+## First full rectification comparisons
+
+The matched 500-feature medium trial reduced CPU 7.8% from 50.91 to 46.96
+seconds. Late ATE fell 7.9% from 3.227 to 2.971 cm, full ATE fell 27.6%
+from 8.305 to 6.014 cm, late RPE increased 0.6%, and peak RSS increased
+3.5% from 437.0 to 452.2 MiB. Its CPU was 0.5% above the same-sequence
+OpenVINS measurement of 46.71 seconds.
+
+On easy, CPU decreased 3.7% from the two-reference mean of 88.72 to 85.47
+seconds, while late ATE increased 13.1% from 1.740 to 1.968 cm and full ATE
+increased 59.2% from 1.857 to 2.956 cm. Peak RSS increased 2.6% to 500.0 MiB.
+All eligible stereo frames and IMU samples were retained on both sequences,
+both inertial refinements completed, and there were no active resets.
+The candidate remains experimental and unselected while repeats check the
+error change. Identical rectified pixels do not prove identical trajectories
+when tracking and mapping run asynchronously.
+[Matched intervals, exact values and percentage changes](orb_rectification_public_20261005.json).
