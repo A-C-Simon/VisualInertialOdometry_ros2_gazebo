@@ -687,3 +687,23 @@ levels, native resolution and BA cap 12. The repeat used 88.87 CPU seconds,
 input and initialized pose coverage, both refinements and no resets.
 Hardware validation remains. Saved legacy atlas compatibility is untested.
 [Loader checks and limits](orb_packed_vocabulary_20261005.json).
+
+
+## Fresh tower check of packed vocabulary and wider pyramid
+
+The explicit 600-feature, scale-1.6/five-level live profile completed the
+120.60-second movement check on the unchanged measured tower. Maximum
+initialized displacement was 72.4 cm, maximum pose step 7.52 cm and maximum
+pose gap 368 ms. Both inertial refinements completed, with zero map resets
+and zero LOST transitions. Three RECENTLY_LOST events recovered. Continuous
+motion inside the desk/height limits and no observed flights, jumps or resets
+were confirmed.
+
+The estimator including ROS launch used 133.31 CPU seconds over 165.01 seconds
+(80.8% of one core), with 518.2 MiB peak RSS. Tracking averaged 11.67 ms over
+4,892 frames. The diagnostic full pipeline used 264.03 CPU seconds over
+183.21 seconds and includes camera, IMU, splitter, recording and RViz. These
+are descriptive live measurements, not a matched comparison to older runs
+or proof of trajectory accuracy against independent ground truth. The public
+500-feature profile still needs separate hardware validation.
+[Live evidence and limitations](tower_pyramid_validation_20261005.json).

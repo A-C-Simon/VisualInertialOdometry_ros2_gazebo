@@ -228,8 +228,14 @@ ORB_PYRAMID_SCALE=1.6 ORB_PYRAMID_LEVELS=5 \
 ../ORB_SLAM/orbslam3_hw290_vio.sh --efficient --rviz --diagnostics
 ```
 
-Run this command from `open_vins`. This is an experimental profile, pending
-fresh tower validation. Public 500-feature trials are not the hardware default:
+Run this command from `open_vins`. A fresh two-minute tower check passed with
+this 600-feature profile: maximum displacement 72.4 cm, no active resets or
+LOST transitions, and three recovered RECENTLY_LOST events. Continuous motion
+within the desk and height limits was confirmed with no observed flights,
+jumps or resets. [Recorded checks](../benchmark/tower_pyramid_validation_20261005.json)
+retain resources and delivery diagnostics. Desk bounds do not establish
+independent ground-truth accuracy or matched CPU savings.
+Public 500-feature trials are not the hardware default:
 ORB stereo startup needs more than 500 detected features, so the exporter
 continues to require a request of at least 501. The smallest pyramid image
 must retain at least 64 pixels per side. Do not change mount calibration to
