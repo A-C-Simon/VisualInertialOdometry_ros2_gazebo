@@ -629,3 +629,11 @@ work. Active-loop handling is unchanged. The formerly crashing wider-pyramid
 configuration is replaying with the correction. This diagnosis does not
 establish the cause of historical hardware resets.
 [Diagnosis and validation](orb_disabled_loop_queue_20261005.json).
+
+The corrected wider-pyramid replay completed without the former crash and
+retained all 2,911 eligible pairs and 29,120 IMU samples, both refinements
+and complete pose coverage. It used 105.35 CPU seconds, with late ATE
+1.805 cm and RPE 1.214 cm. A matching reference with the same loop-worker
+fix is running; the previous 119.08-second blur reference used the old
+loop worker. Do not attribute the whole difference to spacing yet.
+[Spacing trials](orb_pyramid_spacing_20261005.json).

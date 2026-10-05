@@ -12,7 +12,20 @@
   "fix": "Initialize mpCurrentKF to nullptr and do not enqueue place-recognition keyframes when mbActiveLC is false. Active-loop queue handling is retained.",
   "patch_sha256": "e6a052e38f7324073785ae114cee23f12dd7ef23d0aefcc6a1fba0537dad7920",
   "core_library_sha256": "c1c46cfe07602da52a328e597d8a3b69297420b368d7cce12218ade3238b1ee6",
-  "status": "full corrected replay running",
+  "status": "formerly crashing configuration completed the full replay with the correction",
   "primary_source": "https://github.com/UZ-SLAMLab/ORB_SLAM3/blob/master/src/LoopClosing.cc",
-  "limits": "Does not establish a new cost saving or explain historical resets; the failure was reproduced under the experimental spacing configuration."
+  "limits": "Does not establish a new cost saving or explain historical resets; the failure was reproduced under the experimental spacing configuration.",
+  "corrected_replay": {
+    "run": "benchmark/results/euroc_20261005_safe_pyramid14_r1",
+    "completion": {
+      "elapsed_s": 156.31223543098895,
+      "estimator_exit": 0,
+      "player_exit": 0
+    },
+    "eligible_stereo_pairs": 2911,
+    "imu_received": 29120,
+    "map_resets": 0,
+    "viba1_completed": true,
+    "viba2_completed": true
+  }
 }
