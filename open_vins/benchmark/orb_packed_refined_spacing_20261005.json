@@ -1,0 +1,128 @@
+{
+  "status": "unselected: lower CPU but increased trajectory error on both evaluation intervals",
+  "core_library_sha256": "7e884afa4a3c6a5573de51fdb5061bfd6dd818e3baca446234c5c4c5c8243742",
+  "policy": "Healthy keyframe spacing remains 0.25 s through initialization and first refinement, then increases to 0.5 s after second refinement. Urgent weak-tracking insertion remains unchanged.",
+  "comparison": {
+    "dataset": "EuRoC V1_01_easy",
+    "resources": [
+      {
+        "trial": "euroc_20261005_packed_pyramid16_500_r1",
+        "cpu_seconds": 88.57000000000001,
+        "peak_rss_mib": 486.41015625,
+        "completion": {
+          "elapsed_s": 151.86868957901606,
+          "estimator_exit": 0,
+          "player_exit": 0
+        }
+      },
+      {
+        "trial": "euroc_20261005_packed_pyramid16_500_r2",
+        "cpu_seconds": 88.86999999999999,
+        "peak_rss_mib": 487.83984375,
+        "completion": {
+          "elapsed_s": 151.86888740496943,
+          "estimator_exit": 0,
+          "player_exit": 0
+        }
+      },
+      {
+        "trial": "euroc_20261005_packed_refined05_r1",
+        "cpu_seconds": 82.55999999999999,
+        "peak_rss_mib": 446.23046875,
+        "completion": {
+          "elapsed_s": 151.92081054096343,
+          "estimator_exit": 0,
+          "player_exit": 0
+        }
+      }
+    ],
+    "post_initialization": {
+      "common_start_s": 1403715303.262143,
+      "common_end_s": 1403715417.962143,
+      "alignment": "SE(3), no scale; GT position interpolated",
+      "results": [
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_packed_pyramid16_500_r1/online.txt",
+          "poses": 2295,
+          "duration_s": 114.70000004768372,
+          "approximate_20hz_coverage": 0.9999999995844556,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.01742468126389251,
+          "ate_p95_m": 0.02917214917127869,
+          "rpe_1s_translation_rmse_m": 0.012144278217564102
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_packed_pyramid16_500_r2/online.txt",
+          "poses": 2295,
+          "duration_s": 114.70000004768372,
+          "approximate_20hz_coverage": 0.9999999995844556,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.017369851194287977,
+          "ate_p95_m": 0.02832393131313065,
+          "rpe_1s_translation_rmse_m": 0.011770168601165996
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_packed_refined05_r1/online.txt",
+          "poses": 2295,
+          "duration_s": 114.70000004768372,
+          "approximate_20hz_coverage": 0.9999999995844556,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.021292208082043563,
+          "ate_p95_m": 0.036888393871732095,
+          "rpe_1s_translation_rmse_m": 0.01406034546249072
+        }
+      ]
+    },
+    "full_common_interval": {
+      "common_start_s": 1403715280.762143,
+      "common_end_s": 1403715417.962143,
+      "alignment": "SE(3), no scale; GT position interpolated",
+      "results": [
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_packed_pyramid16_500_r1/online.txt",
+          "poses": 2745,
+          "duration_s": 137.20000004768372,
+          "approximate_20hz_coverage": 0.9999999996525777,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.017768562969355722,
+          "ate_p95_m": 0.030051824587196053,
+          "rpe_1s_translation_rmse_m": 0.012858001774337414
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_packed_pyramid16_500_r2/online.txt",
+          "poses": 2745,
+          "duration_s": 137.20000004768372,
+          "approximate_20hz_coverage": 0.9999999996525777,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.019374903277112804,
+          "ate_p95_m": 0.0337594798052445,
+          "rpe_1s_translation_rmse_m": 0.013487037208833805
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_packed_refined05_r1/online.txt",
+          "poses": 2745,
+          "duration_s": 137.20000004768372,
+          "approximate_20hz_coverage": 0.9999999996525777,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.026187343413745783,
+          "ate_p95_m": 0.050744864472504016,
+          "rpe_1s_translation_rmse_m": 0.01680441166939733
+        }
+      ]
+    }
+  },
+  "percent_changes_vs_mean_references": {
+    "cpu": -6.943192064923364,
+    "late_ate": 22.388240782569202,
+    "late_rpe": 17.58871588431208,
+    "full_common_interval_ate": 41.00645987090979
+  },
+  "input_checks": {
+    "eligible_stereo_pairs": 2911,
+    "imu_received": 29120,
+    "max_imu_gap_ms": 5,
+    "both_inertial_refinements_completed": true,
+    "active_map_resets": 0
+  },
+  "limits": "One sequence and one candidate run against two completed reference runs. Results do not support selecting this policy for the cost-with-quality goal."
+}

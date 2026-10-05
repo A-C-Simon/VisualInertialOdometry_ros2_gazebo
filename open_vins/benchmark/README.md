@@ -707,3 +707,16 @@ are descriptive live measurements, not a matched comparison to older runs
 or proof of trajectory accuracy against independent ground truth. The public
 500-feature profile still needs separate hardware validation.
 [Live evidence and limitations](tower_pyramid_validation_20261005.json).
+
+
+## Refined keyframe spacing with the corrected packed core
+
+A fresh test repeats the 0.5-second spacing policy after VIBA2 with the
+corrected baseline, disabled-loop queue, exact stereo/blur arithmetic and
+packed vocabulary. CPU fell 6.9% from the two-reference mean of 88.72 to
+82.56 seconds, but late ATE rose 22.4% from 1.740 to 2.129 cm and late RPE
+rose 17.6% from 1.196 to 1.406 cm. Full common-interval ATE also rose 41.0%.
+All 2,911 eligible frames and 29,120 IMU samples were retained, both refinements
+completed and there were no active resets. This policy remains unselected:
+the cost reduction comes with worse error on both evaluation intervals.
+[Comparison and percentages](orb_packed_refined_spacing_20261005.json).
