@@ -771,3 +771,15 @@ wider-pyramid gap is 12.4%. These are single runs; quality-preserving
 selection remains unproven. The first OpenVINS launch's library-symbol
 failure is excluded from cost comparison.
 [Intervals, percentages and startup diagnostics](orb_medium_pyramid_20261005.json).
+
+
+## CPU profile of the packed core
+
+The diagnostic replay attributes 32.7% of process CPU to extraction, 30.3%
+to tracking and 24.1% to mapping. Nested scopes overlap and must not be added
+together. Tracking outside image processing accounted for 9.90 CPU seconds,
+including rectification and other work. A revised exact FAST detector was
+30.2% slower in its standalone check (0.492 to 0.641 seconds) and remains
+unselected. Instrumentation and a short prototype compilation near the end
+make this replay unsuitable as a final cost comparison.
+[Scope timings and limitations](orb_packed_cpu_profile_20261005.json).
