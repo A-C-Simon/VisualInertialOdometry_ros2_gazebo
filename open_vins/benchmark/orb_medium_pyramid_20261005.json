@@ -1,0 +1,256 @@
+{
+  "status": "experimental: less CPU and fewer startup failures, but worse late ATE; broader selection unproven",
+  "comparison": {
+    "dataset": "EuRoC V1_02_medium",
+    "resources": [
+      {
+        "trial": "euroc_20261005_medium_packed_reference_r1",
+        "cpu_seconds": 65.94,
+        "peak_rss_mib": 461.125,
+        "completion": {
+          "elapsed_s": 91.7585722989752,
+          "estimator_exit": 0,
+          "player_exit": 0
+        }
+      },
+      {
+        "trial": "euroc_20261005_medium_packed_500_r1",
+        "cpu_seconds": 50.91,
+        "peak_rss_mib": 437.01953125,
+        "completion": {
+          "elapsed_s": 92.89652711700182,
+          "estimator_exit": 0,
+          "player_exit": 0
+        }
+      }
+    ],
+    "post_initialization": {
+      "common_start_s": 1403715553.912143,
+      "common_end_s": 1403715608.4121432,
+      "alignment": "SE(3), no scale; GT position interpolated",
+      "results": [
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_medium_packed_reference_r1/online.txt",
+          "poses": 1091,
+          "duration_s": 54.5,
+          "approximate_20hz_coverage": 0.9999999956293569,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.019857864774287182,
+          "ate_p95_m": 0.033060045696875436,
+          "rpe_1s_translation_rmse_m": 0.037472204827119965
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_medium_packed_500_r1/online.txt",
+          "poses": 1091,
+          "duration_s": 54.5,
+          "approximate_20hz_coverage": 0.9999999956293569,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.03226534408500234,
+          "ate_p95_m": 0.05222600194909449,
+          "rpe_1s_translation_rmse_m": 0.03863293330136184
+        }
+      ]
+    },
+    "full_common_interval": {
+      "common_start_s": 1403715531.962143,
+      "common_end_s": 1403715608.4121432,
+      "alignment": "SE(3), no scale; GT position interpolated",
+      "results": [
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_medium_packed_reference_r1/online.txt",
+          "poses": 1530,
+          "duration_s": 76.45000004768372,
+          "approximate_20hz_coverage": 0.9999999962601007,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.3621623345552225,
+          "ate_p95_m": 0.8911409245299701,
+          "rpe_1s_translation_rmse_m": 0.12674870794978324
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_medium_packed_500_r1/online.txt",
+          "poses": 1530,
+          "duration_s": 76.45000004768372,
+          "approximate_20hz_coverage": 0.9999999962601007,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.08314455223841893,
+          "ate_p95_m": 0.1999323213649487,
+          "rpe_1s_translation_rmse_m": 0.04888549476256224
+        }
+      ]
+    }
+  },
+  "percent_changes": {
+    "cpu": -22.79344858962694,
+    "peak_rss": -5.227534562211977,
+    "late_ate": 62.48143721262971,
+    "late_rpe": 3.0975718658588614,
+    "full_common_interval_ate": -77.04218680263088
+  },
+  "diagnostics": {
+    "euroc_20261005_medium_packed_reference_r1": {
+      "active_map_resets": 35,
+      "lost_transitions": 2,
+      "viba1_completed": true,
+      "viba2_completed": true,
+      "eligible_stereo_frames": 1709,
+      "imu_samples_received": 17100
+    },
+    "euroc_20261005_medium_packed_500_r1": {
+      "active_map_resets": 0,
+      "lost_transitions": 0,
+      "viba1_completed": true,
+      "viba2_completed": true,
+      "eligible_stereo_frames": 1709,
+      "imu_samples_received": 17100
+    },
+    "euroc_20261005_medium_packed_600_p16_r1": {
+      "active_map_resets": 35,
+      "lost_transitions": 1,
+      "viba1_completed": true,
+      "viba2_completed": true,
+      "eligible_stereo_frames": 1709,
+      "imu_samples_received": 17100
+    }
+  },
+  "limits": "Single runs on V1_02_medium. The 600-feature scale-1.2 reference resets 35 times early; wider-pyramid profiles avoid those resets but increase late ATE. Startup differences influence total CPU and full-interval error. OpenVINS successfully processes the same sequence after its workspace is sourced; the initial library-symbol failure is excluded. Neither lower-budget nor wider-pyramid policy establishes quality preservation across sequences.",
+  "medium_method_and_budget_comparison": {
+    "dataset": "EuRoC V1_02_medium",
+    "resources": [
+      {
+        "trial": "euroc_20261005_medium_openvins_fixed_r2",
+        "cpu_seconds": 46.71,
+        "peak_rss_mib": 134.10546875,
+        "completion": {
+          "elapsed_s": 91.53300317801768,
+          "estimator_exit": 0,
+          "player_exit": 0
+        }
+      },
+      {
+        "trial": "euroc_20261005_medium_packed_reference_r1",
+        "cpu_seconds": 65.94,
+        "peak_rss_mib": 461.125,
+        "completion": {
+          "elapsed_s": 91.7585722989752,
+          "estimator_exit": 0,
+          "player_exit": 0
+        }
+      },
+      {
+        "trial": "euroc_20261005_medium_packed_600_p16_r1",
+        "cpu_seconds": 52.49,
+        "peak_rss_mib": 459.921875,
+        "completion": {
+          "elapsed_s": 91.74958110199077,
+          "estimator_exit": 0,
+          "player_exit": 0
+        }
+      },
+      {
+        "trial": "euroc_20261005_medium_packed_500_r1",
+        "cpu_seconds": 50.91,
+        "peak_rss_mib": 437.01953125,
+        "completion": {
+          "elapsed_s": 92.89652711700182,
+          "estimator_exit": 0,
+          "player_exit": 0
+        }
+      }
+    ],
+    "post_initialization": {
+      "common_start_s": 1403715553.912143,
+      "common_end_s": 1403715608.4121432,
+      "alignment": "SE(3), no scale; GT position interpolated",
+      "results": [
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_medium_openvins_fixed_r2/online.txt",
+          "poses": 1091,
+          "duration_s": 54.5,
+          "approximate_20hz_coverage": 0.9999999956293569,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.037472417245570204,
+          "ate_p95_m": 0.05507212237725409,
+          "rpe_1s_translation_rmse_m": 0.03333911393348632
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_medium_packed_reference_r1/online.txt",
+          "poses": 1091,
+          "duration_s": 54.5,
+          "approximate_20hz_coverage": 0.9999999956293569,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.019857864774287182,
+          "ate_p95_m": 0.033060045696875436,
+          "rpe_1s_translation_rmse_m": 0.037472204827119965
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_medium_packed_600_p16_r1/online.txt",
+          "poses": 1091,
+          "duration_s": 54.5,
+          "approximate_20hz_coverage": 0.9999999956293569,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.02499028784479924,
+          "ate_p95_m": 0.04008127991792722,
+          "rpe_1s_translation_rmse_m": 0.03859778915746372
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_medium_packed_500_r1/online.txt",
+          "poses": 1091,
+          "duration_s": 54.5,
+          "approximate_20hz_coverage": 0.9999999956293569,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.03226534408500234,
+          "ate_p95_m": 0.05222600194909449,
+          "rpe_1s_translation_rmse_m": 0.03863293330136184
+        }
+      ]
+    },
+    "full_common_interval": {
+      "common_start_s": 1403715531.962143,
+      "common_end_s": 1403715608.4121432,
+      "alignment": "SE(3), no scale; GT position interpolated",
+      "results": [
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_medium_openvins_fixed_r2/online.txt",
+          "poses": 1530,
+          "duration_s": 76.45000004768372,
+          "approximate_20hz_coverage": 0.9999999962601007,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.042901984252272075,
+          "ate_p95_m": 0.06259108213961494,
+          "rpe_1s_translation_rmse_m": 0.03497200792312915
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_medium_packed_reference_r1/online.txt",
+          "poses": 1530,
+          "duration_s": 76.45000004768372,
+          "approximate_20hz_coverage": 0.9999999962601007,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.3621623345552225,
+          "ate_p95_m": 0.8911409245299701,
+          "rpe_1s_translation_rmse_m": 0.12674870794978324
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_medium_packed_600_p16_r1/online.txt",
+          "poses": 1530,
+          "duration_s": 76.45000004768372,
+          "approximate_20hz_coverage": 0.9999999962601007,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.06321266602475512,
+          "ate_p95_m": 0.13807424006760316,
+          "rpe_1s_translation_rmse_m": 0.04775116588519929
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_medium_packed_500_r1/online.txt",
+          "poses": 1530,
+          "duration_s": 76.45000004768372,
+          "approximate_20hz_coverage": 0.9999999962601007,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.08314455223841893,
+          "ate_p95_m": 0.1999323213649487,
+          "rpe_1s_translation_rmse_m": 0.04888549476256224
+        }
+      ]
+    }
+  },
+  "next_action": "Profile remaining work in the optimized core; investigate why wider spacing has larger late ATE on this second sequence."
+}

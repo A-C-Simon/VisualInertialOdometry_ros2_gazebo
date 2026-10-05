@@ -747,3 +747,27 @@ Comparisons can label the dataset explicitly with `summarize_trials.py
 --dataset-name "EuRoC V1_02_medium" --start-time 1403715553.912143`. This start
 is 30 seconds after the first camera timestamp; full common-interval results
 remain included alongside the later interval.
+
+
+## First medium-sequence feature and pyramid comparison
+
+At native resolution, the packed 600-feature scale-1.2/eight-level reference
+used 65.94 CPU seconds versus 50.91 for 500 features at scale 1.6/five levels,
+a 22.8% reduction. Both retained 1,709 eligible stereo frames and 17,100 IMU
+samples and completed both refinements. The reference had 35 early active
+resets and two LOST transitions; the candidate had neither.
+
+Late ATE increased 62.5% from 1.986 to 3.227 cm, while full common-interval
+ATE decreased 77.0% from 36.216 to 8.314 cm. Different startup behavior affects
+whole-run cost and full-interval accuracy. The lower-budget profile remains
+experimental; its larger late ATE prevents claiming general quality preservation.
+The 600-feature wider-pyramid run used 52.49 CPU seconds and 2.499 cm
+late ATE; full common-interval ATE was 6.321 cm. This improves on the
+500-feature profile's late error, but still exceeds the narrow-pyramid
+reference. OpenVINS on the same sequence used 46.71 CPU seconds and
+134.1 MiB peak RSS, with 3.747 cm late ATE and 4.290 cm full ATE.
+The 500-feature ORB CPU gap to OpenVINS is 9.0%, and the 600-feature
+wider-pyramid gap is 12.4%. These are single runs; quality-preserving
+selection remains unproven. The first OpenVINS launch's library-symbol
+failure is excluded from cost comparison.
+[Intervals, percentages and startup diagnostics](orb_medium_pyramid_20261005.json).
