@@ -28,6 +28,8 @@ p.add_argument('--motion-gated-initialization',action='store_true',
                help='Experimental: require measured translation before inertial initialization and wait during quiet intervals')
 p.add_argument('--fast-stereo-patches',action='store_true',
                help='Experimental: retain exact stereo L1 distances while reducing temporary allocations')
+p.add_argument('--fast-gaussian',action='store_true',
+               help='Experimental: use equivalent fixed-point descriptor blur on OpenCV 4.5.4')
 p.add_argument('--profile-cpu',action='store_true',
                help='Diagnostic only: collect inclusive per-stage thread CPU with ORB_PROFILE_OUTPUT')
 a=p.parse_args()
@@ -38,7 +40,7 @@ if not 0 <= a.refined_keyframe_interval_s <= .5:
  p.error('Refined keyframe interval must be between 0 and 0.5 seconds')
 if a.refined_keyframe_interval_s and a.refined_keyframe_interval_s < a.keyframe_interval_s:
  p.error('Refined keyframe interval must not shorten the initial interval')
-if (a.preserve_inertial_origin or a.keyframe_interval_s or a.refined_keyframe_interval_s or a.motion_gated_initialization or a.fast_stereo_patches or a.profile_cpu) and out == (ROOT/'benchmark/build_orb_core').resolve():
+if (a.preserve_inertial_origin or a.keyframe_interval_s or a.refined_keyframe_interval_s or a.motion_gated_initialization or a.fast_stereo_patches or a.fast_gaussian or a.profile_cpu) and out == (ROOT/'benchmark/build_orb_core').resolve():
  p.error('Use a separate --output directory for experimental core changes')
 if a.check_translation_invariance and (a.prepare_only or not a.check_translation_invariance.is_file()):
  p.error('Translation check requires an existing settings file and a compiled build')
@@ -53,13 +55,15 @@ manifest={'preserve_inertial_origin':a.preserve_inertial_origin,
           'refined_keyframe_interval_s':a.refined_keyframe_interval_s,
           'motion_gated_initialization':a.motion_gated_initialization,
           'fast_stereo_patches':a.fast_stereo_patches,
+          'fast_gaussian':a.fast_gaussian,
           'profile_cpu':a.profile_cpu,
           'original_library_sha256':hashlib.sha256((root/'lib/libORB_SLAM3.so').read_bytes()).hexdigest(),
           'flags':flags,'sources':{},'compile_commands':[]}
 patch='';export_patch='';tracking_patch='';motion_patch='';objects={}
 source_names=['Optimizer.cc','Settings.cc','System.cc','Tracking.cc','LocalMapping.cc','Frame.cc']
-if a.profile_cpu:
+if a.profile_cpu or a.fast_gaussian:
  source_names.append('ORBextractor.cc')
+if a.profile_cpu:
  profile_header=ROOT/'benchmark/orb_cpu_profile.hpp'
  (out/profile_header.name).write_bytes(profile_header.read_bytes())
  manifest['cpu_profile_header_sha256']=hashlib.sha256(profile_header.read_bytes()).hexdigest()
@@ -191,6 +195,20 @@ for name in source_names:
    (out/header.name).write_bytes(header.read_bytes())
    manifest['stereo_patch_sha256']=hashlib.sha256(policy.read_bytes()).hexdigest()
    manifest['stereo_patch_header_sha256']=hashlib.sha256(header.read_bytes()).hexdigest()
+ if name=='ORBextractor.cc' and a.fast_gaussian:
+  marker='''            Mat workingMat = mvImagePyramid[level].clone();
+            GaussianBlur(workingMat, workingMat, Size(7, 7), 2, 2, BORDER_REFLECT_101);'''
+  assert new.count(marker)==1
+  replacement='''            Mat workingMat;
+            orb_fast::gaussian7(mvImagePyramid[level], workingMat);'''
+  new='#include "orb_gaussian7.hpp"\n'+new.replace(marker,replacement)
+  header=ROOT/'benchmark/orb_gaussian7.hpp'
+  (out/header.name).write_bytes(header.read_bytes())
+  manifest['gaussian_header_sha256']=hashlib.sha256(header.read_bytes()).hexdigest()
+  gaussian_patch=''.join(difflib.unified_diff(old.splitlines(True),new.splitlines(True),
+                           fromfile='a/src/ORBextractor.cc',tofile='b/src/ORBextractor.cc'))
+  (out/'orb_gaussian.patch').write_text(gaussian_patch)
+  patched.write_text(new)
  policy_new=new
  if a.profile_cpu:
   scope_names={
@@ -216,7 +234,8 @@ for name in source_names:
      new,count=re.subn(pattern,lambda m:m[0]+'\n        ORB_CPU_SCOPE('+json.dumps(label)+');',new,flags=re.M)
      assert count==1,label
      manifest['cpu_profile_scopes'][label]=count
-    marker='            GaussianBlur(workingMat, workingMat, Size(7, 7), 2, 2, BORDER_REFLECT_101);'
+    marker=('            orb_fast::gaussian7(mvImagePyramid[level], workingMat);' if a.fast_gaussian else
+            '            GaussianBlur(workingMat, workingMat, Size(7, 7), 2, 2, BORDER_REFLECT_101);')
     assert new.count(marker)==1
     new=new.replace(marker,'            { ORB_CPU_SCOPE("ORBextractor::GaussianBlur");\n'+marker+'\n            }')
     manifest['cpu_profile_scopes']['ORBextractor::GaussianBlur']=1
@@ -239,7 +258,7 @@ for name in source_names:
   if a.motion_gated_initialization:
    (out/'orb_motion_gate.patch').write_text(source_patch)
   else:motion_patch+=source_patch
- elif name!='Frame.cc':patch+=source_patch
+ elif name not in ('Frame.cc','ORBextractor.cc'):patch+=source_patch
  obj=out/(name+'.o');objects['CMakeFiles/ORB_SLAM3.dir/src/'+name+'.o']=str(obj)
  command=['/usr/bin/c++']+flags['CXX_DEFINES']+flags['CXX_INCLUDES']+flags['CXX_FLAGS']+['-c',str(patched),'-o',str(obj)]
  manifest['compile_commands'].append(command)

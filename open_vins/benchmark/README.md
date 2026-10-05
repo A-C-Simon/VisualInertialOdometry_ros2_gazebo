@@ -539,3 +539,27 @@ work used approximately 31.03 seconds after subtracting octree distribution
 and orientation; that remainder is not a FAST-only timer. All 2,911 eligible
 stereo pairs and 29,120 IMU samples were retained with both refinements and
 no resets. These measurements prioritize detection and blur over descriptors.
+
+## Equivalent descriptor blur experiment
+
+`--fast-gaussian` selects a separate-output fixed-point 7x7 sigma-2 blur in
+an isolated core. The OpenCV 4.5.4 Q8 coefficients are even, allowing exact
+Q7 arithmetic and AVX2 multiply-add without intermediate saturation. The
+image boundary remains independently reflected, as in the original clone.
+Other OpenCV versions use the ordinary isolated OpenCV operation. No feature
+count, image size, pyramid level, detection or matching policy is changed.
+
+The native check matched 62,890,306 pixels across 600 random, constant and
+checkerboard images with odd strides and small dimensions. A complete
+extractor comparison on 160 EuRoC images matched 96,867 keypoints and
+descriptors, including repeated input size changes. The 400-image blur
+microbenchmark took 0.326 seconds versus 0.160 with AVX2; a scalar build was
+correct but slower. A whole-estimator replay is required before selecting
+this change. [Native checks and replay status](orb_gaussian_cost_20261005.json).
+
+```bash
+python3 benchmark/build_orb_core.py \
+  --output benchmark/build_orb_fixed_gaussian \
+  --preserve-inertial-origin --motion-gated-initialization \
+  --keyframe-interval-s 0.25 --fast-stereo-patches --fast-gaussian
+```

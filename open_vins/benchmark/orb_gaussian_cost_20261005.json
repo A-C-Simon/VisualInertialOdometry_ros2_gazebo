@@ -1,0 +1,31 @@
+{
+  "status": "experimental; full replay pending",
+  "scope": "Exact descriptor blur arithmetic, retaining feature counts, detection, resolution and pyramid scales",
+  "installed_opencv": "4.5.4",
+  "native_image_checks": 600,
+  "exact_pixels": 62890306,
+  "full_extractor_images": 160,
+  "exact_keypoints_and_descriptors": 96867,
+  "microbenchmark": {
+    "iterations": 400,
+    "image_size": [
+      752,
+      480
+    ],
+    "reference_seconds": 0.326159,
+    "candidate_seconds": 0.160157,
+    "scope": "blur with original clone/in-place OpenCV versus separate fixed-point output, one thread; not whole estimator CPU"
+  },
+  "scalar_validation": {
+    "exact_pixels": 62890306,
+    "reference_seconds": 0.312879,
+    "candidate_seconds": 0.411141,
+    "selection": "scalar path correct but slower; native AVX2 host is the optimization target"
+  },
+  "limits": "Exact agreement covers the tested native images and synthetic borders/strides. Final CPU and trajectory comparison still requires complete uninstrumented replay. Full-extractor comparison changes input size on every third image.",
+  "source_url": "https://raw.githubusercontent.com/opencv/opencv/4.5.4/modules/imgproc/src/smooth.dispatch.cpp",
+  "orb_gaussian7.hpp_sha256": "d0ac6e1622d2c6ce52f1b688265ff2ce0fd0f8fc532b1b778690fd8bb4b504c3",
+  "orb_gaussian7_check.cc_sha256": "0f333c45962011adcceafa46fdfc00497989407db7c5a5520f704005591565b4",
+  "orb_extractor_equivalence.cc_sha256": "e89920787e3f8e2dcbdcc38603b21a7ed9673e98e255a1a1c29f34dadc7904cf",
+  "core_library_sha256": "a8fc3eafae1946c9645c60a3d440701a453bc56260e39789b3defd93625bb612"
+}
