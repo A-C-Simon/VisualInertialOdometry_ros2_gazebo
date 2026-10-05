@@ -572,3 +572,14 @@ Late ATE was 2.063 versus 2.131 cm; full common-interval ATE was 2.333
 versus 4.936 cm. The change alters scheduling despite identical extraction
 results. A fresh paired repeat is running, and the hardware cost/quality
 gate remains open.
+
+## Pyramid buffer reuse experiment
+
+`--reuse-pyramid` retains the previous bordered pyramid allocation when
+its dimensions, type, parent dimensions and ROI offset match. Input size
+changes allocate fresh storage. Resize and reflected borders remain exactly
+the same, and no extractor class layout changes are introduced. This follows
+OpenVINS' practice of retaining pyramid storage between images. The complete
+extractor check matched all pyramid pixels, keypoints and descriptors on
+160 native/resized EuRoC inputs. Whole-estimator CPU savings are pending.
+[Reuse checks](orb_pyramid_reuse_20261005.json).

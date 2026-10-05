@@ -1,0 +1,14 @@
+{
+  "status": "experimental; full replay pending",
+  "inspiration": "OpenVINS retains image pyramid storage between camera frames",
+  "change": "Reuse existing bordered image allocation only if size, type, full parent size and ROI offset match. Preserve resize and border operations. No class layout changes.",
+  "native_check": {
+    "images": 160,
+    "exact_keypoints_and_descriptors": 96867,
+    "all_pyramid_pixels_equal": true,
+    "input_size_changes": true
+  },
+  "core_library_sha256": "b47cf72e11a7d81f617db8e9c5ed02dbb825818504d6fb784f53999a2fde45fa",
+  "patch_sha256": "ad0e00d15b2e09dc3a4ba436845c5b05d148d41f6a4f72239a45bdfb3968e177",
+  "limits": "Native equality does not establish a whole-estimator CPU saving. Variant adds only buffer reuse to the fixed-point blur candidate."
+}
