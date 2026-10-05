@@ -214,5 +214,209 @@
     "selection": "not integrated; kernel gain too small to prioritize before the dominant detector and blur costs",
     "whole_pipeline_cost_or_accuracy_claim": false,
     "prototype_location": "/tmp/orb_descriptor_simd.hpp"
+  },
+  "extractor_detail": {
+    "scope": "Diagnostic profiling replay; inclusive thread CPU. Nested stage rows overlap.",
+    "run": "benchmark/results/euroc_20261005_extractor_profile",
+    "completion": {
+      "elapsed_s": 157.11003525799606,
+      "estimator_exit": 0,
+      "player_exit": 0
+    },
+    "invocation": {
+      "command": [
+        "/home/ac/VisualInertialOdometry_ros2_gazebo/ORB_SLAM/build/orb_slam_ros2/stereo_imu_node",
+        "--ros-args",
+        "-r",
+        "__ns:=/orbslam_vio",
+        "-p",
+        "use_viewer:=false",
+        "-p",
+        "reliable_images:=true",
+        "-p",
+        "sync_queue_size:=64",
+        "-p",
+        "publish_bootstrap_poses:=false",
+        "-p",
+        "settings_path:=/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/configs/orb_euroc_600_no_loop.yaml",
+        "-p",
+        "vocabulary_path:=/home/ac/ORB_SLAM3/Vocabulary/ORBvoc.txt",
+        "-p",
+        "trajectory_path:=/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_extractor_profile/retrospective.txt",
+        "-p",
+        "keyframe_trajectory_path:=/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_extractor_profile/keyframes.txt",
+        "-p",
+        "timing_path:=/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_extractor_profile/tracking_ms.txt",
+        "-p",
+        "opencv_threads:=1"
+      ],
+      "threads": 1,
+      "dataset": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/datasets/euroc/V1_01_easy",
+      "config": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/configs/orb_euroc_600_no_loop.yaml",
+      "core_library_dir": "benchmark/build_orb_cpu_profile_extract",
+      "local_ba_window": 12,
+      "cpu_profile_output": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_extractor_profile/stage_cpu.csv",
+      "diagnostic_cpu_profile": true,
+      "orb_images_reliable": true
+    },
+    "process_cpu_seconds": 129.46,
+    "peak_rss_mib": 691.81640625,
+    "profile_csv_sha256": "ceec991407290f76fc9d5086153648636021373f35c80f25a53067e14738a891",
+    "nonoverlapping_thread_scopes": {
+      "Frame::ExtractORB": 61.500273654,
+      "System::TrackStereo": 29.776897499,
+      "LocalMapping::Run": 22.548845787
+    },
+    "other_cpu_seconds": 15.633983060000006,
+    "stages": {
+      "LocalMapping::Run": {
+        "calls": 1,
+        "cpu_seconds": 22.548845787
+      },
+      "System::TrackStereo": {
+        "calls": 2911,
+        "cpu_seconds": 29.776897499
+      },
+      "Tracking::GrabImageStereo": {
+        "calls": 2911,
+        "cpu_seconds": 19.998313346
+      },
+      "Frame::ExtractORB": {
+        "calls": 5822,
+        "cpu_seconds": 61.500273654
+      },
+      "ORBextractor::ComputePyramid": {
+        "calls": 5822,
+        "cpu_seconds": 5.015691281
+      },
+      "ORBextractor::ComputeKeyPointsOctTree": {
+        "calls": 5822,
+        "cpu_seconds": 34.958211447
+      },
+      "ORBextractor::DistributeOctTree": {
+        "calls": 46576,
+        "cpu_seconds": 2.333703033
+      },
+      "ORBextractor::computeOrientation": {
+        "calls": 46576,
+        "cpu_seconds": 1.596794207
+      },
+      "ORBextractor::GaussianBlur": {
+        "calls": 46576,
+        "cpu_seconds": 16.782955102
+      },
+      "ORBextractor::computeDescriptors": {
+        "calls": 46576,
+        "cpu_seconds": 3.243353345
+      },
+      "Frame::ComputeStereoMatches": {
+        "calls": 2911,
+        "cpu_seconds": 1.992067582
+      },
+      "Frame::AssignFeaturesToGrid": {
+        "calls": 2911,
+        "cpu_seconds": 0.208305478
+      },
+      "Tracking::Track": {
+        "calls": 2911,
+        "cpu_seconds": 16.857854816
+      },
+      "Tracking::PreintegrateIMU": {
+        "calls": 2911,
+        "cpu_seconds": 0.161114065
+      },
+      "LocalMapping::ProcessNewKeyFrame": {
+        "calls": 395,
+        "cpu_seconds": 1.374882389
+      },
+      "LocalMapping::MapPointCulling": {
+        "calls": 395,
+        "cpu_seconds": 0.046439955
+      },
+      "LocalMapping::CreateNewMapPoints": {
+        "calls": 395,
+        "cpu_seconds": 0.425644472
+      },
+      "LocalMapping::SearchInNeighbors": {
+        "calls": 395,
+        "cpu_seconds": 2.652520011
+      },
+      "LocalMapping::KeyFrameCulling": {
+        "calls": 395,
+        "cpu_seconds": 2.321863855
+      },
+      "Tracking::TrackReferenceKeyFrame": {
+        "calls": 1,
+        "cpu_seconds": 0.003062562
+      },
+      "Frame::ComputeBoW": {
+        "calls": 1,
+        "cpu_seconds": 0.001695378
+      },
+      "Optimizer::PoseOptimization": {
+        "calls": 292,
+        "cpu_seconds": 0.327620529
+      },
+      "Tracking::TrackLocalMap": {
+        "calls": 2909,
+        "cpu_seconds": 14.150289749
+      },
+      "Tracking::UpdateLocalMap": {
+        "calls": 2909,
+        "cpu_seconds": 2.130245908
+      },
+      "Tracking::SearchLocalPoints": {
+        "calls": 2909,
+        "cpu_seconds": 3.791549865
+      },
+      "Tracking::TrackWithMotionModel": {
+        "calls": 2908,
+        "cpu_seconds": 0.22193939
+      },
+      "Tracking::CreateNewKeyFrame": {
+        "calls": 394,
+        "cpu_seconds": 0.080798107
+      },
+      "Optimizer::LocalBundleAdjustment": {
+        "calls": 28,
+        "cpu_seconds": 0.68726412
+      },
+      "LocalMapping::InitializeIMU": {
+        "calls": 3,
+        "cpu_seconds": 0.672131783
+      },
+      "Optimizer::InertialOptimization": {
+        "calls": 3,
+        "cpu_seconds": 0.007560165
+      },
+      "Optimizer::FullInertialBA": {
+        "calls": 3,
+        "cpu_seconds": 0.656490791
+      },
+      "Optimizer::PoseInertialOptimizationLastKeyFrame": {
+        "calls": 370,
+        "cpu_seconds": 0.930446244
+      },
+      "Optimizer::PoseInertialOptimizationLastFrame": {
+        "calls": 2393,
+        "cpu_seconds": 7.04814083
+      },
+      "Optimizer::LocalInertialBA": {
+        "calls": 365,
+        "cpu_seconds": 13.914114817
+      }
+    },
+    "limits": "Instrumentation and scheduling can alter the replay. Final cost and trajectory comparisons require an uninstrumented candidate.",
+    "core_library_sha256": "46c9f1eee10e0e91cb4680158a27d21874835f39f31dd5a8965353d85aa1eb86",
+    "cpu_profile_header_sha256": "1ac0ce9a3fde12129e27df9d884b53a8c5b734826de344ff974c8956760a436d",
+    "input_validation": {
+      "eligible_stereo_pairs": 2911,
+      "imu_received": 29120,
+      "map_resets": 0,
+      "viba1_completed": true,
+      "viba2_completed": true
+    },
+    "detector_remainder_cpu_seconds": 31.027714207,
+    "detector_remainder_scope": "FAST cell detection, cell vector work and setup; not an individually timed FAST-only scope"
   }
 }

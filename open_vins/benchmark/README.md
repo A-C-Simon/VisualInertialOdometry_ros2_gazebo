@@ -530,3 +530,12 @@ An AVX2/FMA descriptor prototype matched 100,000 descriptors byte for byte on
 an odd-stride image ROI. Its isolated kernel saved only about 11% in two
 microbenchmarks, so it was not integrated. The unused prototype is retained
 under `/tmp`, and its measurements are in the CPU-profile evidence above.
+
+A second complete profile separates extraction further: 129.46 CPU seconds
+with 61.50 in extraction, 29.78 in the outer stereo tracking call and 22.55
+in mapping. Within extraction, pyramid construction used 5.02 seconds,
+blur 16.78, descriptors 3.24 and orientation 1.60. Detection and cell vector
+work used approximately 31.03 seconds after subtracting octree distribution
+and orientation; that remainder is not a FAST-only timer. All 2,911 eligible
+stereo pairs and 29,120 IMU samples were retained with both refinements and
+no resets. These measurements prioritize detection and blur over descriptors.
