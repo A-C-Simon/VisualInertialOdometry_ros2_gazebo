@@ -732,3 +732,18 @@ full RPE rose 41.4%. This one-run result remains unselected. Initialization
 scheduling can change error, but a larger full-interval error cannot be
 ignored when selecting an optimization that must preserve trajectory quality.
 [Both intervals and percentage changes](orb_packed_ba10_20261005.json).
+
+
+## Verified medium-sequence cache
+
+`datasets/euroc/V1_02_medium` is available for a second sequence check. The
+mirror's nested ZIP matches the cached official archive directory: 668,079,368
+bytes and CRC32 `369b3afd`. All 3,452 ZIP members passed CRC checks. Only the
+matching compressed nested-entry byte range was downloaded and decompressed;
+the 6 GB outer archive was not copied into the workspace. The archive and
+images remain ignored by Git. [Size, checksum, SHA and source records](euroc_medium_dataset_provenance_20261005.json).
+
+Comparisons can label the dataset explicitly with `summarize_trials.py
+--dataset-name "EuRoC V1_02_medium" --start-time 1403715553.912143`. This start
+is 30 seconds after the first camera timestamp; full common-interval results
+remain included alongside the later interval.

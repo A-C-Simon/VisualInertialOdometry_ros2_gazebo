@@ -11,6 +11,8 @@ ROOT = Path(__file__).resolve().parent
 p = argparse.ArgumentParser()
 p.add_argument('trials', nargs='+', help='Directory names within benchmark/results')
 p.add_argument('--ground-truth', type=Path, default=Path('/tmp/euroc/V1_01_easy/mav0/state_groundtruth_estimate0/data.csv'))
+p.add_argument('--dataset-name', default='EuRoC V1_01_easy',
+               help='Dataset label for this comparison; pass the matching start time for other sequences')
 p.add_argument('--start-time', type=float, default=1403715303.262143,
                help='EuRoC V1_01 camera start + 30 seconds, after initial inertial BA')
 p.add_argument('--output', type=Path, required=True)
@@ -32,7 +34,7 @@ command = [sys.executable, str(ROOT/'compare_runs.py'), str(a.ground_truth)]
 command += [str(directory/'online.txt') for directory in directories]
 steady = json.loads(subprocess.check_output(command+['--start-time',str(a.start_time)],text=True))
 full = json.loads(subprocess.check_output(command,text=True))
-report = dict(dataset='EuRoC V1_01_easy', resources=resources,
+report = dict(dataset=a.dataset_name, resources=resources,
               post_initialization=steady, full_common_interval=full)
 a.output.write_text(json.dumps(report, indent=2)+'\n')
 for resource, metric in zip(resources, steady['results']):

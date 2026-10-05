@@ -1,0 +1,20 @@
+{
+  "mirror_url": "https://huggingface.co/datasets/GlowBond/EuRoC_MAV_Dataset/resolve/main/vicon_room1.zip",
+  "extraction": "HTTP byte range of matching official nested ZIP entry; outer raw deflate decompressed before validating nested ZIP CRC",
+  "official_archive_url": "https://www.research-collection.ethz.ch/server/api/core/bitstreams/02ecda9a-298f-498b-970c-b7c44334d880/content",
+  "official_entry": "vicon_room1/V1_02_medium/V1_02_medium.zip",
+  "bytes": 668079368,
+  "crc32": "0x369b3afd",
+  "official_size_and_crc_match": true,
+  "sha256": "0cf5d44baf7aac5d6d705dfb6c5abdd097139bc95aa252dc0c00c66d479ebfc2",
+  "zip_member_crc_checks_pass": true,
+  "zip_members": 3452,
+  "extracted_to": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/datasets/euroc/V1_02_medium",
+  "archive_path": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/datasets/euroc/V1_02_medium.zip",
+  "data_row_counts": {
+    "cam0": 1710,
+    "cam1": 1711,
+    "imu0": 17100,
+    "state_groundtruth_estimate0": 16702
+  }
+}
