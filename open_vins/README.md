@@ -8,7 +8,8 @@ global map, or Pangolin.
 ## HW290 calibration that stopped the large drift
 
 **For the physical rig, start with [the tested drift correction](hw290_stereo/DRIFT_FIX.md).**
-The normal hardware launcher already selects the measured October 1 profile.
+The normal hardware launcher selects the measured October 2 rigid-tower profile.
+The October 1 measurements below describe the earlier mount.
 The previous-model replay reached 18.92 km; the fitted model stayed below
 0.47 m, and a fresh desk test stayed below 0.852 m with no reported flights.
 The guide records the camera/IMU calibration method, matching rectification,
@@ -20,7 +21,20 @@ evidence, limitations and quick launch commands.
 
 Git reference: `hw290-openvins-drift-fix-20261001` (`0c9cf22`). Reuse the
 [dated profile](hw290_stereo/calibration/20261001/README.md) for the unchanged
-mount; repeat the calibration method when the mount changes.
+earlier mount; use the current tower profile for live operation and repeat
+calibration when the mount changes.
+
+## Selected ORB tower profile
+
+```bash
+./hw290_stereo/run_selected_orb.sh --rviz
+```
+
+The selected 600-feature, scale-1.6/five-level packed core passed the confirmed
+two-minute tower test without observed flights, jumps or resets. See
+[the selection, measurements and limits](hw290_stereo/ORB_SELECTED_PROFILE.md).
+The cheapest public candidates retain mixed accuracy results. General equality
+to OpenVINS CPU with preserved quality has not been established.
 
 ## Layout
 
@@ -31,7 +45,8 @@ mount; repeat the calibration method when the mount changes.
 | `ov_rover_sim/config/rover_stereo/` | Camera, IMU, and estimator calibration |
 | `benchmark/` | EuRoC replay, resource measurement, ATE tools, and comparison report |
 | `hw290_stereo/DRIFT_FIX.md` | Tested physical calibration correction and how to repeat it |
-| `hw290_stereo/calibration/20261001/` | Default measured HW290 camera/IMU profile and validation |
+| `hw290_stereo/calibration/20261002_tower/` | Current measured tower camera/IMU profile and validation |
+| `hw290_stereo/calibration/20261001/` | Historical calibration for the previous mount |
 | `run_vio_gazebo.sh` | Full simulation launcher |
 | `build_vio/` | Isolated colcon build output |
 | `install_vio/` | Isolated ROS 2 install space |

@@ -852,6 +852,23 @@ This supports repeating matched trials; it does not establish that the observed
 error increase is harmless or caused by one particular source.
 
 
+## Selected profile at the conclusion of the trials
+
+For the unchanged tower, use:
+
+```bash
+./hw290_stereo/run_selected_orb.sh --rviz
+```
+
+The chosen packed core has 600 features, scale 1.6/five levels and local BA 12.
+It passed the fresh two-minute tower check. On medium, increasing from 500 to
+600 features cost 3.1% more CPU and reduced late/full ATE by 22.5%/24.0%.
+The cheaper raw rectification and worker variants remain unselected. Further
+experiments are concluded here; the general OpenVINS cost/quality objective
+has not been proved across datasets and live hardware.
+[Settings, launch command, evidence and limits](../hw290_stereo/ORB_SELECTED_PROFILE.md).
+[Selection record and percentage calculations](orb_selected_profile_20261005.json).
+
 ## Final persistent extraction worker trial
 
 Two persistent workers matched 191,340 keypoints and descriptors over 160

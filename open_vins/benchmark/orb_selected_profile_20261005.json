@@ -1,0 +1,36 @@
+{
+  "status": "Selected for the unchanged calibrated tower; best demonstrated live balance at the conclusion of these trials.",
+  "selection_date": "2026-10-05",
+  "mount_id": "20261002_rigid_tower",
+  "core": "benchmark/build_orb_fixed_gaussian_packed",
+  "core_library_sha256": "49e8e0ef3b18bafc3924f689e27274a963519ddfbb2c2c883c2d23ffb643fbe9",
+  "operating_point": {
+    "requested_features": 600,
+    "scale_factor": 1.6,
+    "pyramid_levels": 5,
+    "per_camera_resolution": [
+      640,
+      480
+    ],
+    "local_ba_window": 12,
+    "healthy_keyframe_interval_s": 0.25
+  },
+  "launcher": "hw290_stereo/run_selected_orb.sh",
+  "live_evidence": "benchmark/tower_pyramid_validation_20261005.json",
+  "medium_600_vs_500_same_packed_core_percent_changes": {
+    "cpu": 3.1035160086427136,
+    "memory": 5.240576704773993,
+    "post_initialization.ate_rmse_m": -22.54758610674389,
+    "post_initialization.rpe_1s_translation_rmse_m": -0.09096939034882352,
+    "full_common_interval.ate_rmse_m": -23.972570273165548,
+    "full_common_interval.rpe_1s_translation_rmse_m": -2.3203792512940837
+  },
+  "selection_reason": "The 600-feature setting passed the fresh tower movement check and improved medium late and full ATE versus 500 features at modest extra CPU. Faster raw-image candidates have mixed error and no live validation.",
+  "limitations": [
+    "Not the lowest CPU of all public candidates.",
+    "No independent live ground truth or matched live OpenVINS CPU comparison.",
+    "Medium late error still exceeds the narrow-pyramid 600-feature reference.",
+    "General equality to OpenVINS CPU with preserved quality remains unproven.",
+    "No more experiments planned after the current worker trial at the request to conclude."
+  ]
+}

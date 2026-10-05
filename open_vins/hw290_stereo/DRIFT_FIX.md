@@ -13,11 +13,13 @@ The camera fit uses ruler-confirmed 40 mm tags, measured stereo geometry,
 fitted camera/IMU rotation and translation, and +14.584 ms cam0 timing. It is
 specific to the rigid tower. The CAD board-center mismatch and provisional
 noise remain limitations. This is a bounded desk check, not independent
-accuracy against ground truth. ORB receives the same profile but still resets.
+accuracy against ground truth. ORB receives the same profile; the
+[selected October 5 configuration](ORB_SELECTED_PROFILE.md) passed its fresh
+movement check without observed flights, jumps or resets.
 
 ```bash
 ./hw290_stereo/run_hw290_openvins.sh
-../ORB_SLAM/orbslam3_hw290_vio.sh --efficient --rviz
+./hw290_stereo/run_selected_orb.sh --rviz
 ```
 
 ## Previous mount: calibration correction on October 1

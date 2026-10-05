@@ -3,15 +3,17 @@
 The hardware pipeline uses a side by side ELP stereo camera, an HW290 IMU
 connected through an Arduino Nano, the OpenVINS estimator and an optional
 ORB-SLAM3 estimator. The IMU reports identity 0x98, consistent with an
-ICM-20689. OpenVINS now uses the measured October 1 camera and IMU mount profile.
-IMU noise remains provisional; ORB-SLAM3 still uses the earlier calibration.
+ICM-20689. Both estimators use the measured October 2 rigid-tower camera/IMU
+profile. IMU noise remains provisional. The [selected October 5 ORB profile](ORB_SELECTED_PROFILE.md)
+passed the fresh tower movement check.
 
 ## Start here: calibration that stopped the large drift
 
 **Read [DRIFT_FIX.md](DRIFT_FIX.md) before changing this calibration.**
-It identifies the tested profile, the changes that removed the large flights,
-and the method to repeat for a changed mount. The profile is already the normal
-OpenVINS default. Git reference: `hw290-openvins-drift-fix-20261001` (`0c9cf22`).
+It identifies the current tower profile, the calibration and queue fixes that
+removed the large flights, and the method to repeat for a changed mount. The
+October 1 Git reference `hw290-openvins-drift-fix-20261001` (`0c9cf22`) records
+the previous mount and is retained for historical replay.
 
 ## Run
 
@@ -19,7 +21,7 @@ From `open_vins`:
 
 ```bash
 ./hw290_stereo/run_hw290_openvins.sh
-../ORB_SLAM/orbslam3_hw290_vio.sh --efficient --rviz
+./hw290_stereo/run_selected_orb.sh --rviz
 ```
 
 RViz opens by default for OpenVINS and when requested with `--rviz` for ORB.
@@ -212,15 +214,17 @@ inside the saved run directory can be converted from ROS 2 to a ROS 1 bag with
 `rosbags-convert`, as described by the official Kalibr ROS 2 guide. Record the
 static stereo target sequence and dynamic camera-IMU sequence as separate runs.
 
-## Experimental ORB pyramid settings
+## Selected ORB pyramid settings
 
-The launcher can pass `ORB_FEATURES`, `ORB_PYRAMID_SCALE` and
-`ORB_PYRAMID_LEVELS` to the native calibration exporter. Defaults are unchanged:
+Use `run_selected_orb.sh` for the chosen 600-feature, scale-1.6/five-level profile.
+[Selection and evidence](ORB_SELECTED_PROFILE.md) explain why it was retained.
+The general launcher can still pass `ORB_FEATURES`, `ORB_PYRAMID_SCALE` and
+`ORB_PYRAMID_LEVELS` to the native calibration exporter. Its defaults remain:
 600 features with `--efficient`, scale 1.2 and eight levels. The exporter
 retains the measured camera/IMU transform, baseline, noise and time offset;
 it validates the requested operating point before starting sensors.
 
-A live optimization check uses the separately built core and 600 features:
+The equivalent explicit command uses the separately built core and 600 features:
 
 ```bash
 ORB_CORE_DIR="$PWD/benchmark/build_orb_fixed_gaussian_packed" \
