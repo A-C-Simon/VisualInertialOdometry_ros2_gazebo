@@ -1,4 +1,5 @@
 // Export the selected OpenVINS rectified camera/IMU calibration for ORB-SLAM3.
+#include <algorithm>
 #include <cmath>
 #include <filesystem>
 #include <fstream>
@@ -50,8 +51,8 @@ cv::Mat transform(const cv::FileNode &camera) {
 }
 
 int main(int argc, char **argv) {
-  if (argc != 5) {
-    std::cerr << "Usage: export_orb_calibration ESTIMATOR_YAML STEREO_YAML OUTPUT_YAML FEATURES\n";
+  if (argc != 5 && argc != 7) {
+    std::cerr << "Usage: export_orb_calibration ESTIMATOR_YAML STEREO_YAML OUTPUT_YAML FEATURES [PYRAMID_SCALE PYRAMID_LEVELS]\n";
     return 2;
   }
   try {
@@ -112,6 +113,20 @@ int main(int argc, char **argv) {
     // Upstream stereo initialization requires more than 500 detected features.
     if (consumed != std::string(argv[4]).size() || features < 501 || features > 3000)
       throw std::runtime_error("Stereo-inertial features must be an integer in [501, 3000]");
+    double pyramid_scale = 1.2;
+    int pyramid_levels = 8;
+    if (argc == 7) {
+      pyramid_scale = std::stod(argv[5], &consumed);
+      if (consumed != std::string(argv[5]).size() || !std::isfinite(pyramid_scale) ||
+          pyramid_scale < 1.1 || pyramid_scale > 1.6)
+        throw std::runtime_error("Pyramid scale must be finite and in [1.1, 1.6]");
+      pyramid_levels = std::stoi(argv[6], &consumed);
+      if (consumed != std::string(argv[6]).size() || pyramid_levels < 1 || pyramid_levels > 8)
+        throw std::runtime_error("Pyramid levels must be an integer in [1, 8]");
+    }
+    // Keep enough usable image area for ORB's bordered detection cells.
+    if (std::min(width, height) / std::pow(pyramid_scale, pyramid_levels - 1) < 64)
+      throw std::runtime_error("Smallest pyramid image must have at least 64 pixels per side");
     double offset = number(left["timeshift_cam_imu"]);
     for (const auto *key : {"gyroscope_noise_density", "accelerometer_noise_density",
                             "gyroscope_random_walk", "accelerometer_random_walk", "update_rate"})
@@ -140,8 +155,8 @@ int main(int argc, char **argv) {
     value("IMU.AccWalk", number(imu["accelerometer_random_walk"]));
     value("IMU.Frequency", number(imu["update_rate"]));
     value("HW290.CameraImuOffset", offset);
-    value("ORBextractor.nFeatures", features); value("ORBextractor.scaleFactor", 1.2);
-    value("ORBextractor.nLevels", 8); value("ORBextractor.iniThFAST", 20); value("ORBextractor.minThFAST", 7);
+    value("ORBextractor.nFeatures", features); value("ORBextractor.scaleFactor", pyramid_scale);
+    value("ORBextractor.nLevels", pyramid_levels); value("ORBextractor.iniThFAST", 20); value("ORBextractor.minThFAST", 7);
     value("Viewer.KeyFrameSize", .05); value("Viewer.KeyFrameLineWidth", 1.);
     value("Viewer.GraphLineWidth", .9); value("Viewer.PointSize", 2.);
     value("Viewer.CameraSize", .08); value("Viewer.CameraLineWidth", 3.);

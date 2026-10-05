@@ -211,3 +211,26 @@ OpenVINS camera model expects rectified images. The resulting `sensors_bag`
 inside the saved run directory can be converted from ROS 2 to a ROS 1 bag with
 `rosbags-convert`, as described by the official Kalibr ROS 2 guide. Record the
 static stereo target sequence and dynamic camera-IMU sequence as separate runs.
+
+## Experimental ORB pyramid settings
+
+The launcher can pass `ORB_FEATURES`, `ORB_PYRAMID_SCALE` and
+`ORB_PYRAMID_LEVELS` to the native calibration exporter. Defaults are unchanged:
+600 features with `--efficient`, scale 1.2 and eight levels. The exporter
+retains the measured camera/IMU transform, baseline, noise and time offset;
+it validates the requested operating point before starting sensors.
+
+A live optimization check uses the separately built core and 600 features:
+
+```bash
+ORB_CORE_DIR="$PWD/benchmark/build_orb_fixed_gaussian_packed" \
+ORB_PYRAMID_SCALE=1.6 ORB_PYRAMID_LEVELS=5 \
+../ORB_SLAM/orbslam3_hw290_vio.sh --efficient --rviz --diagnostics
+```
+
+Run this command from `open_vins`. This is an experimental profile, pending
+fresh tower validation. Public 500-feature trials are not the hardware default:
+ORB stereo startup needs more than 500 detected features, so the exporter
+continues to require a request of at least 501. The smallest pyramid image
+must retain at least 64 pixels per side. Do not change mount calibration to
+change feature extraction settings.

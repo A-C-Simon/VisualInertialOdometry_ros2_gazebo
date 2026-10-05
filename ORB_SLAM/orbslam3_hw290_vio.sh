@@ -29,6 +29,7 @@ for arg in "$@"; do
     --help|-h)
       echo "Usage: $0 [--sensors-only] [--efficient] [--diagnostics] [--rviz] [--viewer] [--no-rviz] [--no-viewer] [--calibration-test]"
       echo "  --efficient    use 600 features and capped local BA (validated on EuRoC)"
+      echo "  Optional experiment: ORB_FEATURES, ORB_PYRAMID_SCALE, ORB_PYRAMID_LEVELS"
       echo "  --diagnostics  save sensor/pose bag and raw IMU log"
       echo "  --calibration-test  validate a fitted profile for the current mount"
       echo "  --sensors-only  publish camera+IMU only, skip ORB-SLAM3"
@@ -88,6 +89,9 @@ if [[ "$EFFICIENT" == true ]]; then
 else
   export ORB_LOCAL_BA_WINDOW="${ORB_LOCAL_BA_WINDOW:-25}"
 fi
+FEATURES="${ORB_FEATURES:-$FEATURES}"
+PYRAMID_SCALE="${ORB_PYRAMID_SCALE:-1.2}"
+PYRAMID_LEVELS="${ORB_PYRAMID_LEVELS:-8}"
 RVIZ_VIO="${ORB_ROOT}/orb_slam_ros2/config/rviz_hw290_vio.rviz"
 RVIZ_SENSORS="${HW290_DIR}/rviz_hw290_sensors.rviz"
 [[ -x "$SPLITTER" ]] || { echo "Splitter missing: $SPLITTER (build ov_hw290 first)" >&2; exit 1; }
@@ -110,10 +114,10 @@ for manifest in build_manifest.json validation_manifest.json prototype_manifest.
 done
 echo "ORB core: $CORE_DIR"
 SETTINGS_PATH="$RUN_DIR/orb_settings.yaml"
-CALIBRATED_OFFSET=$("$CALIBRATION_EXPORTER" "$ESTIMATOR_CONFIG" "$CALIBRATION" "$SETTINGS_PATH" "$FEATURES")
+CALIBRATED_OFFSET=$("$CALIBRATION_EXPORTER" "$ESTIMATOR_CONFIG" "$CALIBRATION" "$SETTINGS_PATH" "$FEATURES" "$PYRAMID_SCALE" "$PYRAMID_LEVELS")
 cp "$CALIBRATION" "$RUN_DIR/stereo_opencv.yaml"
 printf '%s\n' "$ESTIMATOR_CONFIG" "$CALIBRATION" > "$RUN_DIR/calibration_source.txt"
-echo "Measured profile: camera/IMU offset=${CALIBRATED_OFFSET}s, features=${FEATURES}, local BA cap=${ORB_LOCAL_BA_WINDOW}"
+echo "Measured profile: camera/IMU offset=${CALIBRATED_OFFSET}s, features=${FEATURES}, pyramid=${PYRAMID_SCALE}/${PYRAMID_LEVELS}, local BA cap=${ORB_LOCAL_BA_WINDOW}"
 
 start_node camera /tmp/orb_vio_usb_cam.log "$CAMERA_NODE" --ros-args --params-file "$USB_CAM_PARAMS"
 sleep 1
