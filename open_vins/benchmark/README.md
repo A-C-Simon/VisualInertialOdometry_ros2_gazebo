@@ -637,3 +637,9 @@ and complete pose coverage. It used 105.35 CPU seconds, with late ATE
 fix is running; the previous 119.08-second blur reference used the old
 loop worker. Do not attribute the whole difference to spacing yet.
 [Spacing trials](orb_pyramid_spacing_20261005.json).
+
+The matching corrected reference used 119.14 CPU seconds, versus 105.35
+with 1.4 spacing (11.57% lower). Late ATE was 1.955/1.805 cm and RPE
+1.174/1.214 cm, with complete coverage in both. The small RPE increase
+and repeatability still need checking before selecting the spacing change.
+A 1.6/five-level trial is next, using the same corrected core.

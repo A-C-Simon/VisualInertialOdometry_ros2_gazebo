@@ -94,7 +94,87 @@
       "map_resets": 0,
       "viba1_completed": true,
       "viba2_completed": true
-    }
+    },
+    "matched_reference_pair": {
+      "dataset": "EuRoC V1_01_easy",
+      "resources": [
+        {
+          "trial": "euroc_20261005_safe_gaussian_reference_r1",
+          "cpu_seconds": 119.13999999999999,
+          "peak_rss_mib": 691.19140625,
+          "completion": {
+            "elapsed_s": 156.22672441700706,
+            "estimator_exit": 0,
+            "player_exit": 0
+          }
+        },
+        {
+          "trial": "euroc_20261005_safe_pyramid14_r1",
+          "cpu_seconds": 105.35,
+          "peak_rss_mib": 694.39453125,
+          "completion": {
+            "elapsed_s": 156.31223543098895,
+            "estimator_exit": 0,
+            "player_exit": 0
+          }
+        }
+      ],
+      "post_initialization": {
+        "common_start_s": 1403715303.262143,
+        "common_end_s": 1403715417.962143,
+        "alignment": "SE(3), no scale; GT position interpolated",
+        "results": [
+          {
+            "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_safe_gaussian_reference_r1/online.txt",
+            "poses": 2295,
+            "duration_s": 114.70000004768372,
+            "approximate_20hz_coverage": 0.9999999995844556,
+            "max_pose_gap_s": 0.05000019073486328,
+            "ate_rmse_m": 0.019554571911716744,
+            "ate_p95_m": 0.032517973899753354,
+            "rpe_1s_translation_rmse_m": 0.011744241879092933
+          },
+          {
+            "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_safe_pyramid14_r1/online.txt",
+            "poses": 2295,
+            "duration_s": 114.70000004768372,
+            "approximate_20hz_coverage": 0.9999999995844556,
+            "max_pose_gap_s": 0.05000019073486328,
+            "ate_rmse_m": 0.018047011910790216,
+            "ate_p95_m": 0.02814954530188479,
+            "rpe_1s_translation_rmse_m": 0.012136479827011519
+          }
+        ]
+      },
+      "full_common_interval": {
+        "common_start_s": 1403715280.762143,
+        "common_end_s": 1403715417.962143,
+        "alignment": "SE(3), no scale; GT position interpolated",
+        "results": [
+          {
+            "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_safe_gaussian_reference_r1/online.txt",
+            "poses": 2745,
+            "duration_s": 137.20000004768372,
+            "approximate_20hz_coverage": 0.9999999996525777,
+            "max_pose_gap_s": 0.05000019073486328,
+            "ate_rmse_m": 0.0636900988151035,
+            "ate_p95_m": 0.17563652792831017,
+            "rpe_1s_translation_rmse_m": 0.0320219537003262
+          },
+          {
+            "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_safe_pyramid14_r1/online.txt",
+            "poses": 2745,
+            "duration_s": 137.20000004768372,
+            "approximate_20hz_coverage": 0.9999999996525777,
+            "max_pose_gap_s": 0.05000019073486328,
+            "ate_rmse_m": 0.022188178810030212,
+            "ate_p95_m": 0.04125422210593108,
+            "rpe_1s_translation_rmse_m": 0.014268561932378472
+          }
+        ]
+      }
+    },
+    "matched_cpu_reduction_percent": 11.574618096357232
   },
-  "limits": "First comparison uses a reference without the disabled-loop fix. Do not isolate a spacing saving until the same-core reference completes. Pyramid spacing changes feature locations and octave distribution, so native equality checks do not apply. Hardware validation is pending."
+  "limits": "Same corrected core for the matched comparison. Spacing changes feature locations and octave distribution. One sequence and one spacing run do not establish repeatability or hardware accuracy. Relative error increased slightly in this pair."
 }
