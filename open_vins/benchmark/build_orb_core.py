@@ -194,6 +194,7 @@ for name in source_names:
  policy_new=new
  if a.profile_cpu:
   scope_names={
+   'System.cc':['TrackStereo'],
    'Frame.cc':['ExtractORB','ComputeStereoMatches','ComputeBoW','AssignFeaturesToGrid'],
    'Tracking.cc':['GrabImageStereo','Track','PreintegrateIMU','TrackLocalMap','SearchLocalPoints','TrackWithMotionModel','TrackReferenceKeyFrame','UpdateLocalMap','CreateNewKeyFrame'],
    'LocalMapping.cc':['Run','ProcessNewKeyFrame','CreateNewMapPoints','SearchInNeighbors','MapPointCulling','KeyFrameCulling','InitializeIMU','ScaleRefinement'],
@@ -208,6 +209,17 @@ for name in source_names:
     new,count=re.subn(pattern,lambda m:m[0]+'\n    ORB_CPU_SCOPE('+json.dumps(label)+');',new,flags=re.M)
     assert count>0,label
     manifest['cpu_profile_scopes'][label]=count
+   if name=='ORBextractor.cc':
+    for function in ['computeOrientation','computeDescriptors']:
+     pattern=r'(^\s*static void '+function+r'\s*\([^;{}]*\)\s*\n\s*\{)'
+     label='ORBextractor::'+function
+     new,count=re.subn(pattern,lambda m:m[0]+'\n        ORB_CPU_SCOPE('+json.dumps(label)+');',new,flags=re.M)
+     assert count==1,label
+     manifest['cpu_profile_scopes'][label]=count
+    marker='            GaussianBlur(workingMat, workingMat, Size(7, 7), 2, 2, BORDER_REFLECT_101);'
+    assert new.count(marker)==1
+    new=new.replace(marker,'            { ORB_CPU_SCOPE("ORBextractor::GaussianBlur");\n'+marker+'\n            }')
+    manifest['cpu_profile_scopes']['ORBextractor::GaussianBlur']=1
    patched.write_text(new)
  manifest['sources'][name]={'original_sha256':hashlib.sha256(old.encode()).hexdigest(),
                            'patched_sha256':hashlib.sha256(new.encode()).hexdigest()}

@@ -31,7 +31,8 @@ cpu = number('User time (seconds)') + number('System time (seconds)')
 # Stereo extraction runs on two worker threads. GrabImageStereo runs on the
 # tracking thread and LocalMapping::Run on the mapping thread. These three
 # scopes do not nest in the measured stereo-inertial implementation.
-partition_names = ['Frame::ExtractORB', 'Tracking::GrabImageStereo', 'LocalMapping::Run']
+tracking_scope = 'System::TrackStereo' if 'System::TrackStereo' in stages else 'Tracking::GrabImageStereo'
+partition_names = ['Frame::ExtractORB', tracking_scope, 'LocalMapping::Run']
 partitions = {name: stages[name]['cpu_seconds'] for name in partition_names}
 other = cpu - sum(partitions.values())
 if other < -0.05:
