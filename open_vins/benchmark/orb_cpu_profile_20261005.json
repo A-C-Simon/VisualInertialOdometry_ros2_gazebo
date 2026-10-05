@@ -1,0 +1,205 @@
+{
+  "scope": "Diagnostic profiling replay; inclusive thread CPU. Nested stage rows overlap.",
+  "run": "benchmark/results/euroc_20261005_cpu_profile",
+  "completion": {
+    "elapsed_s": 156.83920125098666,
+    "estimator_exit": 0,
+    "player_exit": 0
+  },
+  "invocation": {
+    "command": [
+      "/home/ac/VisualInertialOdometry_ros2_gazebo/ORB_SLAM/build/orb_slam_ros2/stereo_imu_node",
+      "--ros-args",
+      "-r",
+      "__ns:=/orbslam_vio",
+      "-p",
+      "use_viewer:=false",
+      "-p",
+      "reliable_images:=true",
+      "-p",
+      "sync_queue_size:=64",
+      "-p",
+      "publish_bootstrap_poses:=false",
+      "-p",
+      "settings_path:=/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/configs/orb_euroc_600_no_loop.yaml",
+      "-p",
+      "vocabulary_path:=/home/ac/ORB_SLAM3/Vocabulary/ORBvoc.txt",
+      "-p",
+      "trajectory_path:=/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_cpu_profile/retrospective.txt",
+      "-p",
+      "keyframe_trajectory_path:=/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_cpu_profile/keyframes.txt",
+      "-p",
+      "timing_path:=/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_cpu_profile/tracking_ms.txt",
+      "-p",
+      "opencv_threads:=1"
+    ],
+    "threads": 1,
+    "dataset": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/datasets/euroc/V1_01_easy",
+    "config": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/configs/orb_euroc_600_no_loop.yaml",
+    "core_library_dir": "benchmark/build_orb_cpu_profile",
+    "local_ba_window": 12,
+    "cpu_profile_output": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_cpu_profile/stage_cpu.csv",
+    "diagnostic_cpu_profile": true,
+    "orb_images_reliable": true
+  },
+  "process_cpu_seconds": 130.2,
+  "peak_rss_mib": 692.33203125,
+  "profile_csv_sha256": "db390546fa68e50d45d4d90db7ad82f7d0bd9f5886765e0df84c51b4e32640ca",
+  "nonoverlapping_thread_scopes": {
+    "Frame::ExtractORB": 61.58004706,
+    "Tracking::GrabImageStereo": 20.144067452,
+    "LocalMapping::Run": 22.678807287
+  },
+  "other_cpu_seconds": 25.79707820099999,
+  "stages": {
+    "LocalMapping::Run": {
+      "calls": 1,
+      "cpu_seconds": 22.678807287
+    },
+    "Tracking::GrabImageStereo": {
+      "calls": 2911,
+      "cpu_seconds": 20.144067452
+    },
+    "Frame::ExtractORB": {
+      "calls": 5822,
+      "cpu_seconds": 61.58004706
+    },
+    "ORBextractor::ComputePyramid": {
+      "calls": 5822,
+      "cpu_seconds": 4.956259015
+    },
+    "ORBextractor::ComputeKeyPointsOctTree": {
+      "calls": 5822,
+      "cpu_seconds": 35.066684943
+    },
+    "ORBextractor::DistributeOctTree": {
+      "calls": 46576,
+      "cpu_seconds": 2.346377045
+    },
+    "Frame::ComputeStereoMatches": {
+      "calls": 2911,
+      "cpu_seconds": 1.981809134
+    },
+    "Frame::AssignFeaturesToGrid": {
+      "calls": 2911,
+      "cpu_seconds": 0.210395269
+    },
+    "Tracking::Track": {
+      "calls": 2911,
+      "cpu_seconds": 17.019430872
+    },
+    "Tracking::PreintegrateIMU": {
+      "calls": 2911,
+      "cpu_seconds": 0.161266755
+    },
+    "LocalMapping::ProcessNewKeyFrame": {
+      "calls": 395,
+      "cpu_seconds": 1.360716568
+    },
+    "LocalMapping::MapPointCulling": {
+      "calls": 395,
+      "cpu_seconds": 0.045251831
+    },
+    "LocalMapping::CreateNewMapPoints": {
+      "calls": 395,
+      "cpu_seconds": 0.427569981
+    },
+    "LocalMapping::SearchInNeighbors": {
+      "calls": 395,
+      "cpu_seconds": 2.678913804
+    },
+    "LocalMapping::KeyFrameCulling": {
+      "calls": 395,
+      "cpu_seconds": 2.330515844
+    },
+    "Tracking::TrackReferenceKeyFrame": {
+      "calls": 1,
+      "cpu_seconds": 0.002993641
+    },
+    "Frame::ComputeBoW": {
+      "calls": 1,
+      "cpu_seconds": 0.001660469
+    },
+    "Optimizer::PoseOptimization": {
+      "calls": 292,
+      "cpu_seconds": 0.311395254
+    },
+    "Tracking::TrackLocalMap": {
+      "calls": 2909,
+      "cpu_seconds": 14.328847221
+    },
+    "Tracking::UpdateLocalMap": {
+      "calls": 2909,
+      "cpu_seconds": 2.163742532
+    },
+    "Tracking::SearchLocalPoints": {
+      "calls": 2909,
+      "cpu_seconds": 3.876812834
+    },
+    "Tracking::TrackWithMotionModel": {
+      "calls": 2908,
+      "cpu_seconds": 0.212648835
+    },
+    "Tracking::CreateNewKeyFrame": {
+      "calls": 394,
+      "cpu_seconds": 0.08095634
+    },
+    "Optimizer::LocalBundleAdjustment": {
+      "calls": 28,
+      "cpu_seconds": 0.65225645
+    },
+    "LocalMapping::InitializeIMU": {
+      "calls": 3,
+      "cpu_seconds": 0.562467084
+    },
+    "Optimizer::InertialOptimization": {
+      "calls": 3,
+      "cpu_seconds": 0.007057953
+    },
+    "Optimizer::FullInertialBA": {
+      "calls": 3,
+      "cpu_seconds": 0.546638045
+    },
+    "Optimizer::PoseInertialOptimizationLastKeyFrame": {
+      "calls": 370,
+      "cpu_seconds": 0.933129345
+    },
+    "Optimizer::PoseInertialOptimizationLastFrame": {
+      "calls": 2393,
+      "cpu_seconds": 7.115627122
+    },
+    "Optimizer::LocalInertialBA": {
+      "calls": 365,
+      "cpu_seconds": 14.170339808
+    }
+  },
+  "limits": "Instrumentation and scheduling can alter the replay. Final cost and trajectory comparisons require an uninstrumented candidate.",
+  "core_library_sha256": "b5b3903412f8ea7ce6867e5adcce196df75c382f8c2e725cf6dc4ed2ec6cf509",
+  "cpu_profile_header_sha256": "1ac0ce9a3fde12129e27df9d884b53a8c5b734826de344ff974c8956760a436d",
+  "input_validation": {
+    "eligible_stereo_pairs": 2911,
+    "imu_received": 29120,
+    "map_resets": 0,
+    "viba1_completed": true,
+    "viba2_completed": true
+  },
+  "research": [
+    {
+      "url": "https://arxiv.org/abs/2007.11898",
+      "role": "Original ORB-SLAM3 architecture and accuracy reference"
+    },
+    {
+      "url": "https://arxiv.org/abs/2008.09870",
+      "role": "Published optical-flow approach to reducing descriptor cost; changes tracking algorithm and has not been adopted here"
+    },
+    {
+      "url": "https://arxiv.org/abs/2608.17874",
+      "role": "GPU feature-extraction study; no accessible GPU device on the current host"
+    },
+    {
+      "url": "https://docs.opencv.org/4.13.0/da/d54/group__imgproc__transform.html",
+      "role": "Official fixed-point remap optimization guidance, requires local pixel-equivalence and cost checks"
+    }
+  ],
+  "next_action": "Target the measured extractor cost before changing solver iteration counts. Explore equivalent CPU arithmetic, then verify complete-input trajectories; no cost or quality claim from literature alone."
+}

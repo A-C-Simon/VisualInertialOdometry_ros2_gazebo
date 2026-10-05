@@ -504,3 +504,24 @@ python3 benchmark/build_orb_core.py \
 A native check spanning two translation units and two concurrent workers
 reported both 20 ms CPU loops together and excluded an 80 ms sleep. Output
 is written at normal process shutdown; forced termination can omit it.
+
+The first complete CPU profile used 130.20 estimator CPU seconds. The two
+extraction workers together used 61.58 seconds (47.3%), the tracking thread
+20.14 seconds (15.5%) and local mapping 22.68 seconds (17.4%). Remaining
+startup, rectification, ROS and output work is not separated in this profile.
+Per-frame inertial pose optimization accounts for approximately 8.05 seconds
+inside tracking, so changing solver iteration counts alone cannot close the
+CPU gap to OpenVINS. Feature extraction is the next measured target.
+[Profile counters, input checks and research references](orb_cpu_profile_20261005.json).
+
+Research consulted includes the [original ORB-SLAM3 paper](https://arxiv.org/abs/2007.11898),
+[descriptor-free optical-flow tracking](https://arxiv.org/abs/2008.09870), and
+[accuracy-preserving GPU feature extraction](https://arxiv.org/abs/2608.17874).
+These describe approaches to investigate; their speedups do not establish a
+result on this host. No GPU device is accessible here. OpenVINS' existing
+KLT tracker reuses image pyramids and persistent tracks while replenishing
+features, which suggests a larger front-end redesign if equivalent arithmetic
+optimizations are insufficient. Such a change requires complete trajectory
+validation. [Official OpenCV guidance](https://docs.opencv.org/4.13.0/da/d54/group__imgproc__transform.html)
+also describes faster fixed-point rectification maps; pixel equality and
+local cost must be checked before adopting them.
