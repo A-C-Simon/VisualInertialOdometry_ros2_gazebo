@@ -720,3 +720,15 @@ All 2,911 eligible frames and 29,120 IMU samples were retained, both refinements
 completed and there were no active resets. This policy remains unselected:
 the cost reduction comes with worse error on both evaluation intervals.
 [Comparison and percentages](orb_packed_refined_spacing_20261005.json).
+
+
+## Smaller local BA window with the packed core
+
+Keeping keyframe spacing at 0.25 seconds and reducing the BA cap from 12 to
+10 used 87.03 CPU seconds, 1.9% below the two-reference mean of 88.72 seconds.
+Late ATE fell 5.2% from 1.740 to 1.649 cm and RPE fell 3.0% from 1.196 to
+1.159 cm. However, full common-interval ATE rose 81.1% from 1.857 to 3.364 cm;
+full RPE rose 41.4%. This one-run result remains unselected. Initialization
+scheduling can change error, but a larger full-interval error cannot be
+ignored when selecting an optimization that must preserve trajectory quality.
+[Both intervals and percentage changes](orb_packed_ba10_20261005.json).

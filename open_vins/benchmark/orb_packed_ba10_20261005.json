@@ -1,0 +1,122 @@
+{
+  "status": "unselected; small CPU saving and better late error, but larger full common-interval error",
+  "change": "Local inertial BA cap reduced from 12 to 10, holding healthy keyframe spacing 0.25 s and the packed core unchanged.",
+  "core_library_sha256": "49e8e0ef3b18bafc3924f689e27274a963519ddfbb2c2c883c2d23ffb643fbe9",
+  "comparison": {
+    "dataset": "EuRoC V1_01_easy",
+    "resources": [
+      {
+        "trial": "euroc_20261005_packed_pyramid16_500_r1",
+        "cpu_seconds": 88.57000000000001,
+        "peak_rss_mib": 486.41015625,
+        "completion": {
+          "elapsed_s": 151.86868957901606,
+          "estimator_exit": 0,
+          "player_exit": 0
+        }
+      },
+      {
+        "trial": "euroc_20261005_packed_pyramid16_500_r2",
+        "cpu_seconds": 88.86999999999999,
+        "peak_rss_mib": 487.83984375,
+        "completion": {
+          "elapsed_s": 151.86888740496943,
+          "estimator_exit": 0,
+          "player_exit": 0
+        }
+      },
+      {
+        "trial": "euroc_20261005_packed_ba10_r1",
+        "cpu_seconds": 87.03,
+        "peak_rss_mib": 486.796875,
+        "completion": {
+          "elapsed_s": 151.87121240701526,
+          "estimator_exit": 0,
+          "player_exit": 0
+        }
+      }
+    ],
+    "post_initialization": {
+      "common_start_s": 1403715303.262143,
+      "common_end_s": 1403715417.962143,
+      "alignment": "SE(3), no scale; GT position interpolated",
+      "results": [
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_packed_pyramid16_500_r1/online.txt",
+          "poses": 2295,
+          "duration_s": 114.70000004768372,
+          "approximate_20hz_coverage": 0.9999999995844556,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.01742468126389251,
+          "ate_p95_m": 0.02917214917127869,
+          "rpe_1s_translation_rmse_m": 0.012144278217564102
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_packed_pyramid16_500_r2/online.txt",
+          "poses": 2295,
+          "duration_s": 114.70000004768372,
+          "approximate_20hz_coverage": 0.9999999995844556,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.017369851194287977,
+          "ate_p95_m": 0.02832393131313065,
+          "rpe_1s_translation_rmse_m": 0.011770168601165996
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_packed_ba10_r1/online.txt",
+          "poses": 2295,
+          "duration_s": 114.70000004768372,
+          "approximate_20hz_coverage": 0.9999999995844556,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.01649292440664572,
+          "ate_p95_m": 0.026765910839892246,
+          "rpe_1s_translation_rmse_m": 0.011593924964885115
+        }
+      ]
+    },
+    "full_common_interval": {
+      "common_start_s": 1403715280.762143,
+      "common_end_s": 1403715417.962143,
+      "alignment": "SE(3), no scale; GT position interpolated",
+      "results": [
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_packed_pyramid16_500_r1/online.txt",
+          "poses": 2745,
+          "duration_s": 137.20000004768372,
+          "approximate_20hz_coverage": 0.9999999996525777,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.017768562969355722,
+          "ate_p95_m": 0.030051824587196053,
+          "rpe_1s_translation_rmse_m": 0.012858001774337414
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_packed_pyramid16_500_r2/online.txt",
+          "poses": 2745,
+          "duration_s": 137.20000004768372,
+          "approximate_20hz_coverage": 0.9999999996525777,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.019374903277112804,
+          "ate_p95_m": 0.0337594798052445,
+          "rpe_1s_translation_rmse_m": 0.013487037208833805
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_packed_ba10_r1/online.txt",
+          "poses": 2745,
+          "duration_s": 137.20000004768372,
+          "approximate_20hz_coverage": 0.9999999996525777,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.03363678079449636,
+          "ate_p95_m": 0.08929445080803702,
+          "rpe_1s_translation_rmse_m": 0.01862528691773612
+        }
+      ]
+    }
+  },
+  "percent_changes_vs_mean_references": {
+    "cpu": -1.9048692515780008,
+    "late_ate": -5.198183499269316,
+    "late_rpe": -3.0383177769798375,
+    "full_common_interval_ate": 81.11815720857464,
+    "full_common_interval_rpe": 41.395022642658844
+  },
+  "limits": "One candidate trial versus two references. Larger full-interval error might include asynchronous initialization variation; it cannot be dismissed in a quality-preserving selection."
+}
