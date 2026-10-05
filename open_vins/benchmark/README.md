@@ -440,3 +440,23 @@ reference runs showed startup variation. OpenVINS still used less CPU and
 memory in the matched public protocol: 69.89 seconds and 121.88 MiB.
 [Protocol, core hashes and both accuracy intervals](euroc_fixed_stereo_cost_20261005.json)
 retain these limitations. Reports remain outside this repository.
+
+
+## Saved tower replay, October 5
+
+The corrected reference and patch-cost variant both completed both inertial
+refinements with no resets on the successful October 2 recording. Maximum
+displacement was 82.96 versus 83.66 cm. Both had two RECENTLY_LOST episodes
+and a 0.768-second maximum output gap. Their aligned positions agreed with
+1.01 cm RMSE on 3,302 matching poses; this is agreement without independent
+ground truth, not an accuracy measurement.
+
+The variant used 154.29 CPU seconds versus 147.42 for the reference, 4.7%
+more, with peak RSS 721.16 versus 715.54 MiB. However, tracked pairs differed
+(4,434 versus 4,435), as did received IMU counts (14,619 versus 14,634 of
+14,639 recorded). This is a diagnostic stability comparison with unequal
+delivery, so it establishes no tower cost saving. The original recording
+starts its IMU after the cameras and retains bursty receipt timing. The
+public protocol is being repeated to check the earlier single-pair saving.
+The cost variant remains experimental.
+[Input counts, gaps, resource measurements and agreement](tower_stereo_cost_20261005.json).
