@@ -675,5 +675,13 @@ All 1,082,073 valid nodes matched their IDs, parent links, weights, descriptor
 bytes and valid children. The same 124,315 random and dataset descriptor
 queries produced identical word IDs. Native loader CPU fell from 4.941 to
 0.567 seconds and check-executable peak RSS from 457.3 to 258.9 MiB. These
-are vocabulary-check measurements; the full estimator replay is pending.
+are vocabulary-check measurements. The first complete estimator pair used
+92.86 versus 88.57 CPU seconds and 685.0 versus 486.4 MiB peak RSS.
+Both retained all 2,911 eligible stereo pairs and 29,120 IMU samples,
+completed both inertial refinements and had no resets. Late ATE was
+1.592 versus 1.742 cm; one-second RPE was 1.181 versus 1.214 cm.
+Full common-interval ATE was 2.415 versus 1.777 cm. These are experimental
+single-sequence measurements at 500 requested features, scale 1.6/five
+levels, native resolution and BA cap 12. Repeats and hardware validation
+remain. Saved legacy atlas compatibility is untested.
 [Loader checks and limits](orb_packed_vocabulary_20261005.json).
