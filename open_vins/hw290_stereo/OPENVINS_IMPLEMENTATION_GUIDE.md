@@ -1,7 +1,7 @@
 # OpenVINS stereo VIO: implementation and commissioning guide
 
 Revision: 9 October 2026. Reference runtime: repository commit `21d83df`.
-Handover tag: `openvins-hw290-handover-20261009`.
+Handover with automated setup: `openvins-hw290-setup-20261009`.
 
 ## 1. Purpose and scope
 
@@ -159,6 +159,54 @@ time offset. The IMU die center also differs from the breakout board center.
 
 ## 4. Install and build on a clean host
 
+### Automated setup
+
+On Ubuntu 22.04, install Git if needed, then obtain the version including the
+setup scripts:
+
+```bash
+sudo apt update
+sudo apt install git
+git clone https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo.git \
+  "$HOME/VisualInertialOdometry_ros2_gazebo"
+cd "$HOME/VisualInertialOdometry_ros2_gazebo/open_vins"
+git checkout openvins-hw290-setup-20261009
+./hw290_stereo/setup_hw290_openvins.sh --with-calibration-tools
+source hw290_stereo/env_hw290.sh
+```
+
+Run the installer as your normal account; it requests sudo for system packages.
+It configures the ROS repository when needed, installs dependencies, adds
+serial/video groups, builds the four hardware packages and patched camera,
+and prepares Arduino CLI, AVR core 1.8.8 and an isolated bag conversion venv.
+The calibration option also installs Docker if absent and builds pinned
+Kalibr/Allan images. Existing Docker installations are reused. Docker build
+commands can use sudo without adding the account to the Docker group.
+
+Omit `--with-calibration-tools` if fitting on another host. Use `--jobs 2`
+to control compilation, `--skip-system` to reuse system packages, or
+`--skip-build` to defer compilation. Repeating setup reuses installed tools
+and build caches. Logs and installed versions are saved under
+`benchmark/results/setup_*`.
+
+```bash
+./hw290_stereo/setup_hw290_openvins.sh --dry-run --with-calibration-tools
+./hw290_stereo/setup_hw290_openvins.sh --check
+```
+
+Preview performs no writes or downloads. Check reports missing software and
+returns nonzero if incomplete; it does not initialize hardware or validate
+the camera/IMU mount. A check including calibration images also needs Docker
+query access. Setup leaves firmware, calibration and shell startup files
+unchanged. Log out and in if groups were newly added, then source
+`env_hw290.sh` in each operating shell. It preserves an existing ROS domain
+or defaults to 48; the conversion venv stays off Python's search path.
+
+After successful setup, continue at Section 5. The steps below provide the
+manual installation alternative. The automated flow is covered by simulated
+installation tests; a complete clean-host installation and fresh calibration
+image build have not been completed on 9 October.
+
 ### 4.1 Operating system and dependencies
 
 Use native Ubuntu 22.04 for this reference. Install ROS 2 Humble Desktop and
@@ -174,7 +222,7 @@ After the ROS apt repository is configured:
 sudo apt update
 sudo apt install ros-humble-desktop ros-dev-tools \
   python3-colcon-common-extensions python3-rosdep \
-  build-essential cmake git pkg-config v4l-utils ffmpeg \
+  build-essential cmake git pkg-config v4l-utils ffmpeg usbutils openscad \
   libavcodec-dev libavutil-dev libswscale-dev \
   libeigen3-dev libboost-all-dev libceres-dev \
   libopencv-dev libopencv-contrib-dev libyaml-cpp-dev libssl-dev qtbase5-dev \
@@ -198,7 +246,7 @@ git clone https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo.git \
 export VIO_WS="$HOME/VisualInertialOdometry_ros2_gazebo/open_vins"
 cd "$VIO_WS"
 # The tag includes this guide and the documented runtime.
-git checkout openvins-hw290-handover-20261009
+git checkout openvins-hw290-setup-20261009
 source /opt/ros/humble/setup.bash
 colcon --log-base log_vio build \
   --base-paths ov_core ov_init ov_msckf ov_hw290 \

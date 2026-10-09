@@ -9,6 +9,18 @@ passed the fresh tower movement check.
 
 ## Implement OpenVINS on another device
 
+On Ubuntu 22.04, run the setup as your normal account:
+
+```bash
+./hw290_stereo/setup_hw290_openvins.sh
+source hw290_stereo/env_hw290.sh
+```
+
+Add `--with-calibration-tools` to install/build Docker, Kalibr and Allan tools
+as well. Use `--dry-run` to preview or `--check` for a read-only readiness check.
+Log out and in after new device groups are added. Flash and calibrate the
+actual rig using the guide before normal VIO; setup does not do those steps.
+
 Start with [OPENVINS_IMPLEMENTATION_GUIDE.md](OPENVINS_IMPLEMENTATION_GUIDE.md).
 It provides the complete installation and commissioning sequence for the
 working OpenVINS pipeline, including its calibration and delivery fixes.

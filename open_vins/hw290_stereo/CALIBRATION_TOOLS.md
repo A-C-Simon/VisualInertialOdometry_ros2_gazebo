@@ -11,6 +11,29 @@ interfaces. A complete fresh Docker build and new sensor fit were **not** run
 on 9 October. Keep successful image IDs, build logs and fit reports with the
 new device's evidence; upstream apt repositories and base image tags can change.
 
+## Automated installation
+
+From `open_vins`, install the runtime and offline tools together:
+
+```bash
+./hw290_stereo/setup_hw290_openvins.sh --with-calibration-tools
+source hw290_stereo/env_hw290.sh
+```
+
+If Docker and runtime dependencies already exist, build just the images:
+
+```bash
+./hw290_stereo/build_calibration_tools.sh --jobs 2
+```
+
+The helper uses the pinned sources and image names below, runs command-line
+smoke checks and records image IDs in `CAL_TOOLS/calibration_image_ids.txt`.
+It uses sudo Docker when the account cannot access the daemon. The default
+tools directory is `$HOME/vio_calibration_tools`; export `CAL_TOOLS` to choose
+another disk. The setup also prepares `rosbags-venv`; source the environment,
+then continue with Section 3 to record/analyze noise and fit the new device.
+The detailed commands below remain available for manual installation.
+
 ## 1. Build Kalibr
 
 Install Docker Engine using the

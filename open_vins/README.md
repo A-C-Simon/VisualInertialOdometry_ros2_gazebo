@@ -7,6 +7,19 @@ global map, or Pangolin.
 
 ## Physical OpenVINS engineering handover
 
+For Ubuntu 22.04 setup, run as your normal account:
+
+```bash
+./hw290_stereo/setup_hw290_openvins.sh --with-calibration-tools
+source hw290_stereo/env_hw290.sh
+```
+
+This installs dependencies, builds the hardware packages and patched camera
+driver, and prepares firmware/conversion tools and calibration containers.
+Omit `--with-calibration-tools` for the smaller runtime and firmware tool setup.
+Use `--dry-run` for a preview or `--check` to inspect software readiness.
+Firmware upload and calibration require the actual rig and follow the guide.
+
 Use [the implementation guide](hw290_stereo/OPENVINS_IMPLEMENTATION_GUIDE.md)
 to build the working stereo/IMU pipeline on a clean host and calibrate another
 device. It covers wiring, firmware, dependencies, timestamp and transform
