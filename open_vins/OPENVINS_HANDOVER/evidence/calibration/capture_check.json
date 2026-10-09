@@ -1,0 +1,38 @@
+{
+  "mount_id": "20261002_rigid_tower",
+  "capture": "screen_calibration_20261002_140205_724",
+  "recording_stopped_cleanly": true,
+  "target_file": "benchmark/results/screen_calibration_20261002_140205_724/target.yaml",
+  "topics": {
+    "/imu0": {
+      "count": 9424,
+      "span_s": 95.15875148773193,
+      "mean_rate_hz": 99.02399782131266,
+      "max_interval_ms": 22.02296257019043,
+      "nonpositive_intervals": 0,
+      "gaps_over_25ms": 0,
+      "gaps_over_50ms": 0
+    },
+    "/cam1/image_raw": {
+      "count": 2856,
+      "span_s": 95.11128211021423,
+      "mean_rate_hz": 30.017469396444973,
+      "max_interval_ms": 36.194801330566406,
+      "nonpositive_intervals": 0,
+      "gaps_over_25ms": 2855,
+      "gaps_over_50ms": 0
+    },
+    "/cam0/image_raw": {
+      "count": 2856,
+      "span_s": 95.11128211021423,
+      "mean_rate_hz": 30.017469396444973,
+      "max_interval_ms": 36.194801330566406,
+      "nonpositive_intervals": 0,
+      "gaps_over_25ms": 2855,
+      "gaps_over_50ms": 0
+    }
+  },
+  "raw_stereo": true,
+  "rotation": "unverified",
+  "timing_prior_s": 0.02
+}

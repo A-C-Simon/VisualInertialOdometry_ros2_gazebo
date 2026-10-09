@@ -1,0 +1,22 @@
+{
+  "mount_id": "20261002_rigid_tower",
+  "bag": "../tower.bag",
+  "fit_interval_relative_s": [
+    0,
+    60
+  ],
+  "remaining_interval": "about 35 seconds held out from camera/IMU fitting",
+  "camera_fit": "Stereo fit used the full recording at 4 Hz; no independent ground truth",
+  "target_size_m": 0.04,
+  "target_scale_confirmation": "benchmark/results/screen_target_measurement_20261002_141622_255",
+  "imu_noise": "provisional values, not a measured Allan result",
+  "time_shift_prior_s": 0.02,
+  "rotation": "estimated from current recording; old mount rotation not supplied",
+  "operator_confirmed_full_rig_motion": true,
+  "confirmed_tag_size_m": 0.04,
+  "fullscreen_geometry": {
+    "width_px": 2560,
+    "height_px": 1440,
+    "target_side_px": 1440
+  }
+}
