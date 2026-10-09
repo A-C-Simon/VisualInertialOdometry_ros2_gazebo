@@ -1,0 +1,7 @@
+# Screen measurement on 2026-10-01: tag edge about 40 mm, gap about 12 mm.
+# Valid only at the display size used for this measurement.
+target_type: aprilgrid
+tagCols: 6
+tagRows: 6
+tagSize: 0.040
+tagSpacing: 0.3
