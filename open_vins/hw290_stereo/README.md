@@ -37,6 +37,12 @@ removed the large flights, and the method to repeat for a changed mount. The
 October 1 Git reference `hw290-openvins-drift-fix-20261001` (`0c9cf22`) records
 the previous mount and is retained for historical replay.
 
+## Camera research for 100 m altitude
+
+[CAMERA_RESEARCH_100M.md](CAMERA_RESEARCH_100M.md) compares Chinese global
+shutter options and identifies the optical and software changes needed to
+evaluate OpenVINS around 100 m above ground. These options are not flight validated.
+
 ## Run
 
 From `open_vins`:
