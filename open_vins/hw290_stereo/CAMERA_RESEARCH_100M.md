@@ -4,20 +4,28 @@ Research date: 9 October 2026. Status: engineering shortlist, no purchase or fli
 
 ## 1. Recommendation
 
-Evaluate **two Daheng MER2-503-36U3M monochrome cameras**, matched 8 mm or
-12 mm lenses, a rigid **300 to 500 mm baseline**, and a common hardware
-exposure trigger. These are separate cameras assembled into a stereo rig.
-The suggested baseline is a design starting point, subject to the aircraft's
-width, payload and vibration constraints.
+Evaluate **two Daheng MER2-503-36U3M monochrome cameras**, matched 8 mm lenses,
+a rigid **450 mm centre-to-centre baseline**, and a common hardware exposure
+trigger. Keep 12 mm lenses as an alternative to evaluate for greater angular
+detail. These are separate cameras assembled into a stereo rig. The baseline
+is a design starting point, subject to the complete mounting envelope and payload.
 
 The 3 MP **MER2-302-56U3M** is a useful alternative when bandwidth and image
 processing cost matter more than field coverage. Hikrobot's
 **MV-CS050-10UM V5** is a second supplier option, subject to verification of
 the exact revision's trigger, timestamp and output modes.
 
-Assumptions: 100 m means height above ground, with cameras looking downward.
-Global shutter only is confirmed. Aircraft speed, computer, budget, allowable
-baseline, payload and required trajectory accuracy are still unspecified.
+Confirmed requirements: **100 m above ground**, flight speed **up to 10 m/s**,
+**maximum stereo width 500 mm**, and **global shutter only**. Downward view
+remains an assumption. Computer, budget, payload and required trajectory
+accuracy are still unspecified.
+
+Treat the 500 mm limit as overall assembly width until clarified. It is not
+automatically a 500 mm optical baseline: camera bodies, lenses, brackets and
+cable clearances occupy space beyond the lens centres. A 450 mm baseline plus
+the 8 mm lens's [listed 33 mm barrel diameter](https://en.daheng-imaging.com/show-472-702-1.html)
+spans roughly 483 mm before additional mounting clearance. Check drawings and
+cable routing before fixing the baseline.
 
 No reviewed manufacturer evidence establishes that these particular camera
 assemblies deliver a specified OpenVINS trajectory accuracy at 100 m.
@@ -129,6 +137,11 @@ At 100 m, the 8 mm configuration covers approximately 105.57 x 88.32 m;
 12 mm covers 70.38 x 58.88 m. A 300 mm baseline with 8 mm optics gives about
 **32.6 times** the current rig's predicted disparity at that distance.
 
+The table's 500 mm baselines are geometry references, not assemblies claimed
+to fit the confirmed 500 mm overall width. For the proposed **450 mm baseline**,
+disparity at 100 m is **10.43 px with 8 mm lenses**, or **15.65 px with 12 mm
+lenses**. Ground sampling and FOV remain as listed for each lens.
+
 The 0.2 px uncertainty is an illustrative assumption, not a measured camera
 specification. These are single-point stereo depth uncertainties, **not VIO
 trajectory errors**. More parallax does not imply the same factor of improvement
@@ -239,10 +252,41 @@ Resizing a high-resolution image back to 640 pixels reduces focal length in
 pixels and loses much of the far-range advantage. Cropping preserves pixel
 sampling but narrows coverage; it is different from downsampling.
 
+### Confirmed speed: up to 10 m/s
+
+For a downward pinhole camera over flat ground, horizontal translation gives:
+
+```text
+image_speed_px_per_s = f_px * ground_speed_m_per_s / height_m
+translation_per_frame_px = image_speed_px_per_s / frame_rate_hz
+translation_blur_px = image_speed_px_per_s * exposure_s
+```
+
+At 100 m height, 10 m/s and 30 fps:
+
+| Lens | Translational shift per frame | Blur at 1 ms exposure | Blur at 2 ms exposure |
+| --- | ---: | ---: | ---: |
+| 8 mm | 7.73 px | 0.23 px | 0.46 px |
+| 12 mm | 11.59 px | 0.35 px | 0.70 px |
+
+Start evaluation at 30 fps and around 1 ms exposure in adequate daylight.
+This limits translational blur; it is not a universal exposure setting or a
+guarantee of successful KLT tracking. Lighting, gain, rotation and vibration
+must be measured. Rotation contributes approximately `f_px * angular_rate *
+exposure_s` near the image centre. At 10 m height, the table's translational
+shifts and blur are ten times larger for the same speed. Takeoff, descent,
+lower-altitude travel and turns therefore need separate validation.
+
+The 8 mm lens is the initial choice because its wider field provides more
+coverage and smaller inter-frame displacement than 12 mm, while the 450 mm
+baseline still provides about 10 px of stereo disparity at the target height.
+This is an engineering tradeoff for testing, not an established accuracy result.
+
 ## 7. Evidence needed before final selection
 
-1. Confirm downward view and 100 m above-ground target, terrain, flight speed,
-   acceptable drift, computer, payload, budget and available stereo width.
+1. Confirm downward view, terrain, acceptable drift, computer, payload and budget.
+   Use the confirmed 100 m above-ground target, 10 m/s maximum speed and
+   500 mm width limit when checking the assembly envelope.
 2. Obtain exact quotations and written confirmation of external exposure trigger,
    raw image access, frame counters, timestamp clock and target Linux support.
 3. Calibrate a prototype and replay its recordings before live aerial evaluation.
@@ -256,6 +300,8 @@ sampling but narrows coverage; it is different from downsampling.
    Tests on textured buildings do not establish performance over water or
    uniform vegetation. Set acceptance thresholds from the mission requirement.
 
-**Decision to discuss:** begin with the adjustable Daheng stereo prototype if
-the aircraft accepts a 300 to 500 mm bar. If it cannot, reconsider optics and
-temporal-parallax requirements before choosing another compact stereo module.
+**Decision to discuss:** begin with the adjustable Daheng stereo prototype,
+8 mm lenses and a nominal 450 mm baseline within the 500 mm width limit.
+Confirm the complete mechanical envelope, onboard computer and budget before
+ordering. Review temporal-parallax requirements and estimator gates as part of
+the aerial profile.
