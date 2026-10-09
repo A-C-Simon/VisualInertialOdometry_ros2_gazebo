@@ -25,3 +25,6 @@ benchmark/build_orb_*/
 benchmark/*cdx.txt
 benchmark/20??-??-??_*.md
 benchmark/OpenVINS_Pipeline_Model_*.txt
+
+# Shareable archive; its expanded handover folder is tracked.
+/OPENVINS_HANDOVER.zip

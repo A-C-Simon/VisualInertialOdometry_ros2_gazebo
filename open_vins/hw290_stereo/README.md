@@ -9,6 +9,12 @@ passed the fresh tower movement check.
 
 ## Implement OpenVINS on another device
 
+For a folder to send to another engineer, use
+[OPENVINS_HANDOVER](../OPENVINS_HANDOVER/README.md). It includes the guides,
+reference files, original calibration reports and desk-test evidence, with
+pinned Git links for the complete implementation. A matching ZIP is available
+as `open_vins/OPENVINS_HANDOVER.zip` in the local workspace.
+
 On Ubuntu 22.04, run the setup as your normal account:
 
 ```bash
