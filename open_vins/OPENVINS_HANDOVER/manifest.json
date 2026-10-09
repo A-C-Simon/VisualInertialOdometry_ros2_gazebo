@@ -1,0 +1,1913 @@
+{
+  "bundle": "OPENVINS_HANDOVER",
+  "date": "2026-10-09",
+  "repository": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo.git",
+  "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+  "files": [
+    {
+      "file": "LICENSE",
+      "provenance": "git",
+      "source": "open_vins/LICENSE",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/LICENSE",
+      "source_sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "size_bytes": 35149,
+      "links_adjusted": false
+    },
+    {
+      "file": "CALIBRATION_TOOLS.md",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/CALIBRATION_TOOLS.md",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/CALIBRATION_TOOLS.md",
+      "source_sha256": "0291dd31a66493a9fcaddad62004fc89dc781622d067a966a50cee3a5f4128f6",
+      "sha256": "0291dd31a66493a9fcaddad62004fc89dc781622d067a966a50cee3a5f4128f6",
+      "size_bytes": 10909,
+      "links_adjusted": false
+    },
+    {
+      "file": "CAMERA_RESEARCH_100M.md",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/CAMERA_RESEARCH_100M.md",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/CAMERA_RESEARCH_100M.md",
+      "source_sha256": "595591cced40330aa92e493c21272d185d02d6e2670401708652b84fb3081d93",
+      "sha256": "1267300aeb9a169dda68b847425c353ddf072838bfbeaea63aee6c8d7e4842ca",
+      "size_bytes": 20340,
+      "links_adjusted": true
+    },
+    {
+      "file": "DRIFT_FIX.md",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/DRIFT_FIX.md",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/DRIFT_FIX.md",
+      "source_sha256": "52dd170229342eb59ae93e7c7beb1e7f7d399fa2d74270d136c9725b762ad29b",
+      "sha256": "5d5c1099869d7e669250321fc1b4f6875338c76c633d6cc776f4e8a1efb7c226",
+      "size_bytes": 8350,
+      "links_adjusted": true
+    },
+    {
+      "file": "OPENVINS_IMPLEMENTATION_GUIDE.md",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/OPENVINS_IMPLEMENTATION_GUIDE.md",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/OPENVINS_IMPLEMENTATION_GUIDE.md",
+      "source_sha256": "5e43723263b844f7bebdd58df471fb7f9aa2d55dc8de168cfd4fe4bd7c8880af",
+      "sha256": "eb54b45ca9d9b74c9abdbf8b89c8824fd2ba4495b1fddbca1ebfdc16070a506e",
+      "size_bytes": 42315,
+      "links_adjusted": true
+    },
+    {
+      "file": "reference_files/hw290_stereo/calibration/20261002_tower/README.md",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/calibration/20261002_tower/README.md",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/20261002_tower/README.md",
+      "source_sha256": "bb8d3f350df7d1380b0582bf87e1620d0815c66476f9a63b0c5265668b6cdde9",
+      "sha256": "814d02c80a12fd80ae16f7b6eefd9f1969a9aa023c454bc3f50175bb8115e9eb",
+      "size_bytes": 3485,
+      "links_adjusted": true
+    },
+    {
+      "file": "reference_files/hw290_stereo/calibration/20261002_tower/candidate/README.md",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/calibration/20261002_tower/candidate/README.md",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/20261002_tower/candidate/README.md",
+      "source_sha256": "2320bf04ac18e55e0614730ffa5cf112536d893ebab4ff2418fef57eb4e99974",
+      "sha256": "2320bf04ac18e55e0614730ffa5cf112536d893ebab4ff2418fef57eb4e99974",
+      "size_bytes": 6330,
+      "links_adjusted": false
+    },
+    {
+      "file": "reference_files/hw290_stereo/calibration/20261002_tower/candidate/camchain.yaml",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/calibration/20261002_tower/candidate/camchain.yaml",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/20261002_tower/candidate/camchain.yaml",
+      "source_sha256": "5e573ea1e1a4f7056091620122e95100babe027e0b27d6b3b3ac1084406ed7c3",
+      "sha256": "5e573ea1e1a4f7056091620122e95100babe027e0b27d6b3b3ac1084406ed7c3",
+      "size_bytes": 1277,
+      "links_adjusted": false
+    },
+    {
+      "file": "reference_files/hw290_stereo/calibration/20261002_tower/candidate/camchain_raw.yaml",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/calibration/20261002_tower/candidate/camchain_raw.yaml",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/20261002_tower/candidate/camchain_raw.yaml",
+      "source_sha256": "bff49f6ab4b0a78ff5b92b02ff6b1943597018257789b66311e7836b2e31561f",
+      "sha256": "bff49f6ab4b0a78ff5b92b02ff6b1943597018257789b66311e7836b2e31561f",
+      "size_bytes": 1704,
+      "links_adjusted": false
+    },
+    {
+      "file": "reference_files/hw290_stereo/calibration/20261002_tower/candidate/estimator_config.yaml",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/calibration/20261002_tower/candidate/estimator_config.yaml",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/20261002_tower/candidate/estimator_config.yaml",
+      "source_sha256": "ed899a43224eae60e745aff4e17abffef2aa66900d8e97cca1d02d0e0994124c",
+      "sha256": "ed899a43224eae60e745aff4e17abffef2aa66900d8e97cca1d02d0e0994124c",
+      "size_bytes": 5078,
+      "links_adjusted": false
+    },
+    {
+      "file": "reference_files/hw290_stereo/calibration/20261002_tower/candidate/fit_review.json",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/calibration/20261002_tower/candidate/fit_review.json",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/20261002_tower/candidate/fit_review.json",
+      "source_sha256": "2861f201fdfbd21270188adc42661d2b6dfe6c174ca368b12c43680b31113257",
+      "sha256": "2861f201fdfbd21270188adc42661d2b6dfe6c174ca368b12c43680b31113257",
+      "size_bytes": 9245,
+      "links_adjusted": false
+    },
+    {
+      "file": "reference_files/hw290_stereo/calibration/20261002_tower/candidate/imu.yaml",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/calibration/20261002_tower/candidate/imu.yaml",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/20261002_tower/candidate/imu.yaml",
+      "source_sha256": "7ed8d99488124e87739c9c484d9a170006a67bf752c4ee488a941d1da08f0d26",
+      "sha256": "7ed8d99488124e87739c9c484d9a170006a67bf752c4ee488a941d1da08f0d26",
+      "size_bytes": 613,
+      "links_adjusted": false
+    },
+    {
+      "file": "reference_files/hw290_stereo/calibration/20261002_tower/candidate/stereo_opencv.yaml",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/calibration/20261002_tower/candidate/stereo_opencv.yaml",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/20261002_tower/candidate/stereo_opencv.yaml",
+      "source_sha256": "a2d499d85a4beb8c39d9f2811377e711bd14d1d9d9fc5b774f1a7d6c84f28f69",
+      "sha256": "a2d499d85a4beb8c39d9f2811377e711bd14d1d9d9fc5b774f1a7d6c84f28f69",
+      "size_bytes": 2482,
+      "links_adjusted": false
+    },
+    {
+      "file": "reference_files/hw290_stereo/calibration/20261002_tower/geometry.yaml",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/calibration/20261002_tower/geometry.yaml",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/20261002_tower/geometry.yaml",
+      "source_sha256": "dd0d332b801b68f222956215844a35318ff7f724c82419139fdaaaa3392cb43a",
+      "sha256": "dd0d332b801b68f222956215844a35318ff7f724c82419139fdaaaa3392cb43a",
+      "size_bytes": 827,
+      "links_adjusted": false
+    },
+    {
+      "file": "reference_files/hw290_stereo/calibration/20261002_tower/openscad_echoes.txt",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/calibration/20261002_tower/openscad_echoes.txt",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/20261002_tower/openscad_echoes.txt",
+      "source_sha256": "1ba0b14ddaf2fe07ebd34e5ae1f7a14e8c87ab05fe3d257924fa0a0cc2ba3a83",
+      "sha256": "1ba0b14ddaf2fe07ebd34e5ae1f7a14e8c87ab05fe3d257924fa0a0cc2ba3a83",
+      "size_bytes": 308,
+      "links_adjusted": false
+    },
+    {
+      "file": "reference_files/hw290_stereo/calibration/Dockerfile.allan",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/calibration/Dockerfile.allan",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/Dockerfile.allan",
+      "source_sha256": "60b5f4e18933e0886ca6a53c10c14c24ab508d763deac465a79760919d055db1",
+      "sha256": "60b5f4e18933e0886ca6a53c10c14c24ab508d763deac465a79760919d055db1",
+      "size_bytes": 719,
+      "links_adjusted": false
+    },
+    {
+      "file": "reference_files/hw290_stereo/calibration/allan_hw290.yaml",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/calibration/allan_hw290.yaml",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/allan_hw290.yaml",
+      "source_sha256": "9b950a82721b57aafc9919bdcfd9c448e20217df4e3d8b3b373ecf93fa866548",
+      "sha256": "9b950a82721b57aafc9919bdcfd9c448e20217df4e3d8b3b373ecf93fa866548",
+      "size_bytes": 131,
+      "links_adjusted": false
+    },
+    {
+      "file": "reference_files/hw290_stereo/calibration/aprilgrid_6x6.png",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/calibration/aprilgrid_6x6.png",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/aprilgrid_6x6.png",
+      "source_sha256": "06d300651c9e50724b2821c048065e2cb0e0174f4d34c364a34b7cb5502e8e28",
+      "sha256": "06d300651c9e50724b2821c048065e2cb0e0174f4d34c364a34b7cb5502e8e28",
+      "size_bytes": 60040,
+      "links_adjusted": false
+    },
+    {
+      "file": "reference_files/hw290_stereo/calibration/aprilgrid_6x6_a4.pdf",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/calibration/aprilgrid_6x6_a4.pdf",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/aprilgrid_6x6_a4.pdf",
+      "source_sha256": "62d2ac38d3e44befad2b3ada090e2365165d216b6abc36b92361c3e9c0e7cf98",
+      "sha256": "62d2ac38d3e44befad2b3ada090e2365165d216b6abc36b92361c3e9c0e7cf98",
+      "size_bytes": 26674,
+      "links_adjusted": false
+    },
+    {
+      "file": "reference_files/hw290_stereo/calibration/aprilgrid_6x6_a4.yaml",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/calibration/aprilgrid_6x6_a4.yaml",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/aprilgrid_6x6_a4.yaml",
+      "source_sha256": "282f9610958d7fb8ca2715e88617ec9256a9b106f512d07bed3bdc75098a9f9a",
+      "sha256": "282f9610958d7fb8ca2715e88617ec9256a9b106f512d07bed3bdc75098a9f9a",
+      "size_bytes": 78,
+      "links_adjusted": false
+    },
+    {
+      "file": "reference_files/hw290_stereo/calibration/aprilgrid_6x6_screen.yaml",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/calibration/aprilgrid_6x6_screen.yaml",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/aprilgrid_6x6_screen.yaml",
+      "source_sha256": "f38cb7a472c8e40748b0b5a2150bb6eb47a421d9757c0229df7ecc5c4e3066ef",
+      "sha256": "f38cb7a472c8e40748b0b5a2150bb6eb47a421d9757c0229df7ecc5c4e3066ef",
+      "size_bytes": 211,
+      "links_adjusted": false
+    },
+    {
+      "file": "reference_files/hw290_stereo/calibration/current_mount.yaml",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/calibration/current_mount.yaml",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/current_mount.yaml",
+      "source_sha256": "5486ee1be386e74371947f0098b521b3c626a1e52f4de6ff7c0c63c8a88f5869",
+      "sha256": "5486ee1be386e74371947f0098b521b3c626a1e52f4de6ff7c0c63c8a88f5869",
+      "size_bytes": 520,
+      "links_adjusted": false
+    },
+    {
+      "file": "reference_files/hw290_stereo/calibration/docker_context/.dockerignore",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/calibration/docker_context/.dockerignore",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/docker_context/.dockerignore",
+      "source_sha256": "5118e15ad4e94a6cc0f160f86cea62ed1d0adcff0bb28f128746fb999af74b60",
+      "sha256": "5118e15ad4e94a6cc0f160f86cea62ed1d0adcff0bb28f128746fb999af74b60",
+      "size_bytes": 84,
+      "links_adjusted": false
+    },
+    {
+      "file": "reference_files/hw290_stereo/estimator_config.yaml",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/estimator_config.yaml",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/estimator_config.yaml",
+      "source_sha256": "f3df7007d58cc4c6329490092c0fc3ac331bdd84b192bc9aa42646e12aa1fff7",
+      "sha256": "f3df7007d58cc4c6329490092c0fc3ac331bdd84b192bc9aa42646e12aa1fff7",
+      "size_bytes": 5152,
+      "links_adjusted": false
+    },
+    {
+      "file": "reference_files/hw290_stereo/firmware/hw290_openvins/hw290_openvins.ino",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/firmware/hw290_openvins/hw290_openvins.ino",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/firmware/hw290_openvins/hw290_openvins.ino",
+      "source_sha256": "880b6b98876779ffb92b0dcb0df374237f5ca9fb690fa9367a3c8c8ccac32ea3",
+      "sha256": "880b6b98876779ffb92b0dcb0df374237f5ca9fb690fa9367a3c8c8ccac32ea3",
+      "size_bytes": 8812,
+      "links_adjusted": false
+    },
+    {
+      "file": "reference_files/hw290_stereo/patches/usb_cam-0.8.1-timestamps.patch",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/patches/usb_cam-0.8.1-timestamps.patch",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/patches/usb_cam-0.8.1-timestamps.patch",
+      "source_sha256": "4d9da32bf5c2489e76ff2e64250c7e6b65e5322e7d81a4bb1fbad1c728bced2b",
+      "sha256": "4d9da32bf5c2489e76ff2e64250c7e6b65e5322e7d81a4bb1fbad1c728bced2b",
+      "size_bytes": 536,
+      "links_adjusted": false
+    },
+    {
+      "file": "reference_files/hw290_stereo/record_qos.yaml",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/record_qos.yaml",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/record_qos.yaml",
+      "source_sha256": "fa204efbc1f5d9563d32fb918e352724391449bc5988d4cfc64a0d8226a641c5",
+      "sha256": "fa204efbc1f5d9563d32fb918e352724391449bc5988d4cfc64a0d8226a641c5",
+      "size_bytes": 89,
+      "links_adjusted": false
+    },
+    {
+      "file": "reference_files/hw290_stereo/rviz_hw290.rviz",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/rviz_hw290.rviz",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/rviz_hw290.rviz",
+      "source_sha256": "4c1c6ec6ee666a43e6ee709044c0494871d61bf9ba1fcc2b8418afc78ca10ff0",
+      "sha256": "4c1c6ec6ee666a43e6ee709044c0494871d61bf9ba1fcc2b8418afc78ca10ff0",
+      "size_bytes": 1211,
+      "links_adjusted": false
+    },
+    {
+      "file": "reference_files/hw290_stereo/rviz_hw290_sensors.rviz",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/rviz_hw290_sensors.rviz",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/rviz_hw290_sensors.rviz",
+      "source_sha256": "d7372e95d5429796696c8765a8508ab7b5d150e5a8b1405e55030903d54331e4",
+      "sha256": "d7372e95d5429796696c8765a8508ab7b5d150e5a8b1405e55030903d54331e4",
+      "size_bytes": 871,
+      "links_adjusted": false
+    },
+    {
+      "file": "reference_files/hw290_stereo/usb_cam_hw290.yaml",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/usb_cam_hw290.yaml",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/usb_cam_hw290.yaml",
+      "source_sha256": "9a6a8f2d4f4e0415ece4c4db4a15f53ab3416582529a9ce0b82af4756c601670",
+      "sha256": "9a6a8f2d4f4e0415ece4c4db4a15f53ab3416582529a9ce0b82af4756c601670",
+      "size_bytes": 605,
+      "links_adjusted": false
+    },
+    {
+      "file": "reference_files/hw290_stereo/vio_rig_stand_simple.scad",
+      "provenance": "git",
+      "source": "open_vins/hw290_stereo/vio_rig_stand_simple.scad",
+      "source_revision": "a46f7f31cb3e1e8fe8e32f800f2f12375432d23a",
+      "source_url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/vio_rig_stand_simple.scad",
+      "source_sha256": "87941446750c7abe89fb900245fe0bee36ce464a0bfa50a122283c75ba29fd8a",
+      "sha256": "87941446750c7abe89fb900245fe0bee36ce464a0bfa50a122283c75ba29fd8a",
+      "size_bytes": 5788,
+      "links_adjusted": false
+    },
+    {
+      "file": "evidence/calibration/tower-report-cam.pdf",
+      "provenance": "local_evidence",
+      "source": "benchmark/results/screen_calibration_20261002_140205_724/tower-report-cam.pdf",
+      "sha256": "84746a1dba0cc3fc6be2d2cf0df13a87e819ba6d3be2b94b5b90829070bd3c15",
+      "size_bytes": 1814508,
+      "links_adjusted": false
+    },
+    {
+      "file": "evidence/calibration/tower-report-imucam.pdf",
+      "provenance": "local_evidence",
+      "source": "benchmark/results/screen_calibration_20261002_140205_724/tower-report-imucam.pdf",
+      "sha256": "e1951bd2aa8542c155877433507b2dcfc21aea1fcbbf056cc82be6a5f152f2bb",
+      "size_bytes": 8433336,
+      "links_adjusted": false
+    },
+    {
+      "file": "evidence/calibration/tower-results-cam.txt",
+      "provenance": "local_evidence",
+      "source": "benchmark/results/screen_calibration_20261002_140205_724/tower-results-cam.txt",
+      "sha256": "8b77b045e0cbc5e2de5e6ed1e3e7a98d834a429417401650826c6deb098bd3e9",
+      "size_bytes": 1216,
+      "links_adjusted": false
+    },
+    {
+      "file": "evidence/calibration/tower-results-imucam.txt",
+      "provenance": "local_evidence",
+      "source": "benchmark/results/screen_calibration_20261002_140205_724/tower-results-imucam.txt",
+      "sha256": "80528f983ec0ca89f301544067b1bfa52ef48909a3d2262a915372082f8b636c",
+      "size_bytes": 3886,
+      "links_adjusted": false
+    },
+    {
+      "file": "evidence/calibration/tower-camchain.yaml",
+      "provenance": "local_evidence",
+      "source": "benchmark/results/screen_calibration_20261002_140205_724/tower-camchain.yaml",
+      "sha256": "3a979aa88576257ca81260aca0166a8b5822554e321e0aea62005e1fd4122faa",
+      "size_bytes": 991,
+      "links_adjusted": false
+    },
+    {
+      "file": "evidence/calibration/tower-camchain-imucam.yaml",
+      "provenance": "local_evidence",
+      "source": "benchmark/results/screen_calibration_20261002_140205_724/tower-camchain-imucam.yaml",
+      "sha256": "bff49f6ab4b0a78ff5b92b02ff6b1943597018257789b66311e7836b2e31561f",
+      "size_bytes": 1704,
+      "links_adjusted": false
+    },
+    {
+      "file": "evidence/calibration/tower-imu.yaml",
+      "provenance": "local_evidence",
+      "source": "benchmark/results/screen_calibration_20261002_140205_724/tower-imu.yaml",
+      "sha256": "f9a2032bbc2d53653cf1c218ecc4f8c52b75883795feaa77079970ef59c0c13f",
+      "size_bytes": 330,
+      "links_adjusted": false
+    },
+    {
+      "file": "evidence/calibration/target.yaml",
+      "provenance": "local_evidence",
+      "source": "benchmark/results/screen_calibration_20261002_140205_724/target.yaml",
+      "sha256": "63617e229306c75c0391b46a9b72f4adf2981df7f9fc244f16152838666ecaf2",
+      "size_bytes": 75,
+      "links_adjusted": false
+    },
+    {
+      "file": "evidence/calibration/confirmed_target.yaml",
+      "provenance": "local_evidence",
+      "source": "benchmark/results/screen_calibration_20261002_140205_724/confirmed_target.yaml",
+      "sha256": "63617e229306c75c0391b46a9b72f4adf2981df7f9fc244f16152838666ecaf2",
+      "size_bytes": 75,
+      "links_adjusted": false
+    },
+    {
+      "file": "evidence/calibration/confirmed_display_geometry.txt",
+      "provenance": "local_evidence",
+      "source": "benchmark/results/screen_calibration_20261002_140205_724/confirmed_display_geometry.txt",
+      "sha256": "3af1aaec4523f54c7b453cab53926b14186cd725a019d51f5105127469308ecf",
+      "size_bytes": 71,
+      "links_adjusted": false
+    },
+    {
+      "file": "evidence/calibration/capture_check.json",
+      "provenance": "local_evidence",
+      "source": "benchmark/results/screen_calibration_20261002_140205_724/capture_check.json",
+      "sha256": "7436e021ddfd05ce0fc17b9fe0cdaa51f1b6a528a3f7b369fdff4cffb37dddd1",
+      "size_bytes": 1096,
+      "links_adjusted": false
+    },
+    {
+      "file": "evidence/calibration/vi_fit/fit_scope.json",
+      "provenance": "local_evidence",
+      "source": "benchmark/results/screen_calibration_20261002_140205_724/vi_fit/fit_scope.json",
+      "sha256": "9c9497f10afde4113fe2f8a55b8d362f7b613d381253c2950ba9c424eaa0e717",
+      "size_bytes": 768,
+      "links_adjusted": false
+    },
+    {
+      "file": "evidence/desk_test/analysis.json",
+      "provenance": "local_evidence",
+      "source": "benchmark/results/hw290_openvins_20261002_150426_Rg52ai/analysis.json",
+      "sha256": "cc352149dae71787f49e8f2a855436c0c6695e655299e9336238323eacb4d941",
+      "size_bytes": 1079,
+      "links_adjusted": false
+    },
+    {
+      "file": "evidence/desk_test/summary.json",
+      "provenance": "local_evidence",
+      "source": "benchmark/results/hw290_openvins_20261002_150426_Rg52ai/summary.json",
+      "sha256": "ccb54c946378694fef5a5d6ac1314a87012493f54b7df28f9ad389c94c54edb3",
+      "size_bytes": 6150,
+      "links_adjusted": false
+    },
+    {
+      "file": "evidence/desk_test/summary.txt",
+      "provenance": "local_evidence",
+      "source": "benchmark/results/hw290_openvins_20261002_150426_Rg52ai/summary.txt",
+      "sha256": "9b1431704e8e8df206c5c6576ae876c465a0ff9bc20b0246b1dcb30dd6f59357",
+      "size_bytes": 1476,
+      "links_adjusted": false
+    },
+    {
+      "file": "evidence/desk_test/estimator.resources.json",
+      "provenance": "local_evidence",
+      "source": "benchmark/results/hw290_openvins_20261002_150426_Rg52ai/estimator.resources.json",
+      "sha256": "17a77eb090657b72016aeb150bdd6e759ffa15f7b478a999b1180138da8a252d",
+      "size_bytes": 1216,
+      "links_adjusted": false
+    },
+    {
+      "file": "evidence/desk_test/current_mount.yaml",
+      "provenance": "local_evidence",
+      "source": "benchmark/results/hw290_openvins_20261002_150426_Rg52ai/current_mount.yaml",
+      "sha256": "b759f248d9292f84961494818ad9a2a772fe1c7cba95bbe253dbcba676b0c99b",
+      "size_bytes": 536,
+      "links_adjusted": false
+    },
+    {
+      "file": "evidence/desk_test/record_qos.yaml",
+      "provenance": "local_evidence",
+      "source": "benchmark/results/hw290_openvins_20261002_150426_Rg52ai/record_qos.yaml",
+      "sha256": "fa204efbc1f5d9563d32fb918e352724391449bc5988d4cfc64a0d8226a641c5",
+      "size_bytes": 89,
+      "links_adjusted": false
+    },
+    {
+      "file": "evidence/desk_test/state_estimate.txt",
+      "provenance": "local_evidence",
+      "source": "benchmark/results/hw290_openvins_20261002_150426_Rg52ai/state_estimate.txt",
+      "sha256": "ee7fef6987d427439c0d2d4609e556a7bf3d5875e30990020eb3fd17168da72d",
+      "size_bytes": 2904157,
+      "links_adjusted": false
+    },
+    {
+      "file": "evidence/desk_test/trajectory_check.png",
+      "provenance": "local_evidence",
+      "source": "benchmark/results/hw290_openvins_20261002_150426_Rg52ai/trajectory_check.png",
+      "sha256": "4d5b320987683d5b9ccf2aaf5336f74543916623008211742e3c0353945510ce",
+      "size_bytes": 163856,
+      "links_adjusted": false
+    }
+  ],
+  "rewritten_relative_links": [
+    {
+      "document": "CALIBRATION_TOOLS.md",
+      "original": "OPENVINS_IMPLEMENTATION_GUIDE.md",
+      "resolved_source": "open_vins/hw290_stereo/OPENVINS_IMPLEMENTATION_GUIDE.md",
+      "exported_link": "OPENVINS_IMPLEMENTATION_GUIDE.md"
+    },
+    {
+      "document": "CAMERA_RESEARCH_100M.md",
+      "original": "calibration/20261002_tower/candidate/stereo_opencv.yaml",
+      "resolved_source": "open_vins/hw290_stereo/calibration/20261002_tower/candidate/stereo_opencv.yaml",
+      "exported_link": "reference_files/hw290_stereo/calibration/20261002_tower/candidate/stereo_opencv.yaml"
+    },
+    {
+      "document": "CAMERA_RESEARCH_100M.md",
+      "original": "../ov_core/src/feat/FeatureInitializerOptions.h",
+      "resolved_source": "open_vins/ov_core/src/feat/FeatureInitializerOptions.h",
+      "exported_link": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/feat/FeatureInitializerOptions.h"
+    },
+    {
+      "document": "CAMERA_RESEARCH_100M.md",
+      "original": "../ov_core/src/feat/FeatureInitializer.cpp",
+      "resolved_source": "open_vins/ov_core/src/feat/FeatureInitializer.cpp",
+      "exported_link": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/feat/FeatureInitializer.cpp"
+    },
+    {
+      "document": "CAMERA_RESEARCH_100M.md",
+      "original": "../ov_hw290/src/stereo_splitter.cpp",
+      "resolved_source": "open_vins/ov_hw290/src/stereo_splitter.cpp",
+      "exported_link": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/src/stereo_splitter.cpp"
+    },
+    {
+      "document": "CAMERA_RESEARCH_100M.md",
+      "original": "../ov_hw290/src/build_rectified_profile.cpp",
+      "resolved_source": "open_vins/ov_hw290/src/build_rectified_profile.cpp",
+      "exported_link": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/src/build_rectified_profile.cpp"
+    },
+    {
+      "document": "CAMERA_RESEARCH_100M.md",
+      "original": "../ov_core/src/track/TrackKLT.cpp",
+      "resolved_source": "open_vins/ov_core/src/track/TrackKLT.cpp",
+      "exported_link": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/track/TrackKLT.cpp"
+    },
+    {
+      "document": "CAMERA_RESEARCH_100M.md",
+      "original": "../ov_hw290/src/stereo_splitter.cpp",
+      "resolved_source": "open_vins/ov_hw290/src/stereo_splitter.cpp",
+      "exported_link": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/src/stereo_splitter.cpp"
+    },
+    {
+      "document": "DRIFT_FIX.md",
+      "original": "calibration/20261002_tower/candidate/README.md",
+      "resolved_source": "open_vins/hw290_stereo/calibration/20261002_tower/candidate/README.md",
+      "exported_link": "reference_files/hw290_stereo/calibration/20261002_tower/candidate/README.md"
+    },
+    {
+      "document": "DRIFT_FIX.md",
+      "original": "ORB_SELECTED_PROFILE.md",
+      "resolved_source": "open_vins/hw290_stereo/ORB_SELECTED_PROFILE.md",
+      "exported_link": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/ORB_SELECTED_PROFILE.md"
+    },
+    {
+      "document": "DRIFT_FIX.md",
+      "original": "calibration/20261002_tower/README.md",
+      "resolved_source": "open_vins/hw290_stereo/calibration/20261002_tower/README.md",
+      "exported_link": "reference_files/hw290_stereo/calibration/20261002_tower/README.md"
+    },
+    {
+      "document": "DRIFT_FIX.md",
+      "original": "calibration/20261001/README.md",
+      "resolved_source": "open_vins/hw290_stereo/calibration/20261001/README.md",
+      "exported_link": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/20261001/README.md"
+    },
+    {
+      "document": "DRIFT_FIX.md",
+      "original": "calibration/README.md",
+      "resolved_source": "open_vins/hw290_stereo/calibration/README.md",
+      "exported_link": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/README.md"
+    },
+    {
+      "document": "OPENVINS_IMPLEMENTATION_GUIDE.md",
+      "original": "vio_rig_stand_simple.scad",
+      "resolved_source": "open_vins/hw290_stereo/vio_rig_stand_simple.scad",
+      "exported_link": "reference_files/hw290_stereo/vio_rig_stand_simple.scad"
+    },
+    {
+      "document": "OPENVINS_IMPLEMENTATION_GUIDE.md",
+      "original": "patches/usb_cam-0.8.1-timestamps.patch",
+      "resolved_source": "open_vins/hw290_stereo/patches/usb_cam-0.8.1-timestamps.patch",
+      "exported_link": "reference_files/hw290_stereo/patches/usb_cam-0.8.1-timestamps.patch"
+    },
+    {
+      "document": "OPENVINS_IMPLEMENTATION_GUIDE.md",
+      "original": "usb_cam_hw290.yaml",
+      "resolved_source": "open_vins/hw290_stereo/usb_cam_hw290.yaml",
+      "exported_link": "reference_files/hw290_stereo/usb_cam_hw290.yaml"
+    },
+    {
+      "document": "OPENVINS_IMPLEMENTATION_GUIDE.md",
+      "original": "process_helpers.sh",
+      "resolved_source": "open_vins/hw290_stereo/process_helpers.sh",
+      "exported_link": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/process_helpers.sh"
+    },
+    {
+      "document": "OPENVINS_IMPLEMENTATION_GUIDE.md",
+      "original": "firmware/hw290_openvins/hw290_openvins.ino",
+      "resolved_source": "open_vins/hw290_stereo/firmware/hw290_openvins/hw290_openvins.ino",
+      "exported_link": "reference_files/hw290_stereo/firmware/hw290_openvins/hw290_openvins.ino"
+    },
+    {
+      "document": "OPENVINS_IMPLEMENTATION_GUIDE.md",
+      "original": "CALIBRATION_TOOLS.md",
+      "resolved_source": "open_vins/hw290_stereo/CALIBRATION_TOOLS.md",
+      "exported_link": "CALIBRATION_TOOLS.md"
+    },
+    {
+      "document": "OPENVINS_IMPLEMENTATION_GUIDE.md",
+      "original": "calibration/aprilgrid_6x6_a4.pdf",
+      "resolved_source": "open_vins/hw290_stereo/calibration/aprilgrid_6x6_a4.pdf",
+      "exported_link": "reference_files/hw290_stereo/calibration/aprilgrid_6x6_a4.pdf"
+    },
+    {
+      "document": "OPENVINS_IMPLEMENTATION_GUIDE.md",
+      "original": "CALIBRATION_TOOLS.md",
+      "resolved_source": "open_vins/hw290_stereo/CALIBRATION_TOOLS.md",
+      "exported_link": "CALIBRATION_TOOLS.md"
+    },
+    {
+      "document": "OPENVINS_IMPLEMENTATION_GUIDE.md",
+      "original": "calibration/20261002_tower/candidate/imu.yaml",
+      "resolved_source": "open_vins/hw290_stereo/calibration/20261002_tower/candidate/imu.yaml",
+      "exported_link": "reference_files/hw290_stereo/calibration/20261002_tower/candidate/imu.yaml"
+    },
+    {
+      "document": "OPENVINS_IMPLEMENTATION_GUIDE.md",
+      "original": "estimator_config.yaml",
+      "resolved_source": "open_vins/hw290_stereo/estimator_config.yaml",
+      "exported_link": "reference_files/hw290_stereo/estimator_config.yaml"
+    },
+    {
+      "document": "OPENVINS_IMPLEMENTATION_GUIDE.md",
+      "original": "calibration/20261002_tower/candidate/README.md",
+      "resolved_source": "open_vins/hw290_stereo/calibration/20261002_tower/candidate/README.md",
+      "exported_link": "reference_files/hw290_stereo/calibration/20261002_tower/candidate/README.md"
+    },
+    {
+      "document": "OPENVINS_IMPLEMENTATION_GUIDE.md",
+      "original": "../ov_msckf/src/ros/ROS2Visualizer.cpp",
+      "resolved_source": "open_vins/ov_msckf/src/ros/ROS2Visualizer.cpp",
+      "exported_link": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/ros/ROS2Visualizer.cpp"
+    },
+    {
+      "document": "reference_files/hw290_stereo/calibration/20261002_tower/README.md",
+      "original": "../../vio_rig_stand_simple.scad",
+      "resolved_source": "open_vins/hw290_stereo/vio_rig_stand_simple.scad",
+      "exported_link": "../../vio_rig_stand_simple.scad"
+    },
+    {
+      "document": "reference_files/hw290_stereo/calibration/20261002_tower/README.md",
+      "original": "candidate/README.md",
+      "resolved_source": "open_vins/hw290_stereo/calibration/20261002_tower/candidate/README.md",
+      "exported_link": "candidate/README.md"
+    },
+    {
+      "document": "reference_files/hw290_stereo/calibration/20261002_tower/README.md",
+      "original": "openscad_echoes.txt",
+      "resolved_source": "open_vins/hw290_stereo/calibration/20261002_tower/openscad_echoes.txt",
+      "exported_link": "openscad_echoes.txt"
+    },
+    {
+      "document": "reference_files/hw290_stereo/calibration/20261002_tower/README.md",
+      "original": "geometry.yaml",
+      "resolved_source": "open_vins/hw290_stereo/calibration/20261002_tower/geometry.yaml",
+      "exported_link": "geometry.yaml"
+    },
+    {
+      "document": "reference_files/hw290_stereo/calibration/20261002_tower/README.md",
+      "original": "../README.md",
+      "resolved_source": "open_vins/hw290_stereo/calibration/README.md",
+      "exported_link": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/README.md"
+    },
+    {
+      "document": "reference_files/hw290_stereo/calibration/20261002_tower/README.md",
+      "original": "../current_mount.yaml",
+      "resolved_source": "open_vins/hw290_stereo/calibration/current_mount.yaml",
+      "exported_link": "../current_mount.yaml"
+    },
+    {
+      "document": "reference_files/hw290_stereo/calibration/20261002_tower/README.md",
+      "original": "candidate/README.md",
+      "resolved_source": "open_vins/hw290_stereo/calibration/20261002_tower/candidate/README.md",
+      "exported_link": "candidate/README.md"
+    },
+    {
+      "document": "reference_files/hw290_stereo/calibration/20261002_tower/candidate/README.md",
+      "original": "../README.md",
+      "resolved_source": "open_vins/hw290_stereo/calibration/20261002_tower/README.md",
+      "exported_link": "../README.md"
+    }
+  ],
+  "runtime_sources": [
+    {
+      "path": "open_vins/hw290_stereo/CALIBRATION_TOOLS.md",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/CALIBRATION_TOOLS.md",
+      "included_file": "CALIBRATION_TOOLS.md"
+    },
+    {
+      "path": "open_vins/hw290_stereo/CAMERA_RESEARCH_100M.md",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/CAMERA_RESEARCH_100M.md",
+      "included_file": "CAMERA_RESEARCH_100M.md"
+    },
+    {
+      "path": "open_vins/hw290_stereo/DRIFT_FIX.md",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/DRIFT_FIX.md",
+      "included_file": "DRIFT_FIX.md"
+    },
+    {
+      "path": "open_vins/hw290_stereo/OPENVINS_IMPLEMENTATION_GUIDE.md",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/OPENVINS_IMPLEMENTATION_GUIDE.md",
+      "included_file": "OPENVINS_IMPLEMENTATION_GUIDE.md"
+    },
+    {
+      "path": "open_vins/hw290_stereo/ORB_SELECTED_PROFILE.md",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/ORB_SELECTED_PROFILE.md",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/README.md",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/README.md",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/REPAIR_NOTES.md",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/REPAIR_NOTES.md",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/build_calibration_tools.sh",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/build_calibration_tools.sh",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/build_camera_driver.sh",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/build_camera_driver.sh",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/calibrate_rotation.py",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibrate_rotation.py",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/calibration/.gitignore",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/.gitignore",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/calibration/20261001/README.md",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/20261001/README.md",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/calibration/20261001/camchain.yaml",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/20261001/camchain.yaml",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/calibration/20261001/camchain_raw.yaml",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/20261001/camchain_raw.yaml",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/calibration/20261001/imu.yaml",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/20261001/imu.yaml",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/calibration/20261001/stereo_opencv.yaml",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/20261001/stereo_opencv.yaml",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/calibration/20261001/validation.json",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/20261001/validation.json",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/calibration/20261002_tower/README.md",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/20261002_tower/README.md",
+      "included_file": "reference_files/hw290_stereo/calibration/20261002_tower/README.md"
+    },
+    {
+      "path": "open_vins/hw290_stereo/calibration/20261002_tower/candidate/README.md",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/20261002_tower/candidate/README.md",
+      "included_file": "reference_files/hw290_stereo/calibration/20261002_tower/candidate/README.md"
+    },
+    {
+      "path": "open_vins/hw290_stereo/calibration/20261002_tower/candidate/camchain.yaml",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/20261002_tower/candidate/camchain.yaml",
+      "included_file": "reference_files/hw290_stereo/calibration/20261002_tower/candidate/camchain.yaml"
+    },
+    {
+      "path": "open_vins/hw290_stereo/calibration/20261002_tower/candidate/camchain_raw.yaml",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/20261002_tower/candidate/camchain_raw.yaml",
+      "included_file": "reference_files/hw290_stereo/calibration/20261002_tower/candidate/camchain_raw.yaml"
+    },
+    {
+      "path": "open_vins/hw290_stereo/calibration/20261002_tower/candidate/estimator_config.yaml",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/20261002_tower/candidate/estimator_config.yaml",
+      "included_file": "reference_files/hw290_stereo/calibration/20261002_tower/candidate/estimator_config.yaml"
+    },
+    {
+      "path": "open_vins/hw290_stereo/calibration/20261002_tower/candidate/fit_review.json",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/20261002_tower/candidate/fit_review.json",
+      "included_file": "reference_files/hw290_stereo/calibration/20261002_tower/candidate/fit_review.json"
+    },
+    {
+      "path": "open_vins/hw290_stereo/calibration/20261002_tower/candidate/imu.yaml",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/20261002_tower/candidate/imu.yaml",
+      "included_file": "reference_files/hw290_stereo/calibration/20261002_tower/candidate/imu.yaml"
+    },
+    {
+      "path": "open_vins/hw290_stereo/calibration/20261002_tower/candidate/stereo_opencv.yaml",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/20261002_tower/candidate/stereo_opencv.yaml",
+      "included_file": "reference_files/hw290_stereo/calibration/20261002_tower/candidate/stereo_opencv.yaml"
+    },
+    {
+      "path": "open_vins/hw290_stereo/calibration/20261002_tower/geometry.yaml",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/20261002_tower/geometry.yaml",
+      "included_file": "reference_files/hw290_stereo/calibration/20261002_tower/geometry.yaml"
+    },
+    {
+      "path": "open_vins/hw290_stereo/calibration/20261002_tower/openscad_echoes.txt",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/20261002_tower/openscad_echoes.txt",
+      "included_file": "reference_files/hw290_stereo/calibration/20261002_tower/openscad_echoes.txt"
+    },
+    {
+      "path": "open_vins/hw290_stereo/calibration/Dockerfile.allan",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/Dockerfile.allan",
+      "included_file": "reference_files/hw290_stereo/calibration/Dockerfile.allan"
+    },
+    {
+      "path": "open_vins/hw290_stereo/calibration/README.md",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/README.md",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/calibration/allan_hw290.yaml",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/allan_hw290.yaml",
+      "included_file": "reference_files/hw290_stereo/calibration/allan_hw290.yaml"
+    },
+    {
+      "path": "open_vins/hw290_stereo/calibration/aprilgrid_6x6.png",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/aprilgrid_6x6.png",
+      "included_file": "reference_files/hw290_stereo/calibration/aprilgrid_6x6.png"
+    },
+    {
+      "path": "open_vins/hw290_stereo/calibration/aprilgrid_6x6_a4.pdf",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/aprilgrid_6x6_a4.pdf",
+      "included_file": "reference_files/hw290_stereo/calibration/aprilgrid_6x6_a4.pdf"
+    },
+    {
+      "path": "open_vins/hw290_stereo/calibration/aprilgrid_6x6_a4.yaml",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/aprilgrid_6x6_a4.yaml",
+      "included_file": "reference_files/hw290_stereo/calibration/aprilgrid_6x6_a4.yaml"
+    },
+    {
+      "path": "open_vins/hw290_stereo/calibration/aprilgrid_6x6_screen.yaml",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/aprilgrid_6x6_screen.yaml",
+      "included_file": "reference_files/hw290_stereo/calibration/aprilgrid_6x6_screen.yaml"
+    },
+    {
+      "path": "open_vins/hw290_stereo/calibration/current_mount.yaml",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/current_mount.yaml",
+      "included_file": "reference_files/hw290_stereo/calibration/current_mount.yaml"
+    },
+    {
+      "path": "open_vins/hw290_stereo/calibration/docker_context/.dockerignore",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/docker_context/.dockerignore",
+      "included_file": "reference_files/hw290_stereo/calibration/docker_context/.dockerignore"
+    },
+    {
+      "path": "open_vins/hw290_stereo/calibration_archive/2026-09-25_before_mount_calibration.yaml",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration_archive/2026-09-25_before_mount_calibration.yaml",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/check_rectified_stereo.py",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/check_rectified_stereo.py",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/env_hw290.sh",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/env_hw290.sh",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/estimator_config.yaml",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/estimator_config.yaml",
+      "included_file": "reference_files/hw290_stereo/estimator_config.yaml"
+    },
+    {
+      "path": "open_vins/hw290_stereo/firmware/hw290_openvins/hw290_openvins.ino",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/firmware/hw290_openvins/hw290_openvins.ino",
+      "included_file": "reference_files/hw290_stereo/firmware/hw290_openvins/hw290_openvins.ino"
+    },
+    {
+      "path": "open_vins/hw290_stereo/hw290_imu.py",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/hw290_imu.py",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/hw290_openvins.ino",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/hw290_openvins.ino",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/imu_protocol.py",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/imu_protocol.py",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/inspect_sensors.py",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/inspect_sensors.py",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/kalibr_imu_chain.yaml",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/kalibr_imu_chain.yaml",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/kalibr_imucam_chain.yaml",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/kalibr_imucam_chain.yaml",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/managed_process.py",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/managed_process.py",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/patches/usb_cam-0.8.1-timestamps.patch",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/patches/usb_cam-0.8.1-timestamps.patch",
+      "included_file": "reference_files/hw290_stereo/patches/usb_cam-0.8.1-timestamps.patch"
+    },
+    {
+      "path": "open_vins/hw290_stereo/process_helpers.sh",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/process_helpers.sh",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/record_motion_test.py",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/record_motion_test.py",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/record_qos.yaml",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/record_qos.yaml",
+      "included_file": "reference_files/hw290_stereo/record_qos.yaml"
+    },
+    {
+      "path": "open_vins/hw290_stereo/run_hw290_openvins.sh",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/run_hw290_openvins.sh",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/run_selected_orb.sh",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/run_selected_orb.sh",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/run_summary.py",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/run_summary.py",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/rviz_hw290.rviz",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/rviz_hw290.rviz",
+      "included_file": "reference_files/hw290_stereo/rviz_hw290.rviz"
+    },
+    {
+      "path": "open_vins/hw290_stereo/rviz_hw290_sensors.rviz",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/rviz_hw290_sensors.rviz",
+      "included_file": "reference_files/hw290_stereo/rviz_hw290_sensors.rviz"
+    },
+    {
+      "path": "open_vins/hw290_stereo/setup_hw290_openvins.sh",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/setup_hw290_openvins.sh",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/static_transform_args.py",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/static_transform_args.py",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/stereo_splitter.py",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/stereo_splitter.py",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/test_imu_protocol.py",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/test_imu_protocol.py",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/test_setup_hw290.py",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/test_setup_hw290.py",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/hw290_stereo/usb_cam_hw290.yaml",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/usb_cam_hw290.yaml",
+      "included_file": "reference_files/hw290_stereo/usb_cam_hw290.yaml"
+    },
+    {
+      "path": "open_vins/hw290_stereo/vio_rig_stand_simple.scad",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/vio_rig_stand_simple.scad",
+      "included_file": "reference_files/hw290_stereo/vio_rig_stand_simple.scad"
+    },
+    {
+      "path": "open_vins/ov_core/CMakeLists.txt",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/CMakeLists.txt",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/cmake/ROS2.cmake",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/cmake/ROS2.cmake",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/package.xml",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/package.xml",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/rosdoc.yaml",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/rosdoc.yaml",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/cam/CamBase.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/cam/CamBase.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/cam/CamEqui.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/cam/CamEqui.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/cam/CamRadtan.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/cam/CamRadtan.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/cpi/CpiBase.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/cpi/CpiBase.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/cpi/CpiV1.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/cpi/CpiV1.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/cpi/CpiV1.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/cpi/CpiV1.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/cpi/CpiV2.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/cpi/CpiV2.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/cpi/CpiV2.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/cpi/CpiV2.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/dummy.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/dummy.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/feat/Feature.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/feat/Feature.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/feat/Feature.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/feat/Feature.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/feat/FeatureDatabase.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/feat/FeatureDatabase.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/feat/FeatureDatabase.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/feat/FeatureDatabase.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/feat/FeatureHelper.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/feat/FeatureHelper.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/feat/FeatureInitializer.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/feat/FeatureInitializer.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/feat/FeatureInitializer.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/feat/FeatureInitializer.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/feat/FeatureInitializerOptions.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/feat/FeatureInitializerOptions.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/plot/LICENSE",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/plot/LICENSE",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/plot/matplotlibcpp.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/plot/matplotlibcpp.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/sim/BsplineSE3.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/sim/BsplineSE3.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/sim/BsplineSE3.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/sim/BsplineSE3.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/test_profile.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/test_profile.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/test_webcam.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/test_webcam.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/track/Grider_FAST.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/track/Grider_FAST.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/track/Grider_GRID.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/track/Grider_GRID.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/track/TrackAruco.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/track/TrackAruco.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/track/TrackAruco.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/track/TrackAruco.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/track/TrackBase.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/track/TrackBase.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/track/TrackBase.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/track/TrackBase.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/track/TrackDescriptor.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/track/TrackDescriptor.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/track/TrackDescriptor.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/track/TrackDescriptor.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/track/TrackKLT.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/track/TrackKLT.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/track/TrackKLT.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/track/TrackKLT.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/track/TrackSIM.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/track/TrackSIM.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/track/TrackSIM.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/track/TrackSIM.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/types/IMU.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/types/IMU.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/types/JPLQuat.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/types/JPLQuat.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/types/Landmark.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/types/Landmark.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/types/Landmark.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/types/Landmark.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/types/LandmarkRepresentation.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/types/LandmarkRepresentation.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/types/PoseJPL.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/types/PoseJPL.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/types/Type.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/types/Type.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/types/Vec.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/types/Vec.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/utils/colors.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/utils/colors.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/utils/dataset_reader.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/utils/dataset_reader.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/utils/opencv_lambda_body.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/utils/opencv_lambda_body.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/utils/opencv_yaml_parse.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/utils/opencv_yaml_parse.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/utils/print.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/utils/print.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/utils/print.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/utils/print.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/utils/quat_ops.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/utils/quat_ops.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_core/src/utils/sensor_data.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/utils/sensor_data.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/CMakeLists.txt",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/CMakeLists.txt",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/include/ov_hw290/imu_protocol.hpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/include/ov_hw290/imu_protocol.hpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/package.xml",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/package.xml",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/src/build_rectified_profile.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/src/build_rectified_profile.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/src/calibration_screen.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/src/calibration_screen.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/src/check_mount_calibration.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/src/check_mount_calibration.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/src/export_orb_calibration.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/src/export_orb_calibration.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/src/hw290_imu.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/src/hw290_imu.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/src/stereo_splitter.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/src/stereo_splitter.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/test/check_protocol_parity.py",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/test/check_protocol_parity.py",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/test/protocol_probe.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/test/protocol_probe.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/test/serial_benchmark.py",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/test/serial_benchmark.py",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/test/serial_fault_checks.py",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/test/serial_fault_checks.py",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/test/stereo_output_checks.py",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/test/stereo_output_checks.py",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/LICENSE",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/LICENSE",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/README.md",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/README.md",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/Edge.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/Edge.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/FloatImage.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/FloatImage.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/GLine2D.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/GLine2D.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/GLineSegment2D.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/GLineSegment2D.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/Gaussian.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/Gaussian.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/GrayModel.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/GrayModel.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/Gridder.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/Gridder.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/Homography33.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/Homography33.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/MathUtil.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/MathUtil.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/Quad.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/Quad.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/Segment.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/Segment.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/Tag16h5.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/Tag16h5.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/Tag16h5_other.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/Tag16h5_other.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/Tag25h7.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/Tag25h7.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/Tag25h9.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/Tag25h9.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/Tag36h11.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/Tag36h11.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/Tag36h11_other.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/Tag36h11_other.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/Tag36h9.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/Tag36h9.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/TagDetection.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/TagDetection.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/TagDetector.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/TagDetector.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/TagFamily.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/TagFamily.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/UnionFindSimple.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/UnionFindSimple.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/XYWeight.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/XYWeight.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/pch.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/include/apriltags/pch.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/src/Edge.cc",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/src/Edge.cc",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/src/FloatImage.cc",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/src/FloatImage.cc",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/src/GLine2D.cc",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/src/GLine2D.cc",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/src/GLineSegment2D.cc",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/src/GLineSegment2D.cc",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/src/Gaussian.cc",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/src/Gaussian.cc",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/src/GrayModel.cc",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/src/GrayModel.cc",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/src/Homography33.cc",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/src/Homography33.cc",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/src/MathUtil.cc",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/src/MathUtil.cc",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/src/Quad.cc",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/src/Quad.cc",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/src/Segment.cc",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/src/Segment.cc",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/src/TagDetection.cc",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/src/TagDetection.cc",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/src/TagDetector.cc",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/src/TagDetector.cc",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/src/TagFamily.cc",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/src/TagFamily.cc",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_hw290/third_party/ethz_apriltag2/src/UnionFindSimple.cc",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/third_party/ethz_apriltag2/src/UnionFindSimple.cc",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_init/CMakeLists.txt",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_init/CMakeLists.txt",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_init/cmake/ROS2.cmake",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_init/cmake/ROS2.cmake",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_init/launch/display.rviz",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_init/launch/display.rviz",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_init/package.xml",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_init/package.xml",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_init/rosdoc.yaml",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_init/rosdoc.yaml",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_init/src/ceres/Factor_GenericPrior.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_init/src/ceres/Factor_GenericPrior.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_init/src/ceres/Factor_GenericPrior.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_init/src/ceres/Factor_GenericPrior.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_init/src/ceres/Factor_ImageReprojCalib.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_init/src/ceres/Factor_ImageReprojCalib.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_init/src/ceres/Factor_ImageReprojCalib.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_init/src/ceres/Factor_ImageReprojCalib.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_init/src/ceres/Factor_ImuCPIv1.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_init/src/ceres/Factor_ImuCPIv1.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_init/src/ceres/Factor_ImuCPIv1.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_init/src/ceres/Factor_ImuCPIv1.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_init/src/ceres/State_JPLQuatLocal.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_init/src/ceres/State_JPLQuatLocal.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_init/src/ceres/State_JPLQuatLocal.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_init/src/ceres/State_JPLQuatLocal.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_init/src/dummy.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_init/src/dummy.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_init/src/dynamic/DynamicInitializer.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_init/src/dynamic/DynamicInitializer.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_init/src/dynamic/DynamicInitializer.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_init/src/dynamic/DynamicInitializer.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_init/src/init/InertialInitializer.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_init/src/init/InertialInitializer.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_init/src/init/InertialInitializer.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_init/src/init/InertialInitializer.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_init/src/init/InertialInitializerOptions.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_init/src/init/InertialInitializerOptions.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_init/src/sim/SimulatorInit.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_init/src/sim/SimulatorInit.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_init/src/sim/SimulatorInit.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_init/src/sim/SimulatorInit.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_init/src/static/StaticInitializer.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_init/src/static/StaticInitializer.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_init/src/static/StaticInitializer.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_init/src/static/StaticInitializer.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_init/src/test_dynamic_init.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_init/src/test_dynamic_init.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_init/src/test_dynamic_mle.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_init/src/test_dynamic_mle.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_init/src/test_simulation.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_init/src/test_simulation.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_init/src/utils/helper.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_init/src/utils/helper.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/CMakeLists.txt",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/CMakeLists.txt",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/cmake/ROS2.cmake",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/cmake/ROS2.cmake",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/launch/display.rviz",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/launch/display.rviz",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/launch/display_driving.rviz",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/launch/display_driving.rviz",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/launch/display_ros2.rviz",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/launch/display_ros2.rviz",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/launch/subscribe.launch.py",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/launch/subscribe.launch.py",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/package.xml",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/package.xml",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/rosdoc.yaml",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/rosdoc.yaml",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/core/VioManager.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/core/VioManager.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/core/VioManager.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/core/VioManager.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/core/VioManagerHelper.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/core/VioManagerHelper.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/core/VioManagerOptions.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/core/VioManagerOptions.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/dummy.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/dummy.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/ros/ROS2Visualizer.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/ros/ROS2Visualizer.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/ros/ROS2Visualizer.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/ros/ROS2Visualizer.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/ros/ROSVisualizerHelper.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/ros/ROSVisualizerHelper.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/ros/ROSVisualizerHelper.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/ros/ROSVisualizerHelper.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/run_simulation.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/run_simulation.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/run_subscribe_msckf.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/run_subscribe_msckf.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/sim/Simulator.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/sim/Simulator.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/sim/Simulator.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/sim/Simulator.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/state/Propagator.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/state/Propagator.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/state/Propagator.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/state/Propagator.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/state/State.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/state/State.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/state/State.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/state/State.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/state/StateHelper.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/state/StateHelper.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/state/StateHelper.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/state/StateHelper.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/state/StateOptions.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/state/StateOptions.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/test_sim_meas.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/test_sim_meas.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/test_sim_repeat.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/test_sim_repeat.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/update/UpdaterHelper.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/update/UpdaterHelper.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/update/UpdaterHelper.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/update/UpdaterHelper.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/update/UpdaterMSCKF.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/update/UpdaterMSCKF.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/update/UpdaterMSCKF.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/update/UpdaterMSCKF.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/update/UpdaterOptions.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/update/UpdaterOptions.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/update/UpdaterSLAM.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/update/UpdaterSLAM.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/update/UpdaterSLAM.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/update/UpdaterSLAM.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/update/UpdaterZeroVelocity.cpp",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/update/UpdaterZeroVelocity.cpp",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/update/UpdaterZeroVelocity.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/update/UpdaterZeroVelocity.h",
+      "included_file": null
+    },
+    {
+      "path": "open_vins/ov_msckf/src/utils/NoiseManager.h",
+      "url": "https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_msckf/src/utils/NoiseManager.h",
+      "included_file": null
+    }
+  ],
+  "raw_bags_included": false,
+  "runtime_acquired_by": "clone repository and checkout source_revision"
+}
