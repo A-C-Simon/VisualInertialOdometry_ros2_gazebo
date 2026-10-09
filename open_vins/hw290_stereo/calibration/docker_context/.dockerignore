@@ -1,0 +1,2 @@
+# Dockerfile.allan does not COPY local files. Keep recordings out of its context.
+*
