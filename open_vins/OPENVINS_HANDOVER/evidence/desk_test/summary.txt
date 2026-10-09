@@ -1,0 +1,22 @@
+
+================ run summary ================
+CPU: accumulated user+system; 100% means one fully occupied CPU core.
+Process                CPU s  Avg CPU %   Peak MiB
+camera                 25.71       14.9      112.5
+estimator             119.73       75.1      456.0
+imu                     2.97        1.8       23.2
+recorder               19.68       11.8      137.4
+rviz                   32.47       20.1      186.2
+splitter               51.17       30.6       54.2
+tf_cam0                 0.16        0.1       23.9
+tf_cam1                 0.16        0.1       23.8
+Measured child CPU total: 252.05 s; launch wall time: 173.90 s; average 144.9% of one core
+Per-process peak memory is not simultaneous total memory. Includes viewers when enabled.
+Logged tracking/update timings: n=4575, mean=18.75 ms, median=16.10, p95=25.50, max=1904.00
+These are processing times, not measured output Hz or total estimator CPU.
+OpenVINS logged poses: 3654; final displacement=0.159 m; max displacement=0.894 m (rounded log positions, no ground truth)
+Last periodic IMU counters: published=15551 corrupt=0 gaps=0 saturated=0
+Periodic IMU delivery rate: min=83.8, max=99.4 Hz
+Diagnostic run: sensor recording and debug logging costs are included. Close the bag writer before inspecting its database.
+Saved run: /home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/hw290_stereo/../benchmark/results/hw290_openvins_20261002_150426_Rg52ai
+=============================================

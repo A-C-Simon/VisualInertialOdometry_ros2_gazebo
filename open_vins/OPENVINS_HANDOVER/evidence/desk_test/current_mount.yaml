@@ -1,0 +1,8 @@
+%YAML:1.0
+---
+mount_id: "20261002_rigid_tower"
+status: "fitted_pending_validation"
+geometry: "20261002_tower/geometry.yaml"
+validated_chain_sha256: "5e573ea1e1a4f7056091620122e95100babe027e0b27d6b3b3ac1084406ed7c3"
+validated_stereo_sha256: "a2d499d85a4beb8c39d9f2811377e711bd14d1d9d9fc5b774f1a7d6c84f28f69"
+reason: "Tower fit remains unvalidated. IMU queue fix restored clean delivery, but a physical repeat had a 1.38 m jump after a 2 s estimator camera gap. Camera callback fix is under validation. Explicit --calibration-test only."

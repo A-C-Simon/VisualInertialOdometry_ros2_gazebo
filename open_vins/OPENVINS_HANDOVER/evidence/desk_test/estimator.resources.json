@@ -1,0 +1,29 @@
+{
+  "command": [
+    "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/hw290_stereo/../install_vio/ov_msckf/lib/ov_msckf/run_subscribe_msckf",
+    "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/hw290_stereo/calibration/20261002_tower/candidate/estimator_config.yaml",
+    "--ros-args",
+    "-r",
+    "__ns:=/ov_msckf",
+    "-p",
+    "use_sim_time:=false",
+    "-p",
+    "publish_calibration_tf:=false",
+    "-p",
+    "verbosity:=DEBUG",
+    "-p",
+    "save_total_state:=true",
+    "-p",
+    "filepath_est:=/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/hw290_stereo/../benchmark/results/hw290_openvins_20261002_150426_Rg52ai/state_estimate.txt",
+    "-p",
+    "filepath_std:=/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/hw290_stereo/../benchmark/results/hw290_openvins_20261002_150426_Rg52ai/state_deviation.txt",
+    "-p",
+    "filepath_gt:=/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/hw290_stereo/../benchmark/results/hw290_openvins_20261002_150426_Rg52ai/state_groundtruth.txt"
+  ],
+  "wall_seconds": 159.41870578700036,
+  "cpu_seconds": 119.726728,
+  "cpu_percent_one_core": 75.10205744611119,
+  "peak_rss_mib": 455.98046875,
+  "exit_code": 0,
+  "forced_shutdown": false
+}
