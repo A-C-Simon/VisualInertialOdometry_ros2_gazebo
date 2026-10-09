@@ -16,9 +16,10 @@ processing cost matter more than field coverage. Hikrobot's
 the exact revision's trigger, timestamp and output modes.
 
 Confirmed requirements: **100 m above ground**, flight speed **up to 10 m/s**,
-**maximum stereo width 500 mm**, and **global shutter only**. Downward view
-remains an assumption. Computer, budget, payload and required trajectory
-accuracy are still unspecified.
+**maximum stereo width 500 mm**, **global shutter only**, and **Jetson Orin NX
+class compute**. Budget is excluded from the current selection. Downward view
+remains an assumption. The exact computer, memory, carrier board, operating
+system, payload and required trajectory accuracy are still unspecified.
 
 Treat the 500 mm limit as overall assembly width until clarified. It is not
 automatically a 500 mm optical baseline: camera bodies, lenses, brackets and
@@ -108,6 +109,7 @@ more angular detail but less ground coverage and overlap during attitude changes
 
 ### Prices and procurement status
 
+Budget is deliberately excluded from the present technical ranking.
 No verified public manufacturer price was found for either industrial camera
 pair. Obtain a China-sourced quote covering **two camera bodies, two lenses,
 locking USB cables, I/O cables, trigger hardware and the bracket**, with exact
@@ -252,6 +254,47 @@ Resizing a high-resolution image back to 640 pixels reduces focal length in
 pixels and loses much of the far-range advantage. Cropping preserves pixel
 sampling but narrows coverage; it is different from downsampling.
 
+### Confirmed computer performance class: Jetson Orin NX
+
+Orin NX class compute is the design reference, not confirmation of an actual
+NVIDIA module or a particular carrier board. It keeps the 5 MP, 30 fps pair
+worth evaluating; it does not establish that the complete pipeline sustains
+30 fps. No benchmark has been run on the proposed computer.
+
+The existing [KLT tracker](../ov_core/src/track/TrackKLT.cpp) calls
+`cv::calcOpticalFlowPyrLK`, and the [splitter](../ov_hw290/src/stereo_splitter.cpp)
+uses CPU `cv::remap` with `cv::Mat`. These paths do not automatically use CUDA
+or Tensor cores. AI TOPS is not a prediction of estimator throughput. Measure
+CPU load, frame latency, thermal throttling and delivery gaps at the aircraft's
+actual power mode, including other onboard workloads.
+
+If the computer is an actual Orin NX, a JetPack 6 based system is a relevant
+integration target: [NVIDIA documents Ubuntu 22.04 for JetPack 6.2](https://developer.nvidia.com/embedded/jetpack-sdk-62).
+The Daheng ARM SDK listing currently recommends only Ubuntu through 20.04,
+so exact aarch64/JetPack support remains a vendor-confirmation and bench-test
+requirement. Hikrobot's aarch64 package is a second option to investigate,
+not proof of compatibility with the intended board and OS.
+
+For USB acquisition, budget 300.81 MB/s of raw stereo image payload at 30 fps,
+plus transport and recording overhead. Inspect the actual carrier's topology:
+[NVIDIA's bring-up guide](https://docs.nvidia.com/jetson/archives/r36.4.4/DeveloperGuide/HR/JetsonModuleAdaptationAndBringUp/JetsonOrinNxNanoSeries.html)
+describes carrier-specific USB routing. Multiple sockets do not guarantee
+independent upstream bandwidth. GMSL2 or CSI would require matched camera,
+deserializer and driver support; similar compute power alone does not provide
+these interfaces.
+
+If profiling shows image preparation dominates on an actual NVIDIA platform,
+[VPI Remap](https://docs.nvidia.com/vpi/group__VPI__Remap.html) offers a CUDA
+backend to investigate. This is a possible software change, not a feature of
+the working pipeline or a measured performance gain. Keep timestamp semantics,
+rectified calibration and trajectory replay checks when evaluating it.
+
+Keep full-resolution 5 MP capture as the first candidate. If measured latency
+is excessive, compare an ROI or the 3 MP camera with the same pixel pitch and
+lens before aggressively resizing. Those options retain central angular
+sampling at the cost of ground coverage. Compare accuracy and compute on the
+same recordings. Budget is not the reason to select the 3 MP fallback.
+
 ### Confirmed speed: up to 10 m/s
 
 For a downward pinhole camera over flat ground, horizontal translation gives:
@@ -284,7 +327,7 @@ This is an engineering tradeoff for testing, not an established accuracy result.
 
 ## 7. Evidence needed before final selection
 
-1. Confirm downward view, terrain, acceptable drift, computer, payload and budget.
+1. Confirm downward view, terrain, acceptable drift, exact computer/OS and payload.
    Use the confirmed 100 m above-ground target, 10 m/s maximum speed and
    500 mm width limit when checking the assembly envelope.
 2. Obtain exact quotations and written confirmation of external exposure trigger,
@@ -302,6 +345,6 @@ This is an engineering tradeoff for testing, not an established accuracy result.
 
 **Decision to discuss:** begin with the adjustable Daheng stereo prototype,
 8 mm lenses and a nominal 450 mm baseline within the 500 mm width limit.
-Confirm the complete mechanical envelope, onboard computer and budget before
-ordering. Review temporal-parallax requirements and estimator gates as part of
-the aerial profile.
+Confirm the complete mechanical envelope and exact computer/driver support
+before ordering. Budget is excluded from the present ranking. Review
+temporal-parallax requirements and estimator gates as part of the aerial profile.
