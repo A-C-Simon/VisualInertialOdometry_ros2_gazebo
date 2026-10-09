@@ -5,6 +5,16 @@ used for camera plus IMU visual inertial odometry. OpenVINS uses a bounded
 MSCKF estimator. It does not run loop closure, place recognition, a persistent
 global map, or Pangolin.
 
+## Physical OpenVINS engineering handover
+
+Use [the implementation guide](hw290_stereo/OPENVINS_IMPLEMENTATION_GUIDE.md)
+to build the working stereo/IMU pipeline on a clean host and calibrate another
+device. It covers wiring, firmware, dependencies, timestamp and transform
+conventions, the retained delivery fixes, validation and diagnostics.
+[Offline calibration tools](hw290_stereo/CALIBRATION_TOOLS.md) includes the
+Docker source build, bag conversion and noise analysis. The supplied tower
+calibration is specific to that physical assembly.
+
 ## HW290 calibration that stopped the large drift
 
 **For the physical rig, start with [the tested drift correction](hw290_stereo/DRIFT_FIX.md).**

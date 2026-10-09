@@ -7,6 +7,16 @@ ICM-20689. Both estimators use the measured October 2 rigid-tower camera/IMU
 profile. IMU noise remains provisional. The [selected October 5 ORB profile](ORB_SELECTED_PROFILE.md)
 passed the fresh tower movement check.
 
+## Implement OpenVINS on another device
+
+Start with [OPENVINS_IMPLEMENTATION_GUIDE.md](OPENVINS_IMPLEMENTATION_GUIDE.md).
+It provides the complete installation and commissioning sequence for the
+working OpenVINS pipeline, including its calibration and delivery fixes.
+[CALIBRATION_TOOLS.md](CALIBRATION_TOOLS.md) provides the offline tool build
+and fitting commands. Another physical assembly needs a new calibration;
+the historical troubleshooting sections below are not an acceptance record
+for a new device.
+
 ## Start here: calibration that stopped the large drift
 
 **Read [DRIFT_FIX.md](DRIFT_FIX.md) before changing this calibration.**

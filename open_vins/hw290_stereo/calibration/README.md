@@ -1,5 +1,10 @@
 # HW290 offline calibration
 
+For a clean installation and new device, follow the
+[implementation guide](../OPENVINS_IMPLEMENTATION_GUIDE.md) and
+[offline tools build and fitting commands](../CALIBRATION_TOOLS.md).
+They include the Docker image build that the historical commands below assume.
+
 **Start with [the tested drift correction and repeatable method](../DRIFT_FIX.md).**
 
 The [current tower mount](20261002_tower/README.md) uses the October 2
