@@ -1,15 +1,9 @@
 # Offline tools for OpenVINS hardware calibration
 
-Companion to [the implementation guide](OPENVINS_IMPLEMENTATION_GUIDE.md).
-Run acquisition on the ROS 2 host and offline fitting in ROS 1 Noetic Docker.
-No live ROS 1 bridge is required. The historically named `kalibr-hw290` image
-is not distributed with this repository and was absent during this documentation
-check. Build the tools explicitly rather than assuming that image exists.
-
-The commands below were checked against pinned upstream source and its command
-interfaces. A complete fresh Docker build and new sensor fit were **not** run
-on 9 October. Keep successful image IDs, build logs and fit reports with the
-new device's evidence; upstream apt repositories and base image tags can change.
+Use ROS 2 Humble for sensor acquisition and ROS 1 Noetic containers for
+Kalibr and Allan analysis. Build the calibration images with the pinned source
+versions below. Record image IDs, build logs, target dimensions and fit reports
+with each assembly's calibration record.
 
 ## Automated installation
 
