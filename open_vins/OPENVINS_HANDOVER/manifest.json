@@ -1,31 +1,23 @@
 {
   "bundle": "OPENVINS_HANDOVER",
   "date": "2026-10-12",
-  "source_revision": "10d12e9db49b0a48f4877e54d6c5147bde669959",
+  "source_revision": "a648f07dbfb1dd2813323db103fa458284b8a94e",
   "source_directory": "source/open_vins",
-  "runtime_acquired_by": "included local source snapshot",
-  "git_metadata_included": false,
-  "raw_bags_included": false,
   "files": [
     {
       "file": "CALIBRATION_TOOLS.md",
-      "sha256": "10649d674fd7a8f555e674a8da2e170adbb56909143390f212dca7e996bf1aae",
-      "size_bytes": 10899
-    },
-    {
-      "file": "CAMERA_RESEARCH_100M.md",
-      "sha256": "3459a74fd77ae5518eb5fd1454ccf2bdde1937bb3dff71afb30671da59f241ef",
-      "size_bytes": 19722
+      "sha256": "2130de6eef149fa7e1a63fd967239b564bf4ef6798516b637e0523cf2f2a669d",
+      "size_bytes": 10469
     },
     {
       "file": "DRIFT_FIX.md",
-      "sha256": "0e82603ed3624005d8d20f208b03a1262cc40b83741a4ae1c1d3fec470dea271",
-      "size_bytes": 8028
+      "sha256": "a0587932b4b2e3cf6362372d805e916ce41d5ea69e952b45264f70cc060f433e",
+      "size_bytes": 4050
     },
     {
       "file": "FILES_AND_SOURCES.md",
-      "sha256": "838ff597c9319f12848bf4978d9e6c5f7c4c241c1cc0885bad1885d17a904974",
-      "size_bytes": 3480
+      "sha256": "4e601c690532bf8e3bac3e30b60bdee27bbf2e9bb6b37115cd2d0489a1de18b7",
+      "size_bytes": 3243
     },
     {
       "file": "LICENSE",
@@ -34,13 +26,13 @@
     },
     {
       "file": "OPENVINS_IMPLEMENTATION_GUIDE.md",
-      "sha256": "d680b4fe92615c52faac4a6fd45d948a90feabb094204257e4a6ca9b93cd97bb",
-      "size_bytes": 41947
+      "sha256": "ce8a1b9e416abe5f8fc8e0c289e0036b2069e68d16666e1bd8133a2c29e5c78a",
+      "size_bytes": 41735
     },
     {
       "file": "README.md",
-      "sha256": "8558875ff9ea2e2c3d19fd908796e2dba2c13fba3d6871baa929d9b35af1edb3",
-      "size_bytes": 2795
+      "sha256": "9358d820b27c19ed56f0d553d1578a97a77e3945cc2d24633e5a538d0585bdff",
+      "size_bytes": 2829
     },
     {
       "file": "evidence/calibration/capture_check.json",
@@ -184,13 +176,13 @@
     },
     {
       "file": "reference_files/hw290_stereo/calibration/20261002_tower/README.md",
-      "sha256": "25bb583faea829d5e2f60a7eb4f435a0c2d70b5a2ea504214238426133c47d8d",
-      "size_bytes": 3394
+      "sha256": "b3ff9a4930e7c3f5e481044f58c7b0596a1444d421afe6289285bf144d312acf",
+      "size_bytes": 2130
     },
     {
       "file": "reference_files/hw290_stereo/calibration/20261002_tower/candidate/README.md",
-      "sha256": "2320bf04ac18e55e0614730ffa5cf112536d893ebab4ff2418fef57eb4e99974",
-      "size_bytes": 6330
+      "sha256": "91dba70d0dd3cffb6a6fcba758f18f744f4ed328df128bf57def734934df7452",
+      "size_bytes": 2905
     },
     {
       "file": "reference_files/hw290_stereo/calibration/20261002_tower/candidate/camchain.yaml",
@@ -319,138 +311,13 @@
     },
     {
       "file": "source/open_vins/README.md",
-      "sha256": "e04558cffc1ba4f49a5468e8e020f6330bac630f8319880cf31a02c003c6453e",
-      "size_bytes": 737
+      "sha256": "a783ac09d6c7367b14712172801b38daeeaa7d7d76cb376f746c395d780e59b9",
+      "size_bytes": 1169
     },
     {
       "file": "source/open_vins/SOURCE_REVISION",
-      "sha256": "729cf779e7e94da96efdde386775a22d57f726fcc3217f0d8c5ef5413d0daab8",
+      "sha256": "ac2eef18c382b3b8cfab8fd6de3520f781d05c68db4b9f9b185f939b7230b791",
       "size_bytes": 41
-    },
-    {
-      "file": "source/open_vins/benchmark/README.md",
-      "sha256": "6ad14fbc69a575f34c4dd392a8b73ecd877419edecf67d4c699cf4343313cb3e",
-      "size_bytes": 49209
-    },
-    {
-      "file": "source/open_vins/benchmark/build_orb_core.py",
-      "sha256": "46baa6e3f6ece4b085ba448f4853b3166c8bd1e2c544be2ec757a51465a1fc03",
-      "size_bytes": 24829
-    },
-    {
-      "file": "source/open_vins/benchmark/compare_runs.py",
-      "sha256": "0799aa7cfdaaaa3b3a8b189fd85f0d570a4c9dde61169fbed9f43c25131c87dd",
-      "size_bytes": 2396
-    },
-    {
-      "file": "source/open_vins/benchmark/configs/openvins_accuracy.yaml",
-      "sha256": "2eee3e1e67cff5e5701488cd66b5b9e15a9521b7ea14ba83ec9c64fe272a8b29",
-      "size_bytes": 5994
-    },
-    {
-      "file": "source/open_vins/benchmark/configs/openvins_fixed_accuracy.yaml",
-      "sha256": "1103b43708a612267ca0644def4016c38ff164b8dd4de4f6da194152c6e5b3b9",
-      "size_bytes": 5997
-    },
-    {
-      "file": "source/open_vins/benchmark/configs/openvins_fixed_calibration.yaml",
-      "sha256": "ca2206dbdb8b23399b6a60365611dc4355e1c03417d9c121445ac896cf1ce009",
-      "size_bytes": 5997
-    },
-    {
-      "file": "source/open_vins/benchmark/configs/orb_euroc_1200_no_loop.yaml",
-      "sha256": "e35dd2368bbff4d805232720ba8d3805b5eee6b8e8a68c41dc0e92fd61f3059c",
-      "size_bytes": 3822
-    },
-    {
-      "file": "source/open_vins/benchmark/configs/orb_euroc_400_no_loop.yaml",
-      "sha256": "2f4ea18cbf8292caa939ca25576a0e8782f01342d2156670fce46a48f4de977d",
-      "size_bytes": 3821
-    },
-    {
-      "file": "source/open_vins/benchmark/configs/orb_euroc_500_pyramid16.yaml",
-      "sha256": "703b0bf4a9efc07ac8aa0b65666c2843fe48466ab9de7b953790f9803754405f",
-      "size_bytes": 4029
-    },
-    {
-      "file": "source/open_vins/benchmark/configs/orb_euroc_600_640_no_loop.yaml",
-      "sha256": "adde49c84dc8442a2c01042596ee4ccb30e0d2aae7579f63e3c5997801513c36",
-      "size_bytes": 3943
-    },
-    {
-      "file": "source/open_vins/benchmark/configs/orb_euroc_600_no_loop.yaml",
-      "sha256": "68b3a7a2a6aa3f7bad4112c26a195ef3397ee4a4b7d1de307b980b5cfac5a101",
-      "size_bytes": 3821
-    },
-    {
-      "file": "source/open_vins/benchmark/configs/orb_euroc_600_pyramid14.yaml",
-      "sha256": "91d906799456b579eefe04a71dd1fb5e0cdc5a791592cf523c0822e2f9e63d0e",
-      "size_bytes": 4028
-    },
-    {
-      "file": "source/open_vins/benchmark/configs/orb_euroc_600_pyramid16.yaml",
-      "sha256": "6f49f23945e059d38f53bd787a2f3c31e6244e67462cd2d4aa27f0fd5e76c29e",
-      "size_bytes": 4029
-    },
-    {
-      "file": "source/open_vins/benchmark/configs/orb_euroc_800_no_loop.yaml",
-      "sha256": "82bd6b4f54eb83036fc1b54f45efce5523f6ce019883e194d54e84d92769e06c",
-      "size_bytes": 3821
-    },
-    {
-      "file": "source/open_vins/benchmark/configs/orb_euroc_baseline.yaml",
-      "sha256": "299add56d7b997d60d67e4257efe79177ef797cd5dc1ad0163c8e00313ed47d3",
-      "size_bytes": 3746
-    },
-    {
-      "file": "source/open_vins/benchmark/early_estimator_failure_20261005.json",
-      "sha256": "15dcadb39abcd36393164a8d0b78d267050281835a0ab50bb672a95375064b6f",
-      "size_bytes": 489
-    },
-    {
-      "file": "source/open_vins/benchmark/euroc_dataset_provenance_20261002.json",
-      "sha256": "bcddac77b1ad8d44d4aa80a43a80476f208c69c70b642fa3db36d39ad1840f80",
-      "size_bytes": 885
-    },
-    {
-      "file": "source/open_vins/benchmark/euroc_fixed_stereo_cost_20261005.json",
-      "sha256": "71fa44c9c3ee1873b63aa67f374209e81f7c1ac200294acbaa334491854d0a92",
-      "size_bytes": 15712
-    },
-    {
-      "file": "source/open_vins/benchmark/euroc_medium_dataset_provenance_20261005.json",
-      "sha256": "8cc8cadfd75ac297eb5195e5fe3cedce2f8a20bed0619dcd3fc8c88a02ee122e",
-      "size_bytes": 1035
-    },
-    {
-      "file": "source/open_vins/benchmark/euroc_player.py",
-      "sha256": "27d2a5c6fa34513c262904e964d5bbb56da4b2200a40dcd2421672676dc54965",
-      "size_bytes": 7465
-    },
-    {
-      "file": "source/open_vins/benchmark/euroc_preliminary_20261002.json",
-      "sha256": "dea01c5ca2f8b4455f44c34e48a1ba6fe20dee5d8c646f0f922df1e902a7f17d",
-      "size_bytes": 4461
-    },
-    {
-      "file": "source/open_vins/benchmark/euroc_refined_spacing_20261002.json",
-      "sha256": "cb3f2bb515f9d28eb355fe0c7c0cf8d59996abacbf973caf3ac08ffd3153126c",
-      "size_bytes": 4907
-    },
-    {
-      "file": "source/open_vins/benchmark/euroc_reliable_20261002.json",
-      "sha256": "d63c813b73988116e6992db37c378cd9b2b70de7555d953d23de3ffce892742f",
-      "size_bytes": 5189
-    },
-    {
-      "file": "source/open_vins/benchmark/euroc_spacing_20261002.json",
-      "sha256": "4493e8ee490ac2ea04acacaf2be8e8e4a94b8bd762c95479b62ea20205e98765",
-      "size_bytes": 4934
-    },
-    {
-      "file": "source/open_vins/benchmark/euroc_stereo_cost_20261003.json",
-      "sha256": "99d52bb0c9dd60558c9a0e28140cb2a73f3a45458ec41108f65911c74e79681e",
-      "size_bytes": 5050
     },
     {
       "file": "source/open_vins/benchmark/evaluate_ate.py",
@@ -461,256 +328,6 @@
       "file": "source/open_vins/benchmark/monitor_process.py",
       "sha256": "32d174df7d8e5b9345e5c3d5e4c4c1be4f634f2eae9974fc7be14e4240d42225",
       "size_bytes": 1898
-    },
-    {
-      "file": "source/open_vins/benchmark/orb_cpu_profile.hpp",
-      "sha256": "1ac0ce9a3fde12129e27df9d884b53a8c5b734826de344ff974c8956760a436d",
-      "size_bytes": 2926
-    },
-    {
-      "file": "source/open_vins/benchmark/orb_cpu_profile_20261005.json",
-      "sha256": "5c68e120b73cd06554df85055ec3aae32b3991239eab476d8b76c7fab332a45d",
-      "size_bytes": 15652
-    },
-    {
-      "file": "source/open_vins/benchmark/orb_disabled_loop_queue_20261005.json",
-      "sha256": "934b7ea7329306368b0caf01071ec19b11b68ea936f27577bd36ad702ebf4f4f",
-      "size_bytes": 1712
-    },
-    {
-      "file": "source/open_vins/benchmark/orb_extractor_equivalence.cc",
-      "sha256": "e89920787e3f8e2dcbdcc38603b21a7ed9673e98e255a1a1c29f34dadc7904cf",
-      "size_bytes": 1966
-    },
-    {
-      "file": "source/open_vins/benchmark/orb_gaussian7.hpp",
-      "sha256": "d0ac6e1622d2c6ce52f1b688265ff2ce0fd0f8fc532b1b778690fd8bb4b504c3",
-      "size_bytes": 3955
-    },
-    {
-      "file": "source/open_vins/benchmark/orb_gaussian7_check.cc",
-      "sha256": "0f333c45962011adcceafa46fdfc00497989407db7c5a5520f704005591565b4",
-      "size_bytes": 1766
-    },
-    {
-      "file": "source/open_vins/benchmark/orb_gaussian_cost_20261005.json",
-      "sha256": "12c7c08fc5dfcd680c90a5c86191adda2bc397ca93ec87d04331dd4be3250ed8",
-      "size_bytes": 8830
-    },
-    {
-      "file": "source/open_vins/benchmark/orb_medium_pyramid_20261005.json",
-      "sha256": "88c30938e2b87261fbc1181f7b521f7abc44d24c45cb91f0ebf53c47a74ac03b",
-      "size_bytes": 10261
-    },
-    {
-      "file": "source/open_vins/benchmark/orb_native/CMakeLists.txt",
-      "sha256": "98bd94b4a33a22297b9835264015d505cc345b6fa981152bbc951228499ddf0f",
-      "size_bytes": 757
-    },
-    {
-      "file": "source/open_vins/benchmark/orb_native/euroc_online.cc",
-      "sha256": "b6e04619e0573315d20cee37700dd9aafb5f3492b3e33bbbf10ca000859ff676",
-      "size_bytes": 10953
-    },
-    {
-      "file": "source/open_vins/benchmark/orb_packed_ba10_20261005.json",
-      "sha256": "a2f31aa0240922fc894f2df7dbe7e34450bac5a1a727fa7c8b4379ff41209c80",
-      "size_bytes": 5096
-    },
-    {
-      "file": "source/open_vins/benchmark/orb_packed_cpu_profile_20261005.json",
-      "sha256": "1c7907584b72a3afdd7939c402ad1ac3257133cc551152ac324a5dcf50908703",
-      "size_bytes": 8259
-    },
-    {
-      "file": "source/open_vins/benchmark/orb_packed_refined_spacing_20261005.json",
-      "sha256": "748684281f966292bf4482de245451bf906a4b9f32e6be8290a65af75da8783c",
-      "size_bytes": 5289
-    },
-    {
-      "file": "source/open_vins/benchmark/orb_packed_vocabulary.hpp",
-      "sha256": "e1915733b40ee5c499ec4ab457178d9c7a6f349f95e91fa5019fa497189edad6",
-      "size_bytes": 2690
-    },
-    {
-      "file": "source/open_vins/benchmark/orb_packed_vocabulary_20261005.json",
-      "sha256": "48400489133b9946981560e4765ee040ffb5ca5713101834152ecc2e5c1796b9",
-      "size_bytes": 8862
-    },
-    {
-      "file": "source/open_vins/benchmark/orb_pyramid_reuse_20261005.json",
-      "sha256": "e76dcf311e598ef1870aef7cccb3aa4d74fd09fb1223462f6ba03034b0a2c64a",
-      "size_bytes": 4220
-    },
-    {
-      "file": "source/open_vins/benchmark/orb_pyramid_spacing_20261005.json",
-      "sha256": "d0e60428b9251d85169389fbb027af719121e7fbf36101465b41008de645d6e5",
-      "size_bytes": 15864
-    },
-    {
-      "file": "source/open_vins/benchmark/orb_rectification_native_20261005.json",
-      "sha256": "70857186130b8f5ec95918695efcaa09d4a829ffd0d6a009085a134fa5677cc2",
-      "size_bytes": 2069
-    },
-    {
-      "file": "source/open_vins/benchmark/orb_rectification_public_20261005.json",
-      "sha256": "118ca25474041d5fd2f1cf3b55ed0ccaa93043fa37da6cf3575d51193a58a8ad",
-      "size_bytes": 24670
-    },
-    {
-      "file": "source/open_vins/benchmark/orb_remap8u.hpp",
-      "sha256": "9949afbb27cd8a4d3d07c0802a12c801ec718803e3daace5558c8665da437824",
-      "size_bytes": 6854
-    },
-    {
-      "file": "source/open_vins/benchmark/orb_remap_check.cc",
-      "sha256": "2506f0873fd087d3aca402dd8bf8fcfff678f3550ca5a28ea352ca20b6b3125d",
-      "size_bytes": 5610
-    },
-    {
-      "file": "source/open_vins/benchmark/orb_selected_profile_20261005.json",
-      "sha256": "44ce4b03bc13de4c0c808e2abfac2a4058ff0e92bfb5636412b1e482f63afd24",
-      "size_bytes": 1746
-    },
-    {
-      "file": "source/open_vins/benchmark/orb_stereo_workers.hpp",
-      "sha256": "57311b43e1812357d0be57bfab624c758410bba08600f9dd8a28b78d46022945",
-      "size_bytes": 2304
-    },
-    {
-      "file": "source/open_vins/benchmark/orb_translation_invariance.cc",
-      "sha256": "ffc83b289ef5bcef71bbdec4af59215757c07514efe0b1809650359e734f4a0e",
-      "size_bytes": 4390
-    },
-    {
-      "file": "source/open_vins/benchmark/orb_vocabulary_check.cc",
-      "sha256": "222cfeda1e7b3ab04c0c4c0856d4905f6b2d1a4a252210631496e298e848c7b1",
-      "size_bytes": 2292
-    },
-    {
-      "file": "source/open_vins/benchmark/orb_workers_check.cc",
-      "sha256": "451696931c30faff27ac5984dd213c3fe6fd0eb886920a58e932c864d25be3b7",
-      "size_bytes": 5105
-    },
-    {
-      "file": "source/open_vins/benchmark/orb_workers_trial_20261005.json",
-      "sha256": "02290781de68f8992091947ee42f5123a3e5ffec30a00c212571a947173a5f76",
-      "size_bytes": 8787
-    },
-    {
-      "file": "source/open_vins/benchmark/patches/orb_disabled_loop_queue.patch",
-      "sha256": "e6a052e38f7324073785ae114cee23f12dd7ef23d0aefcc6a1fba0537dad7920",
-      "size_bytes": 704
-    },
-    {
-      "file": "source/open_vins/benchmark/patches/orb_inertial_origin.patch",
-      "sha256": "dac91412e51e1214d5418410ea999bbd46e34b46e26e10a36bdf8f7ba0095cdf",
-      "size_bytes": 3611
-    },
-    {
-      "file": "source/open_vins/benchmark/patches/orb_initialization_diagnostics.patch",
-      "sha256": "5d103b067eb25e5562b79eb7c28d7fa731db03679532833bbee9da240ec1ee72",
-      "size_bytes": 1045
-    },
-    {
-      "file": "source/open_vins/benchmark/patches/orb_local_ba_window.patch",
-      "sha256": "16384b90e352760d735fa2c2f308d268733f9491ee1f5bd16c2949ef1feabdd9",
-      "size_bytes": 1760
-    },
-    {
-      "file": "source/open_vins/benchmark/patches/orb_motion_gated_initialization.patch",
-      "sha256": "7ead20e5897f8744612d5c72dbe3267ffdecb11c55be2fc8ae412c4c17030390",
-      "size_bytes": 4694
-    },
-    {
-      "file": "source/open_vins/benchmark/patches/orb_runtime_efficiency.patch",
-      "sha256": "8be745f933243dcc6d3fc5cb87fa77edfc97fadc6275ccb9286b9c29cf2a6223",
-      "size_bytes": 30638
-    },
-    {
-      "file": "source/open_vins/benchmark/patches/orb_safe_trajectory_export.patch",
-      "sha256": "2eb5b25bc12e1ff236a042f4ec563fb655b69d8a70b0334bffb447e98f839841",
-      "size_bytes": 924
-    },
-    {
-      "file": "source/open_vins/benchmark/patches/orb_stereo_baseline_initialization.patch",
-      "sha256": "9e8bbe180736ae5a2f5553847dfb0b36d29a0cee347df5e61f14326172bc6839",
-      "size_bytes": 1144
-    },
-    {
-      "file": "source/open_vins/benchmark/patches/orb_stereo_patch_cost.patch",
-      "sha256": "6dbe433c45f91b975beae69b3fb7258269b1888c8b8b7c141f71ca0c01f8ecdb",
-      "size_bytes": 1471
-    },
-    {
-      "file": "source/open_vins/benchmark/patches/orb_tracking_reset_window.patch",
-      "sha256": "4ff02153682546e2c227caebeb21a88ffa71ff7cc202165f8f08396616c2c1bb",
-      "size_bytes": 461
-    },
-    {
-      "file": "source/open_vins/benchmark/run_public_benchmark.py",
-      "sha256": "6e632af3ac49a4cdc8688daa91d088527c417a1a04484e5cae9a301cf64b2bcd",
-      "size_bytes": 6215
-    },
-    {
-      "file": "source/open_vins/benchmark/stereo_baseline_initialization_20261003.json",
-      "sha256": "08199ccbf0bc6029990498c40a651e58cd3be411b9fca3ffb8e330bc4cdc7008",
-      "size_bytes": 10891
-    },
-    {
-      "file": "source/open_vins/benchmark/stereo_baseline_storage_check.cc",
-      "sha256": "cfcae4b60b7923109b72a792550464ab9b3e30f3083d71bfdd05170ef4a0423b",
-      "size_bytes": 1927
-    },
-    {
-      "file": "source/open_vins/benchmark/stereo_patch_cost_check.cc",
-      "sha256": "7ad9fe2c8b7d8ce44af57db1e17ace4a8448007d28808f94f0b92fe7ae35cb21",
-      "size_bytes": 3004
-    },
-    {
-      "file": "source/open_vins/benchmark/stereo_patch_distance.hpp",
-      "sha256": "8b4c86fc43d171ec40596d93a636496f28fa8c3a91e4b6c49bbc61a30db31856",
-      "size_bytes": 993
-    },
-    {
-      "file": "source/open_vins/benchmark/summarize_cpu_profile.py",
-      "sha256": "9fedc925cbda0ec73882229098302ce174c90c11d990487efd29b1a8bb5a77bc",
-      "size_bytes": 2966
-    },
-    {
-      "file": "source/open_vins/benchmark/summarize_trials.py",
-      "sha256": "22c15d2679cc9d705c043688b0601a30a1909fa96842b90a660af20f9e44596c",
-      "size_bytes": 2455
-    },
-    {
-      "file": "source/open_vins/benchmark/tower_ba_cost_20261002.json",
-      "sha256": "6f7962de3e0fe6897aa8a21a3a304e530173794bd19fb9344271d60f5d933b04",
-      "size_bytes": 3390
-    },
-    {
-      "file": "source/open_vins/benchmark/tower_comparison_20261002.json",
-      "sha256": "fe309586aace051e1852157f2805442f555cb861a44ddd9367ed2eb54c177b35",
-      "size_bytes": 2697
-    },
-    {
-      "file": "source/open_vins/benchmark/tower_comparison_20261002.md",
-      "sha256": "2b60922e99b20cfeb7a7f54b157d21e036bb98454ef459e401f23c1b6e70804a",
-      "size_bytes": 4400
-    },
-    {
-      "file": "source/open_vins/benchmark/tower_initialization_20261002.json",
-      "sha256": "770b4b95b0b91fcaa30f7ef82e948a46f954812f7e85702d1162d5caeebf5cc7",
-      "size_bytes": 12847
-    },
-    {
-      "file": "source/open_vins/benchmark/tower_pyramid_validation_20261005.json",
-      "sha256": "db2871ece534a588e266be0a88fb78426faabb187c789c474d467deebbd0557c",
-      "size_bytes": 3268
-    },
-    {
-      "file": "source/open_vins/benchmark/tower_stereo_cost_20261005.json",
-      "sha256": "b562f431c74c60487e8179b67223eeb7bb82da9e576edf15f9e02006def77572",
-      "size_bytes": 11955
     },
     {
       "file": "source/open_vins/config/euroc_mav/estimator_config.yaml",
@@ -1014,38 +631,23 @@
     },
     {
       "file": "source/open_vins/hw290_stereo/CALIBRATION_TOOLS.md",
-      "sha256": "10649d674fd7a8f555e674a8da2e170adbb56909143390f212dca7e996bf1aae",
-      "size_bytes": 10899
-    },
-    {
-      "file": "source/open_vins/hw290_stereo/CAMERA_RESEARCH_100M.md",
-      "sha256": "595591cced40330aa92e493c21272d185d02d6e2670401708652b84fb3081d93",
-      "size_bytes": 19609
+      "sha256": "2130de6eef149fa7e1a63fd967239b564bf4ef6798516b637e0523cf2f2a669d",
+      "size_bytes": 10469
     },
     {
       "file": "source/open_vins/hw290_stereo/DRIFT_FIX.md",
-      "sha256": "52dd170229342eb59ae93e7c7beb1e7f7d399fa2d74270d136c9725b762ad29b",
-      "size_bytes": 7893
+      "sha256": "8bde90362510ded4dbd29e06022f53f57f54f8fa3f7f48a77f6f5ab70bf177ca",
+      "size_bytes": 4007
     },
     {
       "file": "source/open_vins/hw290_stereo/OPENVINS_IMPLEMENTATION_GUIDE.md",
-      "sha256": "775d5969b2c9af2d301938cb3fa505878d085c618cf629e28207debf675ca1c9",
-      "size_bytes": 41671
-    },
-    {
-      "file": "source/open_vins/hw290_stereo/ORB_SELECTED_PROFILE.md",
-      "sha256": "719d0f4aaab1dc1d9fbd245b409c2a607c6c7c4d1377f797876136b23694642e",
-      "size_bytes": 2815
+      "sha256": "fa5ec6049eb34887dd152609b6de8299d0a65eb53b785318b8ec833ac3db7296",
+      "size_bytes": 41459
     },
     {
       "file": "source/open_vins/hw290_stereo/README.md",
-      "sha256": "7cbaf5fd5282700b2b8a2786514728a8d3def764e85dbd22466dbdba1b6a1fdc",
-      "size_bytes": 14986
-    },
-    {
-      "file": "source/open_vins/hw290_stereo/REPAIR_NOTES.md",
-      "sha256": "aa2fcbdba9841e9b8bac9de78bc46aa75630eeeba18f9ee1793df1a9482edac4",
-      "size_bytes": 14927
+      "sha256": "f18324cd1217d7da1ed4a0147298b781e90bcc2bdf5d6957525e85cf65b236cb",
+      "size_bytes": 1431
     },
     {
       "file": "source/open_vins/hw290_stereo/build_calibration_tools.sh",
@@ -1068,44 +670,14 @@
       "size_bytes": 18
     },
     {
-      "file": "source/open_vins/hw290_stereo/calibration/20261001/README.md",
-      "sha256": "644b7b47a663d23e24b7f91ba9318ce40aa61777338c1b3d108029e33bc4d48c",
-      "size_bytes": 5347
-    },
-    {
-      "file": "source/open_vins/hw290_stereo/calibration/20261001/camchain.yaml",
-      "sha256": "58a8a2f4b7721c9ac48e1407a086974648c1194c3fdf68eaeb9e585af86aeb06",
-      "size_bytes": 1240
-    },
-    {
-      "file": "source/open_vins/hw290_stereo/calibration/20261001/camchain_raw.yaml",
-      "sha256": "8dfbab52a9a52a38607579ed64b0c287b8a1af9b61118c41b57a0ecdcbf7cb8b",
-      "size_bytes": 1692
-    },
-    {
-      "file": "source/open_vins/hw290_stereo/calibration/20261001/imu.yaml",
-      "sha256": "7ed8d99488124e87739c9c484d9a170006a67bf752c4ee488a941d1da08f0d26",
-      "size_bytes": 613
-    },
-    {
-      "file": "source/open_vins/hw290_stereo/calibration/20261001/stereo_opencv.yaml",
-      "sha256": "9421a143473501e72b985dec40706cc833a781e4a0b75060f1f24634a3802d6f",
-      "size_bytes": 2312
-    },
-    {
-      "file": "source/open_vins/hw290_stereo/calibration/20261001/validation.json",
-      "sha256": "18241be42ca7e5f39c5a51caa32bfdb00d52768cacd1a6b48bdaeb5167eb5211",
-      "size_bytes": 12455
-    },
-    {
       "file": "source/open_vins/hw290_stereo/calibration/20261002_tower/README.md",
-      "sha256": "bb8d3f350df7d1380b0582bf87e1620d0815c66476f9a63b0c5265668b6cdde9",
-      "size_bytes": 3343
+      "sha256": "3a0ea30d00fa593bbbb0ef36be80d3d7d959488c648fba2e17cd7f8782685173",
+      "size_bytes": 2079
     },
     {
       "file": "source/open_vins/hw290_stereo/calibration/20261002_tower/candidate/README.md",
-      "sha256": "2320bf04ac18e55e0614730ffa5cf112536d893ebab4ff2418fef57eb4e99974",
-      "size_bytes": 6330
+      "sha256": "a432e80c18f883f42fca23d54921ad8bd2b45439c4ee3680e7fea1f01aa38df7",
+      "size_bytes": 2899
     },
     {
       "file": "source/open_vins/hw290_stereo/calibration/20261002_tower/candidate/camchain.yaml",
@@ -1154,8 +726,8 @@
     },
     {
       "file": "source/open_vins/hw290_stereo/calibration/README.md",
-      "sha256": "b2af4e875c6bb1aa64865de76c1c5b6135e97d6f4fdf141b05a35d972a6031f6",
-      "size_bytes": 11911
+      "sha256": "18da9d97ef33fedf2eede9bc07870c948ec20f962c1552ff925b54a75275a2f7",
+      "size_bytes": 2253
     },
     {
       "file": "source/open_vins/hw290_stereo/calibration/allan_hw290.yaml",
@@ -1253,11 +825,6 @@
       "size_bytes": 1645
     },
     {
-      "file": "source/open_vins/hw290_stereo/package_openvins_handover.py",
-      "sha256": "74e6aa4436d4e7e1ecd601cfc9e2e32d85345ea87319cd0b3157b7f5fd35f414",
-      "size_bytes": 13665
-    },
-    {
       "file": "source/open_vins/hw290_stereo/patches/usb_cam-0.8.1-timestamps.patch",
       "sha256": "4d9da32bf5c2489e76ff2e64250c7e6b65e5322e7d81a4bb1fbad1c728bced2b",
       "size_bytes": 536
@@ -1281,11 +848,6 @@
       "file": "source/open_vins/hw290_stereo/run_hw290_openvins.sh",
       "sha256": "e98c2270bfb9c073bc183d38bdae22bcc698382f4aa2adc4a0ad3ab6726e3d23",
       "size_bytes": 8515
-    },
-    {
-      "file": "source/open_vins/hw290_stereo/run_selected_orb.sh",
-      "sha256": "a487a0c30e343f564e42152bed555aa5de61e80b190c6a8ef9e8871b09b34cec",
-      "size_bytes": 1505
     },
     {
       "file": "source/open_vins/hw290_stereo/run_summary.py",
@@ -2225,131 +1787,6 @@
       "original_sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
     },
     {
-      "path": "benchmark/README.md",
-      "git_blob": "030891247c948d14fb3a27586cc63cb282c8483c",
-      "original_sha256": "6ad14fbc69a575f34c4dd392a8b73ecd877419edecf67d4c699cf4343313cb3e"
-    },
-    {
-      "path": "benchmark/build_orb_core.py",
-      "git_blob": "0e1da03ebd193570275b48555488d2712f89a95b",
-      "original_sha256": "46baa6e3f6ece4b085ba448f4853b3166c8bd1e2c544be2ec757a51465a1fc03"
-    },
-    {
-      "path": "benchmark/compare_runs.py",
-      "git_blob": "647685e1152535e5f0349c394c20de699ed80311",
-      "original_sha256": "0799aa7cfdaaaa3b3a8b189fd85f0d570a4c9dde61169fbed9f43c25131c87dd"
-    },
-    {
-      "path": "benchmark/configs/openvins_accuracy.yaml",
-      "git_blob": "9eb0a86f9df33bcd608827e49f88c3683e413855",
-      "original_sha256": "2eee3e1e67cff5e5701488cd66b5b9e15a9521b7ea14ba83ec9c64fe272a8b29"
-    },
-    {
-      "path": "benchmark/configs/openvins_fixed_accuracy.yaml",
-      "git_blob": "2cac1c8e9fd92c39f9e2b8a733f2419f38632f0a",
-      "original_sha256": "1103b43708a612267ca0644def4016c38ff164b8dd4de4f6da194152c6e5b3b9"
-    },
-    {
-      "path": "benchmark/configs/openvins_fixed_calibration.yaml",
-      "git_blob": "4bd28897f64f609449a5bf9eb845088d32685741",
-      "original_sha256": "ca2206dbdb8b23399b6a60365611dc4355e1c03417d9c121445ac896cf1ce009"
-    },
-    {
-      "path": "benchmark/configs/orb_euroc_1200_no_loop.yaml",
-      "git_blob": "e468c5cc9e8e013d42c766e6fb4a445deeb01440",
-      "original_sha256": "e35dd2368bbff4d805232720ba8d3805b5eee6b8e8a68c41dc0e92fd61f3059c"
-    },
-    {
-      "path": "benchmark/configs/orb_euroc_400_no_loop.yaml",
-      "git_blob": "4b29a1f1143ebb00ffb9956538b3d8da5d7c5a4a",
-      "original_sha256": "2f4ea18cbf8292caa939ca25576a0e8782f01342d2156670fce46a48f4de977d"
-    },
-    {
-      "path": "benchmark/configs/orb_euroc_500_pyramid16.yaml",
-      "git_blob": "9cdbd6deabdcc8b55ecf105e7577958cbeda2888",
-      "original_sha256": "703b0bf4a9efc07ac8aa0b65666c2843fe48466ab9de7b953790f9803754405f"
-    },
-    {
-      "path": "benchmark/configs/orb_euroc_600_640_no_loop.yaml",
-      "git_blob": "840956ded3c879ea39ec3d0881211b254e81e824",
-      "original_sha256": "adde49c84dc8442a2c01042596ee4ccb30e0d2aae7579f63e3c5997801513c36"
-    },
-    {
-      "path": "benchmark/configs/orb_euroc_600_no_loop.yaml",
-      "git_blob": "0f0ee84e5401abd2add04ad55907ef24a90f0773",
-      "original_sha256": "68b3a7a2a6aa3f7bad4112c26a195ef3397ee4a4b7d1de307b980b5cfac5a101"
-    },
-    {
-      "path": "benchmark/configs/orb_euroc_600_pyramid14.yaml",
-      "git_blob": "d434cb7c71d6085e196a3a98dbcc7a8fed55e24a",
-      "original_sha256": "91d906799456b579eefe04a71dd1fb5e0cdc5a791592cf523c0822e2f9e63d0e"
-    },
-    {
-      "path": "benchmark/configs/orb_euroc_600_pyramid16.yaml",
-      "git_blob": "b67e3cc9138899480502d109f1daa2a99a2f7da7",
-      "original_sha256": "6f49f23945e059d38f53bd787a2f3c31e6244e67462cd2d4aa27f0fd5e76c29e"
-    },
-    {
-      "path": "benchmark/configs/orb_euroc_800_no_loop.yaml",
-      "git_blob": "aa3498e71a8a71103557b7feec18c86fca1f187b",
-      "original_sha256": "82bd6b4f54eb83036fc1b54f45efce5523f6ce019883e194d54e84d92769e06c"
-    },
-    {
-      "path": "benchmark/configs/orb_euroc_baseline.yaml",
-      "git_blob": "517da5100c1b2b0370ffb19690d292339081f300",
-      "original_sha256": "299add56d7b997d60d67e4257efe79177ef797cd5dc1ad0163c8e00313ed47d3"
-    },
-    {
-      "path": "benchmark/early_estimator_failure_20261005.json",
-      "git_blob": "8161e0ad56a24d038c69476bcf8b9c4a3893d90f",
-      "original_sha256": "15dcadb39abcd36393164a8d0b78d267050281835a0ab50bb672a95375064b6f"
-    },
-    {
-      "path": "benchmark/euroc_dataset_provenance_20261002.json",
-      "git_blob": "17b74cb05ba3bb638c6c69f47d51f72ebe08a6cc",
-      "original_sha256": "bcddac77b1ad8d44d4aa80a43a80476f208c69c70b642fa3db36d39ad1840f80"
-    },
-    {
-      "path": "benchmark/euroc_fixed_stereo_cost_20261005.json",
-      "git_blob": "d6ab498d6fcdbc980d89761942b33a78125004d1",
-      "original_sha256": "71fa44c9c3ee1873b63aa67f374209e81f7c1ac200294acbaa334491854d0a92"
-    },
-    {
-      "path": "benchmark/euroc_medium_dataset_provenance_20261005.json",
-      "git_blob": "b83cf2a9b5eaf27e7a445dc74019f9a1e15390e3",
-      "original_sha256": "8cc8cadfd75ac297eb5195e5fe3cedce2f8a20bed0619dcd3fc8c88a02ee122e"
-    },
-    {
-      "path": "benchmark/euroc_player.py",
-      "git_blob": "5e7a79d5fa9f86e98fc1f7ad8598b0d726a94b0b",
-      "original_sha256": "27d2a5c6fa34513c262904e964d5bbb56da4b2200a40dcd2421672676dc54965"
-    },
-    {
-      "path": "benchmark/euroc_preliminary_20261002.json",
-      "git_blob": "694282d18e80f9d199e7291431f0ad2424c436ad",
-      "original_sha256": "dea01c5ca2f8b4455f44c34e48a1ba6fe20dee5d8c646f0f922df1e902a7f17d"
-    },
-    {
-      "path": "benchmark/euroc_refined_spacing_20261002.json",
-      "git_blob": "629bc79828c8709f658a614208b6aa2394dea353",
-      "original_sha256": "cb3f2bb515f9d28eb355fe0c7c0cf8d59996abacbf973caf3ac08ffd3153126c"
-    },
-    {
-      "path": "benchmark/euroc_reliable_20261002.json",
-      "git_blob": "c2cedf60e14d9975b5cd674e5b882ba62b15d7b7",
-      "original_sha256": "d63c813b73988116e6992db37c378cd9b2b70de7555d953d23de3ffce892742f"
-    },
-    {
-      "path": "benchmark/euroc_spacing_20261002.json",
-      "git_blob": "7beef56b348361f0f1c5b14e99e46ab42bbdaa7c",
-      "original_sha256": "4493e8ee490ac2ea04acacaf2be8e8e4a94b8bd762c95479b62ea20205e98765"
-    },
-    {
-      "path": "benchmark/euroc_stereo_cost_20261003.json",
-      "git_blob": "1a3c83a13df1fe5cac264a15f440f814bf54afb7",
-      "original_sha256": "99d52bb0c9dd60558c9a0e28140cb2a73f3a45458ec41108f65911c74e79681e"
-    },
-    {
       "path": "benchmark/evaluate_ate.py",
       "git_blob": "c2b62a1e7011715bb926d02885da2bea02d65492",
       "original_sha256": "09964126f88357d46b3063c80ef8d9d14a8a9db858694ebd13f7ab0e2e7d775d"
@@ -2358,256 +1795,6 @@
       "path": "benchmark/monitor_process.py",
       "git_blob": "f125e961470283b10b8eca01f30eaabaa9cad236",
       "original_sha256": "32d174df7d8e5b9345e5c3d5e4c4c1be4f634f2eae9974fc7be14e4240d42225"
-    },
-    {
-      "path": "benchmark/orb_cpu_profile.hpp",
-      "git_blob": "5b81605985a958fa4fb837738456f7fe3a597ed1",
-      "original_sha256": "1ac0ce9a3fde12129e27df9d884b53a8c5b734826de344ff974c8956760a436d"
-    },
-    {
-      "path": "benchmark/orb_cpu_profile_20261005.json",
-      "git_blob": "12d2a5cbe3320bf0730a916813aa702417fb8b5e",
-      "original_sha256": "5c68e120b73cd06554df85055ec3aae32b3991239eab476d8b76c7fab332a45d"
-    },
-    {
-      "path": "benchmark/orb_disabled_loop_queue_20261005.json",
-      "git_blob": "f0280acde4086cc942d94cc129c24fb6f9783365",
-      "original_sha256": "934b7ea7329306368b0caf01071ec19b11b68ea936f27577bd36ad702ebf4f4f"
-    },
-    {
-      "path": "benchmark/orb_extractor_equivalence.cc",
-      "git_blob": "fcc823674aaeffda573eb2468d12d778e3ccd7ee",
-      "original_sha256": "e89920787e3f8e2dcbdcc38603b21a7ed9673e98e255a1a1c29f34dadc7904cf"
-    },
-    {
-      "path": "benchmark/orb_gaussian7.hpp",
-      "git_blob": "a2b62f6adc7036c6c72e6919053ce09b70cb88fe",
-      "original_sha256": "d0ac6e1622d2c6ce52f1b688265ff2ce0fd0f8fc532b1b778690fd8bb4b504c3"
-    },
-    {
-      "path": "benchmark/orb_gaussian7_check.cc",
-      "git_blob": "1d653204c459dab9acca691ccd8b4bfd5329158d",
-      "original_sha256": "0f333c45962011adcceafa46fdfc00497989407db7c5a5520f704005591565b4"
-    },
-    {
-      "path": "benchmark/orb_gaussian_cost_20261005.json",
-      "git_blob": "e87133ca4d0b47ce06fa8d69a51ee944372bd85d",
-      "original_sha256": "12c7c08fc5dfcd680c90a5c86191adda2bc397ca93ec87d04331dd4be3250ed8"
-    },
-    {
-      "path": "benchmark/orb_medium_pyramid_20261005.json",
-      "git_blob": "ad68fb2cd0025a6ac84b4591c744a6374cf4b702",
-      "original_sha256": "88c30938e2b87261fbc1181f7b521f7abc44d24c45cb91f0ebf53c47a74ac03b"
-    },
-    {
-      "path": "benchmark/orb_native/CMakeLists.txt",
-      "git_blob": "182d66f917084cb27202309bd6d04407d4557b55",
-      "original_sha256": "98bd94b4a33a22297b9835264015d505cc345b6fa981152bbc951228499ddf0f"
-    },
-    {
-      "path": "benchmark/orb_native/euroc_online.cc",
-      "git_blob": "4f799f025fa1b0846a50eb6f9bc1bb3637ee70c1",
-      "original_sha256": "b6e04619e0573315d20cee37700dd9aafb5f3492b3e33bbbf10ca000859ff676"
-    },
-    {
-      "path": "benchmark/orb_packed_ba10_20261005.json",
-      "git_blob": "37579ebd7d3a35ce771000ba0d6e504df7edc01d",
-      "original_sha256": "a2f31aa0240922fc894f2df7dbe7e34450bac5a1a727fa7c8b4379ff41209c80"
-    },
-    {
-      "path": "benchmark/orb_packed_cpu_profile_20261005.json",
-      "git_blob": "2fc4c3eb8161d5d2c3679dc299ee4d17bcee126a",
-      "original_sha256": "1c7907584b72a3afdd7939c402ad1ac3257133cc551152ac324a5dcf50908703"
-    },
-    {
-      "path": "benchmark/orb_packed_refined_spacing_20261005.json",
-      "git_blob": "c3ac04c6b660fa4c7856d4a75646c0834c919994",
-      "original_sha256": "748684281f966292bf4482de245451bf906a4b9f32e6be8290a65af75da8783c"
-    },
-    {
-      "path": "benchmark/orb_packed_vocabulary.hpp",
-      "git_blob": "7a84280bfd5cfc77ab465ae385bdcc869711db19",
-      "original_sha256": "e1915733b40ee5c499ec4ab457178d9c7a6f349f95e91fa5019fa497189edad6"
-    },
-    {
-      "path": "benchmark/orb_packed_vocabulary_20261005.json",
-      "git_blob": "97982451d45636f2c62194eae35445daf4891ddd",
-      "original_sha256": "48400489133b9946981560e4765ee040ffb5ca5713101834152ecc2e5c1796b9"
-    },
-    {
-      "path": "benchmark/orb_pyramid_reuse_20261005.json",
-      "git_blob": "8944fc031d2d25b78d23a6dcd0e675b0da290608",
-      "original_sha256": "e76dcf311e598ef1870aef7cccb3aa4d74fd09fb1223462f6ba03034b0a2c64a"
-    },
-    {
-      "path": "benchmark/orb_pyramid_spacing_20261005.json",
-      "git_blob": "32c884e6c861fa7019e429e81ca586102b24eed4",
-      "original_sha256": "d0e60428b9251d85169389fbb027af719121e7fbf36101465b41008de645d6e5"
-    },
-    {
-      "path": "benchmark/orb_rectification_native_20261005.json",
-      "git_blob": "ff982632415a60f55b2dc7a98ab0e6df0763a510",
-      "original_sha256": "70857186130b8f5ec95918695efcaa09d4a829ffd0d6a009085a134fa5677cc2"
-    },
-    {
-      "path": "benchmark/orb_rectification_public_20261005.json",
-      "git_blob": "a78b227cbf2c474238321ae8ecf3253afdacf657",
-      "original_sha256": "118ca25474041d5fd2f1cf3b55ed0ccaa93043fa37da6cf3575d51193a58a8ad"
-    },
-    {
-      "path": "benchmark/orb_remap8u.hpp",
-      "git_blob": "6c8ab04302459871444896fe4b1307b4045e59c2",
-      "original_sha256": "9949afbb27cd8a4d3d07c0802a12c801ec718803e3daace5558c8665da437824"
-    },
-    {
-      "path": "benchmark/orb_remap_check.cc",
-      "git_blob": "2d4ef36af2d08f1e72eb62c536db71092e276a8b",
-      "original_sha256": "2506f0873fd087d3aca402dd8bf8fcfff678f3550ca5a28ea352ca20b6b3125d"
-    },
-    {
-      "path": "benchmark/orb_selected_profile_20261005.json",
-      "git_blob": "63edf504f1feb6a70ca6cb9c5e8a79ea1c2043ab",
-      "original_sha256": "44ce4b03bc13de4c0c808e2abfac2a4058ff0e92bfb5636412b1e482f63afd24"
-    },
-    {
-      "path": "benchmark/orb_stereo_workers.hpp",
-      "git_blob": "c372fc46427acea492ff3bf3e57e393943f92c34",
-      "original_sha256": "57311b43e1812357d0be57bfab624c758410bba08600f9dd8a28b78d46022945"
-    },
-    {
-      "path": "benchmark/orb_translation_invariance.cc",
-      "git_blob": "9ec728359f74c37fd64c4e5a9dac4a658ade52e5",
-      "original_sha256": "ffc83b289ef5bcef71bbdec4af59215757c07514efe0b1809650359e734f4a0e"
-    },
-    {
-      "path": "benchmark/orb_vocabulary_check.cc",
-      "git_blob": "3e42c04ee31e58e3c9f4a20a60da02f6541c82de",
-      "original_sha256": "222cfeda1e7b3ab04c0c4c0856d4905f6b2d1a4a252210631496e298e848c7b1"
-    },
-    {
-      "path": "benchmark/orb_workers_check.cc",
-      "git_blob": "eac21696190476d960dbe435a1cda98cf3857859",
-      "original_sha256": "451696931c30faff27ac5984dd213c3fe6fd0eb886920a58e932c864d25be3b7"
-    },
-    {
-      "path": "benchmark/orb_workers_trial_20261005.json",
-      "git_blob": "6960af24e9a5f5e2e37e14bde07f70a778d258d3",
-      "original_sha256": "02290781de68f8992091947ee42f5123a3e5ffec30a00c212571a947173a5f76"
-    },
-    {
-      "path": "benchmark/patches/orb_disabled_loop_queue.patch",
-      "git_blob": "538be5ee1836f3998431894d4352dce03a3c0a3f",
-      "original_sha256": "e6a052e38f7324073785ae114cee23f12dd7ef23d0aefcc6a1fba0537dad7920"
-    },
-    {
-      "path": "benchmark/patches/orb_inertial_origin.patch",
-      "git_blob": "b2e2ac661ae2d869dc3fe0a6f34c1a8c6934c3de",
-      "original_sha256": "dac91412e51e1214d5418410ea999bbd46e34b46e26e10a36bdf8f7ba0095cdf"
-    },
-    {
-      "path": "benchmark/patches/orb_initialization_diagnostics.patch",
-      "git_blob": "638f0109df9703b0edb62a38bd08af3dd7536dd2",
-      "original_sha256": "5d103b067eb25e5562b79eb7c28d7fa731db03679532833bbee9da240ec1ee72"
-    },
-    {
-      "path": "benchmark/patches/orb_local_ba_window.patch",
-      "git_blob": "b8fd50d78e02409c8c7c2aec9642ea885984c680",
-      "original_sha256": "16384b90e352760d735fa2c2f308d268733f9491ee1f5bd16c2949ef1feabdd9"
-    },
-    {
-      "path": "benchmark/patches/orb_motion_gated_initialization.patch",
-      "git_blob": "8f3ed7c862b19d89e91237d07e5ed620baffb05e",
-      "original_sha256": "7ead20e5897f8744612d5c72dbe3267ffdecb11c55be2fc8ae412c4c17030390"
-    },
-    {
-      "path": "benchmark/patches/orb_runtime_efficiency.patch",
-      "git_blob": "e1059187d388e2b544db5ece02104eecbd7daac8",
-      "original_sha256": "8be745f933243dcc6d3fc5cb87fa77edfc97fadc6275ccb9286b9c29cf2a6223"
-    },
-    {
-      "path": "benchmark/patches/orb_safe_trajectory_export.patch",
-      "git_blob": "a5b9dbb4b8cb590a40395936f0cb7dd5b43424c0",
-      "original_sha256": "2eb5b25bc12e1ff236a042f4ec563fb655b69d8a70b0334bffb447e98f839841"
-    },
-    {
-      "path": "benchmark/patches/orb_stereo_baseline_initialization.patch",
-      "git_blob": "4eea1685dbb3fb2d4d3ad22a8c0bff8b972c1515",
-      "original_sha256": "9e8bbe180736ae5a2f5553847dfb0b36d29a0cee347df5e61f14326172bc6839"
-    },
-    {
-      "path": "benchmark/patches/orb_stereo_patch_cost.patch",
-      "git_blob": "848e8b2d5709f634aeaf2cda6ccfac30ccaded93",
-      "original_sha256": "6dbe433c45f91b975beae69b3fb7258269b1888c8b8b7c141f71ca0c01f8ecdb"
-    },
-    {
-      "path": "benchmark/patches/orb_tracking_reset_window.patch",
-      "git_blob": "ffc2ebb8ce3880e525e92c2b3be7c5806136b5fd",
-      "original_sha256": "4ff02153682546e2c227caebeb21a88ffa71ff7cc202165f8f08396616c2c1bb"
-    },
-    {
-      "path": "benchmark/run_public_benchmark.py",
-      "git_blob": "5fd1c86e0b1baf8d714c5fc0a7861658e9e6a9fd",
-      "original_sha256": "6e632af3ac49a4cdc8688daa91d088527c417a1a04484e5cae9a301cf64b2bcd"
-    },
-    {
-      "path": "benchmark/stereo_baseline_initialization_20261003.json",
-      "git_blob": "f30cc75ee8aa1b610fc3b819b3f0a2c54ff2897f",
-      "original_sha256": "08199ccbf0bc6029990498c40a651e58cd3be411b9fca3ffb8e330bc4cdc7008"
-    },
-    {
-      "path": "benchmark/stereo_baseline_storage_check.cc",
-      "git_blob": "bf9b7c7ea97d5be0b003f33892f2fa4bfa037a94",
-      "original_sha256": "cfcae4b60b7923109b72a792550464ab9b3e30f3083d71bfdd05170ef4a0423b"
-    },
-    {
-      "path": "benchmark/stereo_patch_cost_check.cc",
-      "git_blob": "bdc0550704b9bcb3d399d8cd846a550d9111dd1f",
-      "original_sha256": "7ad9fe2c8b7d8ce44af57db1e17ace4a8448007d28808f94f0b92fe7ae35cb21"
-    },
-    {
-      "path": "benchmark/stereo_patch_distance.hpp",
-      "git_blob": "2fb87c660496087fe0d440adc773adbe1dc927ff",
-      "original_sha256": "8b4c86fc43d171ec40596d93a636496f28fa8c3a91e4b6c49bbc61a30db31856"
-    },
-    {
-      "path": "benchmark/summarize_cpu_profile.py",
-      "git_blob": "63205c4015a86d8f6f9d5175ed589b3d675ea983",
-      "original_sha256": "9fedc925cbda0ec73882229098302ce174c90c11d990487efd29b1a8bb5a77bc"
-    },
-    {
-      "path": "benchmark/summarize_trials.py",
-      "git_blob": "283ba3365ddc790cd3772d0cc78734f5309599d6",
-      "original_sha256": "22c15d2679cc9d705c043688b0601a30a1909fa96842b90a660af20f9e44596c"
-    },
-    {
-      "path": "benchmark/tower_ba_cost_20261002.json",
-      "git_blob": "7b095e126c7a487b5b884efa7db64b4d02f19d00",
-      "original_sha256": "6f7962de3e0fe6897aa8a21a3a304e530173794bd19fb9344271d60f5d933b04"
-    },
-    {
-      "path": "benchmark/tower_comparison_20261002.json",
-      "git_blob": "12de736fc25263e9bd744f2d499db92e10df8cb4",
-      "original_sha256": "fe309586aace051e1852157f2805442f555cb861a44ddd9367ed2eb54c177b35"
-    },
-    {
-      "path": "benchmark/tower_comparison_20261002.md",
-      "git_blob": "bd09ff44f03331d9c538cace7e5f24107160c8c7",
-      "original_sha256": "2b60922e99b20cfeb7a7f54b157d21e036bb98454ef459e401f23c1b6e70804a"
-    },
-    {
-      "path": "benchmark/tower_initialization_20261002.json",
-      "git_blob": "e50b5068a06c0d7dfaa07b72d6a182e11f716439",
-      "original_sha256": "770b4b95b0b91fcaa30f7ef82e948a46f954812f7e85702d1162d5caeebf5cc7"
-    },
-    {
-      "path": "benchmark/tower_pyramid_validation_20261005.json",
-      "git_blob": "36aecddd383699a09d768532e1bee48a7f962bc9",
-      "original_sha256": "db2871ece534a588e266be0a88fb78426faabb187c789c474d467deebbd0557c"
-    },
-    {
-      "path": "benchmark/tower_stereo_cost_20261005.json",
-      "git_blob": "b1bd6211a78c605f27b13d286d5f94d72f4acbf0",
-      "original_sha256": "b562f431c74c60487e8179b67223eeb7bb82da9e576edf15f9e02006def77572"
     },
     {
       "path": "config/euroc_mav/estimator_config.yaml",
@@ -2911,38 +2098,23 @@
     },
     {
       "path": "hw290_stereo/CALIBRATION_TOOLS.md",
-      "git_blob": "367c86acf9a437195137685e3658b890dee58c73",
-      "original_sha256": "10649d674fd7a8f555e674a8da2e170adbb56909143390f212dca7e996bf1aae"
-    },
-    {
-      "path": "hw290_stereo/CAMERA_RESEARCH_100M.md",
-      "git_blob": "c3b1616d737f01772ea4154888090ce83b938ad0",
-      "original_sha256": "595591cced40330aa92e493c21272d185d02d6e2670401708652b84fb3081d93"
+      "git_blob": "4bcdef160473f8dd0025709022d27b6acf5f1dc8",
+      "original_sha256": "2130de6eef149fa7e1a63fd967239b564bf4ef6798516b637e0523cf2f2a669d"
     },
     {
       "path": "hw290_stereo/DRIFT_FIX.md",
-      "git_blob": "dc378002f6d6f3c463af41ce1b13a948a21610fe",
-      "original_sha256": "52dd170229342eb59ae93e7c7beb1e7f7d399fa2d74270d136c9725b762ad29b"
+      "git_blob": "0d2a62a6c9c6fde6d5c8a51f66b3fcebc4407b68",
+      "original_sha256": "8bde90362510ded4dbd29e06022f53f57f54f8fa3f7f48a77f6f5ab70bf177ca"
     },
     {
       "path": "hw290_stereo/OPENVINS_IMPLEMENTATION_GUIDE.md",
-      "git_blob": "b28a642bc9864defb38584c08558fb1ebe5f8ffd",
-      "original_sha256": "775d5969b2c9af2d301938cb3fa505878d085c618cf629e28207debf675ca1c9"
-    },
-    {
-      "path": "hw290_stereo/ORB_SELECTED_PROFILE.md",
-      "git_blob": "720ff4612a8215afb39f88f39b94d24ac05a0262",
-      "original_sha256": "719d0f4aaab1dc1d9fbd245b409c2a607c6c7c4d1377f797876136b23694642e"
+      "git_blob": "122232162ce460b7b0aadbd16e4d38d1546aa49b",
+      "original_sha256": "fa5ec6049eb34887dd152609b6de8299d0a65eb53b785318b8ec833ac3db7296"
     },
     {
       "path": "hw290_stereo/README.md",
       "git_blob": "927c287d26e8affaf52674df4105f97723371ece",
       "original_sha256": "c21884df67dc10a727980c745c3c376afa36ca314544a48ad6c09c213717e199"
-    },
-    {
-      "path": "hw290_stereo/REPAIR_NOTES.md",
-      "git_blob": "c8e8830e8630ca4cec384cd8735863dfaf051e21",
-      "original_sha256": "aa2fcbdba9841e9b8bac9de78bc46aa75630eeeba18f9ee1793df1a9482edac4"
     },
     {
       "path": "hw290_stereo/build_calibration_tools.sh",
@@ -2965,44 +2137,14 @@
       "original_sha256": "dc6c6ec1040d3a0fb8f7d5cc9cb366ba014f37ca1b41e9ff9ad17e526939d5c5"
     },
     {
-      "path": "hw290_stereo/calibration/20261001/README.md",
-      "git_blob": "c9e6eb1f7ee1cd4eeadf71cdbe6408b08a98a7bf",
-      "original_sha256": "644b7b47a663d23e24b7f91ba9318ce40aa61777338c1b3d108029e33bc4d48c"
-    },
-    {
-      "path": "hw290_stereo/calibration/20261001/camchain.yaml",
-      "git_blob": "5ad37b2d398117b9b7c4f13a34343050e1b818de",
-      "original_sha256": "58a8a2f4b7721c9ac48e1407a086974648c1194c3fdf68eaeb9e585af86aeb06"
-    },
-    {
-      "path": "hw290_stereo/calibration/20261001/camchain_raw.yaml",
-      "git_blob": "910ac13911356877a87061b1dd6494a9e1497436",
-      "original_sha256": "8dfbab52a9a52a38607579ed64b0c287b8a1af9b61118c41b57a0ecdcbf7cb8b"
-    },
-    {
-      "path": "hw290_stereo/calibration/20261001/imu.yaml",
-      "git_blob": "2837b23f3bc3b987000e022cefbd6769107ad0b2",
-      "original_sha256": "7ed8d99488124e87739c9c484d9a170006a67bf752c4ee488a941d1da08f0d26"
-    },
-    {
-      "path": "hw290_stereo/calibration/20261001/stereo_opencv.yaml",
-      "git_blob": "9fdbc404706d7b61931aa45b0d76ede6482eafc2",
-      "original_sha256": "9421a143473501e72b985dec40706cc833a781e4a0b75060f1f24634a3802d6f"
-    },
-    {
-      "path": "hw290_stereo/calibration/20261001/validation.json",
-      "git_blob": "c5a80a32c211c912aa0c04ec8955869b5b0e845c",
-      "original_sha256": "18241be42ca7e5f39c5a51caa32bfdb00d52768cacd1a6b48bdaeb5167eb5211"
-    },
-    {
       "path": "hw290_stereo/calibration/20261002_tower/README.md",
-      "git_blob": "fae49114ab496e5db54909f49b753f29bbd39ab3",
-      "original_sha256": "bb8d3f350df7d1380b0582bf87e1620d0815c66476f9a63b0c5265668b6cdde9"
+      "git_blob": "afe84bfa20fa899d7c12ce2d5e0a358e039c8df4",
+      "original_sha256": "3a0ea30d00fa593bbbb0ef36be80d3d7d959488c648fba2e17cd7f8782685173"
     },
     {
       "path": "hw290_stereo/calibration/20261002_tower/candidate/README.md",
-      "git_blob": "1b259f19c4e463ec10bfeb95a8d43648511162e2",
-      "original_sha256": "2320bf04ac18e55e0614730ffa5cf112536d893ebab4ff2418fef57eb4e99974"
+      "git_blob": "8c0b2069e187e8e203e2d7c591303d2d37d9e884",
+      "original_sha256": "a432e80c18f883f42fca23d54921ad8bd2b45439c4ee3680e7fea1f01aa38df7"
     },
     {
       "path": "hw290_stereo/calibration/20261002_tower/candidate/camchain.yaml",
@@ -3051,8 +2193,8 @@
     },
     {
       "path": "hw290_stereo/calibration/README.md",
-      "git_blob": "4da759f5a2669407e275807567af7817504aa75e",
-      "original_sha256": "b2af4e875c6bb1aa64865de76c1c5b6135e97d6f4fdf141b05a35d972a6031f6"
+      "git_blob": "fcef43d6443cad26edea9ce22a848146221e8b74",
+      "original_sha256": "18da9d97ef33fedf2eede9bc07870c948ec20f962c1552ff925b54a75275a2f7"
     },
     {
       "path": "hw290_stereo/calibration/allan_hw290.yaml",
@@ -3150,11 +2292,6 @@
       "original_sha256": "a97a50e989a1a802a0de0779145d94e6f2372298989d5b98f3d7c8b575859d30"
     },
     {
-      "path": "hw290_stereo/package_openvins_handover.py",
-      "git_blob": "4b3b4d2e08bf061ef24baf9e7d25ec6be301c92b",
-      "original_sha256": "74e6aa4436d4e7e1ecd601cfc9e2e32d85345ea87319cd0b3157b7f5fd35f414"
-    },
-    {
       "path": "hw290_stereo/patches/usb_cam-0.8.1-timestamps.patch",
       "git_blob": "3f0ff9df68841cc4130cec36683d93aeb1c89ca1",
       "original_sha256": "4d9da32bf5c2489e76ff2e64250c7e6b65e5322e7d81a4bb1fbad1c728bced2b"
@@ -3178,11 +2315,6 @@
       "path": "hw290_stereo/run_hw290_openvins.sh",
       "git_blob": "78dd2a936e9d3d1df3e72d7d93f4bd831eab7c13",
       "original_sha256": "e98c2270bfb9c073bc183d38bdae22bcc698382f4aa2adc4a0ad3ab6726e3d23"
-    },
-    {
-      "path": "hw290_stereo/run_selected_orb.sh",
-      "git_blob": "92d8de935a0bc6d803935b9ece5d7b94889d3789",
-      "original_sha256": "a487a0c30e343f564e42152bed555aa5de61e80b190c6a8ef9e8871b09b34cec"
     },
     {
       "path": "hw290_stereo/run_summary.py",
@@ -4115,5 +3247,5 @@
       "original_sha256": "ad42c71158e521771ac45ddd0434db85d36c0438dfd6550f842990e875d7f322"
     }
   ],
-  "validated_local_markdown_links": 140
+  "validated_local_markdown_links": 70
 }
