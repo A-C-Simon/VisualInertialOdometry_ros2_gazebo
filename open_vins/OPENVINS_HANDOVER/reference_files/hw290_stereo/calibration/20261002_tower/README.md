@@ -41,7 +41,7 @@ Record raw stereo and timestamped IMU with the new tower rigidly assembled:
 ./hw290_stereo/run_hw290_openvins.sh --calibration-screen
 ```
 
-Follow the [offline procedure](https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/README.md). Verify the fullscreen tag size,
+Follow the [offline procedure](../../../../source/open_vins/hw290_stereo/calibration/README.md). Verify the fullscreen tag size,
 fit stereo geometry and then camera/IMU rotation, translation and time shift.
 If the stereo assembly is unchanged, its existing intrinsic fit remains a
 candidate, but verify image mode and reprojection rather than replacing its

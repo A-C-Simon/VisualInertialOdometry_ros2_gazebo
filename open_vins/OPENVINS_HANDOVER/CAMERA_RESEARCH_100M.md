@@ -191,9 +191,9 @@ for the present requirement.
 
 The working desk configuration must not be treated as an aerial profile:
 
-1. [FeatureInitializerOptions.h](https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/feat/FeatureInitializerOptions.h)
+1. [FeatureInitializerOptions.h](source/open_vins/ov_core/src/feat/FeatureInitializerOptions.h)
    defaults to `fi_max_dist = 60` m. The active HW290 estimator YAML does not
-   override it. [FeatureInitializer.cpp](https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/feat/FeatureInitializer.cpp)
+   override it. [FeatureInitializer.cpp](source/open_vins/ov_core/src/feat/FeatureInitializer.cpp)
    rejects triangulated anchor-camera depth beyond this threshold, including
    during refinement. Ground features near 100 m camera depth would be rejected.
 2. `fi_max_baseline = 40` limits feature distance divided by the effective
@@ -202,9 +202,9 @@ The working desk configuration must not be treated as an aerial profile:
    2.5 m of effective transverse baseline to satisfy that ratio. A 300 mm stereo
    bar alone does not meet it. Review track lifetime, clone spacing and gates
    together, rather than simply disabling checks.
-3. [stereo_splitter.cpp](https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/src/stereo_splitter.cpp) accepts packed
+3. [stereo_splitter.cpp](source/open_vins/ov_hw290/src/stereo_splitter.cpp) accepts packed
    1280 x 480 RGB frames and produces 640 x 480 views.
-   [build_rectified_profile.cpp](https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/src/build_rectified_profile.cpp)
+   [build_rectified_profile.cpp](source/open_vins/ov_hw290/src/build_rectified_profile.cpp)
    explicitly requires 640 x 480 per camera. New industrial cameras need an SDK
    acquisition adapter and image-size support in the calibration tooling.
 
@@ -261,8 +261,8 @@ NVIDIA module or a particular carrier board. It keeps the 5 MP, 30 fps pair
 worth evaluating; it does not establish that the complete pipeline sustains
 30 fps. No benchmark has been run on the proposed computer.
 
-The existing [KLT tracker](https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_core/src/track/TrackKLT.cpp) calls
-`cv::calcOpticalFlowPyrLK`, and the [splitter](https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/ov_hw290/src/stereo_splitter.cpp)
+The existing [KLT tracker](source/open_vins/ov_core/src/track/TrackKLT.cpp) calls
+`cv::calcOpticalFlowPyrLK`, and the [splitter](source/open_vins/ov_hw290/src/stereo_splitter.cpp)
 uses CPU `cv::remap` with `cv::Mat`. These paths do not automatically use CUDA
 or Tensor cores. AI TOPS is not a prediction of estimator throughput. Measure
 CPU load, frame latency, thermal throttling and delivery gaps at the aircraft's

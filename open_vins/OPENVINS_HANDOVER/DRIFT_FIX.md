@@ -14,7 +14,7 @@ fitted camera/IMU rotation and translation, and +14.584 ms cam0 timing. It is
 specific to the rigid tower. The CAD board-center mismatch and provisional
 noise remain limitations. This is a bounded desk check, not independent
 accuracy against ground truth. ORB receives the same profile; the
-[selected October 5 configuration](https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/ORB_SELECTED_PROFILE.md) passed its fresh
+[selected October 5 configuration](source/open_vins/hw290_stereo/ORB_SELECTED_PROFILE.md) passed its fresh
 movement check without observed flights, jumps or resets.
 
 ```bash
@@ -28,7 +28,7 @@ movement check without observed flights, jumps or resets.
 for live camera/IMU alignment on that tower. Start with
 [the current mount and calibration steps](reference_files/hw290_stereo/calibration/20261002_tower/README.md).**
 
-The [October 1 profile](https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/20261001/README.md) below records the
+The [October 1 profile](source/open_vins/hw290_stereo/calibration/20261001/README.md) below records the
 successful correction for the earlier unchanged mount. Its numerical files
 are preserved for historical replay; live launchers require matching current
 mount fingerprints before enabling VIO.
@@ -104,7 +104,7 @@ the estimator's remaining input gaps.
 2. Inspect image coverage and recorded IMU timestamp intervals. Use the saved
    `target.yaml`. Convert the ROS 2 bag to ROS 1 and fit stereo intrinsics and
    relative geometry with Kalibr. Then fit camera/IMU transforms and timing.
-   Follow the [calibration procedure](https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo/blob/a46f7f31cb3e1e8fe8e32f800f2f12375432d23a/open_vins/hw290_stereo/calibration/README.md) for commands.
+   Follow the [calibration procedure](source/open_vins/hw290_stereo/calibration/README.md) for commands.
    Today's IMU fit used the first 60 seconds, before the long recording gaps.
    A new fit should use a clean, sufficiently excited recording.
 
@@ -128,7 +128,7 @@ same. A position or orientation change needs a new fit using this method.
 These VIO commands require a validated profile for the current mount. While
 the tower fit is pending, use `--calibration-screen` to record raw data.
 
-From `/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins`:
+From `$HOME/OPENVINS_HANDOVER/source/open_vins`:
 
 ```bash
 # Normal OpenVINS with RViz and a shutdown benchmark summary
