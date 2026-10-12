@@ -1,0 +1,130 @@
+{
+  "dataset": "EuRoC V1_01_easy",
+  "resources": [
+    {
+      "trial": "euroc_20261002_openvins_fixed_cached",
+      "cpu_seconds": 69.89,
+      "peak_rss_mib": 121.875,
+      "completion": {
+        "elapsed_s": 151.82102380100696,
+        "estimator_exit": 0,
+        "player_exit": 0
+      }
+    },
+    {
+      "trial": "euroc_20261002_orb_motion_gate_600_reliable",
+      "cpu_seconds": 146.26,
+      "peak_rss_mib": 702.8125,
+      "completion": {
+        "elapsed_s": 156.51243173099647,
+        "estimator_exit": 0,
+        "player_exit": 0
+      }
+    },
+    {
+      "trial": "euroc_20261002_orb_refined05_reliable",
+      "cpu_seconds": 127.03999999999999,
+      "peak_rss_mib": 664.7578125,
+      "completion": {
+        "elapsed_s": 156.22419953798817,
+        "estimator_exit": 0,
+        "player_exit": 0
+      }
+    }
+  ],
+  "post_initialization": {
+    "common_start_s": 1403715303.262143,
+    "common_end_s": 1403715417.962143,
+    "alignment": "SE(3), no scale; GT position interpolated",
+    "results": [
+      {
+        "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261002_openvins_fixed_cached/online.txt",
+        "poses": 2295,
+        "duration_s": 114.70000004768372,
+        "approximate_20hz_coverage": 0.9999999995844556,
+        "max_pose_gap_s": 0.05000019073486328,
+        "ate_rmse_m": 0.033395816919724354,
+        "ate_p95_m": 0.04718543991177807,
+        "rpe_1s_translation_rmse_m": 0.009888085038859786
+      },
+      {
+        "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261002_orb_motion_gate_600_reliable/online.txt",
+        "poses": 2295,
+        "duration_s": 114.70000004768372,
+        "approximate_20hz_coverage": 0.9999999995844556,
+        "max_pose_gap_s": 0.05000019073486328,
+        "ate_rmse_m": 0.018941659278722406,
+        "ate_p95_m": 0.030086722322907017,
+        "rpe_1s_translation_rmse_m": 0.012005106957682308
+      },
+      {
+        "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261002_orb_refined05_reliable/online.txt",
+        "poses": 2295,
+        "duration_s": 114.70000004768372,
+        "approximate_20hz_coverage": 0.9999999995844556,
+        "max_pose_gap_s": 0.05000019073486328,
+        "ate_rmse_m": 0.02258296787986911,
+        "ate_p95_m": 0.04049809903658069,
+        "rpe_1s_translation_rmse_m": 0.013083216879466574
+      }
+    ]
+  },
+  "full_common_interval": {
+    "common_start_s": 1403715280.762143,
+    "common_end_s": 1403715417.962143,
+    "alignment": "SE(3), no scale; GT position interpolated",
+    "results": [
+      {
+        "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261002_openvins_fixed_cached/online.txt",
+        "poses": 2745,
+        "duration_s": 137.20000004768372,
+        "approximate_20hz_coverage": 0.9999999996525777,
+        "max_pose_gap_s": 0.05000019073486328,
+        "ate_rmse_m": 0.04336297110747532,
+        "ate_p95_m": 0.08561582284069995,
+        "rpe_1s_translation_rmse_m": 0.01001719899372996
+      },
+      {
+        "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261002_orb_motion_gate_600_reliable/online.txt",
+        "poses": 2745,
+        "duration_s": 137.20000004768372,
+        "approximate_20hz_coverage": 0.9999999996525777,
+        "max_pose_gap_s": 0.05000019073486328,
+        "ate_rmse_m": 0.03457657905439514,
+        "ate_p95_m": 0.07970396398593836,
+        "rpe_1s_translation_rmse_m": 0.019649495632054315
+      },
+      {
+        "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261002_orb_refined05_reliable/online.txt",
+        "poses": 2745,
+        "duration_s": 137.20000004768372,
+        "approximate_20hz_coverage": 0.9999999996525777,
+        "max_pose_gap_s": 0.05000019073486328,
+        "ate_rmse_m": 0.04971045063932725,
+        "ate_p95_m": 0.1338325517422765,
+        "rpe_1s_translation_rmse_m": 0.025293252346386776
+      }
+    ]
+  },
+  "ground_truth": {
+    "path": "ov_data/euroc_mav/V1_01_easy.csv",
+    "sha256": "16543952bf69f3fb886008a26cc21d3c552deca8fa06087f0bc329c09d7fcbe3"
+  },
+  "policy": {
+    "initial_interval_s": 0.25,
+    "refined_interval_s": 0.5,
+    "activation": "After GetIniertialBA2 becomes true",
+    "healthy_inliers_minimum": 50,
+    "tracked_pairs_each": 2911,
+    "imu_samples_each": 29120,
+    "resets_each": 0,
+    "refinements_each": [
+      1,
+      2
+    ],
+    "repeats_each": 1,
+    "default_changed": false
+  },
+  "decision": "Not selected: CPU fell 13.14% but full ATE rose 3.46 to 4.97 cm, post-30-second ATE rose 1.89 to 2.26 cm and translation RPE also increased. No accuracy-preserving saving established.",
+  "candidate_library_sha256": "fe87a09529c2d7ab92549e0364ef8f90f8da2bbbd92980adab955db453b6f17c"
+}

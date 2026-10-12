@@ -1,0 +1,87 @@
+{
+  "status": "Fresh tower validation passed within stated physical bounds; public cost target remains open.",
+  "mount_id": "20261002_rigid_tower",
+  "core": "benchmark/build_orb_fixed_gaussian_packed",
+  "core_library_sha256": "49e8e0ef3b18bafc3924f689e27274a963519ddfbb2c2c883c2d23ffb643fbe9",
+  "operating_point": {
+    "requested_features": 600,
+    "scale_factor": 1.6,
+    "pyramid_levels": 5,
+    "per_camera_resolution": [
+      640,
+      480
+    ],
+    "local_ba_window": 12,
+    "healthy_keyframe_interval_s": 0.25
+  },
+  "live_run": {
+    "run": "benchmark/results/hw290_orb_20261005_132634_98rluO",
+    "bootstrap_poses_included": false,
+    "pose_count": 3769,
+    "pose_span_s": 126.33051609992981,
+    "first_pose_s_after_cue": -5.772869348526001,
+    "max_displacement_m": 0.7238981094354655,
+    "max_step_m": 0.07524172932077139,
+    "max_pose_gap_s": 0.3679957389831543,
+    "active_map_resets": 0,
+    "motion_reset_events": 0,
+    "lost_transitions": 0,
+    "recently_lost_transitions": 3,
+    "refinement_stages": [
+      "start VIBA 1",
+      "end VIBA 1",
+      "start VIBA 2",
+      "end VIBA 2"
+    ],
+    "inertial_output_transitions": [
+      "Inertial output: map=0 initialized=false timestamp=1791196008.143157244",
+      "Inertial output: map=0 initialized=true timestamp=1791196044.787867308"
+    ],
+    "finite": true,
+    "estimator_including_ros_launch_resources": {
+      "wall_seconds": 165.00521634804318,
+      "cpu_seconds": 133.306082,
+      "cpu_percent_one_core": 80.7890107660714,
+      "peak_rss_mib": 518.15234375,
+      "exit_code": 0,
+      "forced_shutdown": false
+    },
+    "timing_ms": {
+      "frames": 4892,
+      "mean": 11.669339940719542,
+      "p95": 17.716379999999997
+    },
+    "scope": "Physical desk bounds only, no independent ground truth; live includes sensor drivers, recording and RViz elsewhere in run summary",
+    "user_confirmation": "Continuous motion within 140 x 80 cm desk area and below 60 cm height; no observed flights, jumps or resets."
+  },
+  "movement_stop": {
+    "reason": "two_minute_movement_complete",
+    "elapsed_s": 120.59699940681458,
+    "max_displacement_m": 0.7238981094354655,
+    "stop_unix_s": 1791196171.196096
+  },
+  "sensor_delivery": {
+    "/cam0/image_raw": {
+      "messages": 5173,
+      "source_span_s": 172.30338096618652,
+      "source_max_gap_ms": 36.245107650756836,
+      "source_gaps_over_50ms": 0,
+      "receipt_max_gap_ms": 100.08525848388672
+    },
+    "/cam1/image_raw": {
+      "messages": 5173,
+      "source_span_s": 172.30338096618652,
+      "source_max_gap_ms": 36.245107650756836,
+      "source_gaps_over_50ms": 0,
+      "receipt_max_gap_ms": 104.38346862792969
+    },
+    "/imu0": {
+      "messages": 16661,
+      "source_span_s": 168.236985206604,
+      "source_max_gap_ms": 22.08089828491211,
+      "source_gaps_over_50ms": 0,
+      "receipt_max_gap_ms": 202.99887657165527
+    }
+  },
+  "limitations": "Desk dimensions are bounds, not independent ground truth. Three RECENTLY_LOST events recovered. This live run differs from the public 500-feature operating point and is not a matched CPU comparison to earlier live runs. Drivers, recording and RViz are excluded from estimator resources and included separately in the launcher summary."
+}

@@ -1,0 +1,20 @@
+--- a/src/LoopClosing.cc
++++ b/src/LoopClosing.cc
+@@ -39,6 +39,7 @@
+     mbLoopDetected(false), mbMergeDetected(false), mnLoopNumNotFound(0), mnMergeNumNotFound(0), mbActiveLC(bActiveLC)
+ {
+     mnCovisibilityConsistencyTh = 3;
++    mpCurrentKF = nullptr;
+     mpLastCurrentKF = static_cast<KeyFrame*>(NULL);
+ 
+ #ifdef REGISTER_TIMES
+@@ -310,6 +311,9 @@
+ 
+ void LoopClosing::InsertKeyFrame(KeyFrame *pKF)
+ {
++    // Disabled place recognition returns before consuming this queue. Do
++    // not enqueue work that would read an uninitialized current keyframe.
++    if (!mbActiveLC) return;
+     unique_lock<mutex> lock(mMutexLoopQueue);
+     if(pKF->mnId!=0)
+         mlpLoopKeyFrameQueue.push_back(pKF);

@@ -1,0 +1,206 @@
+{
+  "status": "unselected: minimal full-run CPU improvement and no live validation; current trials concluded",
+  "core_library_sha256": "748f190bffec334fb2e0474bd4ddb58c9241374fd855efad2dddf7fd0c1a543a",
+  "header_sha256": "57311b43e1812357d0be57bfab624c758410bba08600f9dd8a28b78d46022945",
+  "check_source_sha256": "451696931c30faff27ac5984dd213c3fe6fd0eb886920a58e932c864d25be3b7",
+  "prototype_header_sha256": "2e926dcac4569dee5b3967f757179213f4693c1e4400c2c683b77c0cc524824a",
+  "prototype_check_sha256": "66129d3b74bf5012ec6ec233ce10e2a1189e502c20b62e5dbae61b8449258be1",
+  "native_check": {
+    "exact_stereo_pairs": 160,
+    "exact_keypoints_and_descriptors": 191340,
+    "scope": "600 features, scale 1.6, five levels; compare every keypoint field, descriptor, pyramid level and mono/overlap result. Alternating overlap ranges exercised.",
+    "synchronization": "1000 job pairs, exception propagation and recovery, four concurrent callers with 100 pairs each; clean pool shutdown. Tracked formatted code checked again without timing.",
+    "timing": "Median process CPU of three alternating pairs, 500 stereo extractions per timing; standalone extraction only.",
+    "reference_cpu_s": 5.420959821,
+    "candidate_cpu_s": 5.088802426,
+    "cpu_percent_decrease": 6.12728014904797
+  },
+  "comparison": {
+    "dataset": "EuRoC V1_01_easy",
+    "resources": [
+      {
+        "trial": "euroc_20261005_packed_pyramid16_500_r1",
+        "cpu_seconds": 88.57000000000001,
+        "peak_rss_mib": 486.41015625,
+        "completion": {
+          "elapsed_s": 151.86868957901606,
+          "estimator_exit": 0,
+          "player_exit": 0
+        }
+      },
+      {
+        "trial": "euroc_20261005_packed_pyramid16_500_r2",
+        "cpu_seconds": 88.86999999999999,
+        "peak_rss_mib": 487.83984375,
+        "completion": {
+          "elapsed_s": 151.86888740496943,
+          "estimator_exit": 0,
+          "player_exit": 0
+        }
+      },
+      {
+        "trial": "euroc_20261005_packed_pyramid16_500_r3",
+        "cpu_seconds": 89.47,
+        "peak_rss_mib": 487.83203125,
+        "completion": {
+          "elapsed_s": 151.8703184160404,
+          "estimator_exit": 0,
+          "player_exit": 0
+        }
+      },
+      {
+        "trial": "euroc_20261005_packed_workers_r1",
+        "cpu_seconds": 88.47999999999999,
+        "peak_rss_mib": 494.91796875,
+        "completion": {
+          "elapsed_s": 151.9163396229851,
+          "estimator_exit": 0,
+          "player_exit": 0
+        }
+      }
+    ],
+    "post_initialization": {
+      "common_start_s": 1403715303.262143,
+      "common_end_s": 1403715417.962143,
+      "alignment": "SE(3), no scale; GT position interpolated",
+      "results": [
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_packed_pyramid16_500_r1/online.txt",
+          "poses": 2295,
+          "duration_s": 114.70000004768372,
+          "approximate_20hz_coverage": 0.9999999995844556,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.01742468126389251,
+          "ate_p95_m": 0.02917214917127869,
+          "rpe_1s_translation_rmse_m": 0.012144278217564102
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_packed_pyramid16_500_r2/online.txt",
+          "poses": 2295,
+          "duration_s": 114.70000004768372,
+          "approximate_20hz_coverage": 0.9999999995844556,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.017369851194287977,
+          "ate_p95_m": 0.02832393131313065,
+          "rpe_1s_translation_rmse_m": 0.011770168601165996
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_packed_pyramid16_500_r3/online.txt",
+          "poses": 2295,
+          "duration_s": 114.70000004768372,
+          "approximate_20hz_coverage": 0.9999999995844556,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.019319516141981883,
+          "ate_p95_m": 0.03204066157008098,
+          "rpe_1s_translation_rmse_m": 0.011973479761621402
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_packed_workers_r1/online.txt",
+          "poses": 2295,
+          "duration_s": 114.70000004768372,
+          "approximate_20hz_coverage": 0.9999999995844556,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.018967060756067106,
+          "ate_p95_m": 0.03152613472083979,
+          "rpe_1s_translation_rmse_m": 0.01167029952060581
+        }
+      ]
+    },
+    "full_common_interval": {
+      "common_start_s": 1403715280.762143,
+      "common_end_s": 1403715417.962143,
+      "alignment": "SE(3), no scale; GT position interpolated",
+      "results": [
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_packed_pyramid16_500_r1/online.txt",
+          "poses": 2745,
+          "duration_s": 137.20000004768372,
+          "approximate_20hz_coverage": 0.9999999996525777,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.017768562969355722,
+          "ate_p95_m": 0.030051824587196053,
+          "rpe_1s_translation_rmse_m": 0.012858001774337414
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_packed_pyramid16_500_r2/online.txt",
+          "poses": 2745,
+          "duration_s": 137.20000004768372,
+          "approximate_20hz_coverage": 0.9999999996525777,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.019374903277112804,
+          "ate_p95_m": 0.0337594798052445,
+          "rpe_1s_translation_rmse_m": 0.013487037208833805
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_packed_pyramid16_500_r3/online.txt",
+          "poses": 2745,
+          "duration_s": 137.20000004768372,
+          "approximate_20hz_coverage": 0.9999999996525777,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.046230137805282984,
+          "ate_p95_m": 0.12927818243990932,
+          "rpe_1s_translation_rmse_m": 0.02397387422709344
+        },
+        {
+          "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261005_packed_workers_r1/online.txt",
+          "poses": 2745,
+          "duration_s": 137.20000004768372,
+          "approximate_20hz_coverage": 0.9999999996525777,
+          "max_pose_gap_s": 0.05000019073486328,
+          "ate_rmse_m": 0.0214696213911151,
+          "ate_p95_m": 0.03639429905553157,
+          "rpe_1s_translation_rmse_m": 0.013494279396239333
+        }
+      ]
+    }
+  },
+  "reference_mean_and_candidate": {
+    "resources.cpu_seconds": {
+      "reference_mean": 88.97,
+      "candidate": 88.47999999999999
+    },
+    "resources.peak_rss_mib": {
+      "reference_mean": 487.3606770833333,
+      "candidate": 494.91796875
+    },
+    "post_initialization.ate_rmse_m": {
+      "reference_mean": 0.018038016200054123,
+      "candidate": 0.018967060756067106
+    },
+    "post_initialization.rpe_1s_translation_rmse_m": {
+      "reference_mean": 0.0119626421934505,
+      "candidate": 0.01167029952060581
+    },
+    "full_common_interval.ate_rmse_m": {
+      "reference_mean": 0.027791201350583838,
+      "candidate": 0.0214696213911151
+    },
+    "full_common_interval.rpe_1s_translation_rmse_m": {
+      "reference_mean": 0.01677297107008822,
+      "candidate": 0.013494279396239333
+    }
+  },
+  "percent_changes": {
+    "resources.cpu_seconds": -0.5507474429583108,
+    "resources.peak_rss_mib": 1.5506568383592572,
+    "post_initialization.ate_rmse_m": 5.150480771883301,
+    "post_initialization.rpe_1s_translation_rmse_m": -2.443796847863137,
+    "full_common_interval.ate_rmse_m": -22.746695544832697,
+    "full_common_interval.rpe_1s_translation_rmse_m": -19.547471107822304
+  },
+  "delivery": {
+    "eligible_stereo_frames": 2911,
+    "imu_samples": 29120,
+    "published_stereo_pairs": 2912,
+    "late_pose_coverage_percent": 100,
+    "viba1_completed": true,
+    "viba2_completed": true,
+    "active_map_resets": 0
+  },
+  "limits": [
+    "One full candidate trial versus three references. Full-run CPU improvement is only 0.6 percent, too small to establish a practical benefit from this sample.",
+    "Frontend equality does not prove identical asynchronous SLAM trajectories.",
+    "No medium or live worker trials added after the request to conclude.",
+    "Worker and raw rectification experiments are excluded from the selected tower preset."
+  ]
+}

@@ -1,0 +1,15 @@
+--- a/src/LocalMapping.cc
++++ b/src/LocalMapping.cc
+@@ -138,6 +138,12 @@
+                             if((mTinit<10.f) && (dist<0.02))
+                             {
+                                 cout << "Not enough motion for initializing. Reseting..." << endl;
++                                cout << "IMU_MOTION_RESET timestamp=" << mpCurrentKeyFrame->mTimeStamp
++                                     << " distance_m=" << dist << " motion_time_s=" << mTinit
++                                     << " keyframes=" << mpCurrentKeyFrame->GetMap()->KeyFramesInMap()
++                                     << " refinement1=" << mpCurrentKeyFrame->GetMap()->GetIniertialBA1()
++                                     << " refinement2=" << mpCurrentKeyFrame->GetMap()->GetIniertialBA2()
++                                     << endl;
+                                 unique_lock<mutex> lock(mMutexReset);
+                                 mbResetRequestedActiveMap = true;
+                                 mpMapToReset = mpCurrentKeyFrame->GetMap();

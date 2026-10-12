@@ -1,0 +1,5 @@
+# Analysis configuration, not measured IMU noise parameters.
+imu_topic: /imu0
+imu_rate: 100
+measure_rate: 100
+sequence_time: 10800

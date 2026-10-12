@@ -1,0 +1,5 @@
+ECHO: "HW290 pocket: 21.6 x 4.6 x 20.6 for board 21 x 4 x 20"
+ECHO: "CALIB baseline_m: 0.06"
+ECHO: "CALIB p_IMU_in_cam0_m: [0.03, 0, -0.0317]"
+ECHO: "CALIB p_IMU_in_cam1_m: [-0.03, 0, -0.0317]"
+ECHO: "CALIB rotation: reuse old R_imu_cam iff chip orientation unchanged, else recalibrate; timeshift keep 0.02"

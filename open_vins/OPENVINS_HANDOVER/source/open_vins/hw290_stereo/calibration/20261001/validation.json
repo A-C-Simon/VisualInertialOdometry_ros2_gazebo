@@ -1,0 +1,324 @@
+{
+  "capture": "benchmark/results/screen_calibration_20261001_134827_547",
+  "physical_run": "benchmark/results/hw290_openvins_20261001_165958_VkGYYe",
+  "default_matches_tested_estimator_except_config_paths": true,
+  "default_geometry_files_identical_to_physical_run": true,
+  "rectification_intrinsics_and_transforms_consistent": true,
+  "calibration_sha256": {
+    "camchain.yaml": "58a8a2f4b7721c9ac48e1407a086974648c1194c3fdf68eaeb9e585af86aeb06",
+    "camchain_raw.yaml": "8dfbab52a9a52a38607579ed64b0c287b8a1af9b61118c41b57a0ecdcbf7cb8b",
+    "imu.yaml": "7ed8d99488124e87739c9c484d9a170006a67bf752c4ee488a941d1da08f0d26",
+    "stereo_opencv.yaml": "9421a143473501e72b985dec40706cc833a781e4a0b75060f1f24634a3802d6f"
+  },
+  "physical_analysis": {
+    "run": "hw290_openvins_20261001_165958_VkGYYe",
+    "operator": {
+      "motion_cue_unix_s": 1790863339.5845757,
+      "duration_requested_s": 120,
+      "workspace_dimensions_m": [
+        1.4,
+        0.8,
+        0.6
+      ],
+      "maximum_corner_displacement_m": 1.7204650534085253,
+      "same_mount": true,
+      "stationary_startup_confirmed": true,
+      "config_path": "../screen_calibration_20261001_134827_547/physical_candidate/estimator_config.yaml",
+      "stereo_path": "../screen_calibration_20261001_134827_547/physical_candidate/stereo_opencv.yaml",
+      "operator_confirmed_within_limits": true,
+      "operator_reported_flights": false,
+      "operator_confirmation_unix_s": 1790863859.9815583
+    },
+    "pose_count": 18718,
+    "pose_span_s": 868.0002400875092,
+    "maximum_displacement_from_first_pose_m": 0.8516632962890911,
+    "final_displacement_from_first_pose_m": 0.368010568349606,
+    "position_extent_per_axis_m": [
+      0.662614,
+      1.142391,
+      0.390378
+    ],
+    "exceeded_workspace_diagonal": false,
+    "movement_cue_window_s": 127,
+    "movement_window_maximum_displacement_m": 0.8516632962890911,
+    "last_30s_position_extent_per_axis_m": [
+      0.0027710000000000026,
+      0.0070430000000000215,
+      0.003692000000000001
+    ],
+    "path_length_m": 35.461606631671735,
+    "notes": [
+      "The desk diagonal is a gross divergence check, not a surveyed trajectory.",
+      "The requested motion interval was 120 seconds; the stop cue followed at about 127 seconds.",
+      "The later recording includes waiting and possible repositioning. Final displacement is not a measured return error.",
+      "Accumulated back-and-forth path length is not displacement or drift.",
+      "The operator confirmed staying within the workspace and seeing no flights."
+    ],
+    "estimator_imu_input": {
+      "received": 91754,
+      "gaps_over_50ms": 46,
+      "nonpositive_intervals": 0,
+      "max_dt_ms": 280.112
+    },
+    "visual_updates": {
+      "logged_msckf_updates": 18718,
+      "msckf_updates_with_features": 8527,
+      "logged_slam_updates": 18718,
+      "slam_updates_with_features": 18670
+    },
+    "recorded_imu": {
+      "count": 92748,
+      "header_span_s": 936.6126439571381,
+      "rate_hz": 99.02386071594006,
+      "maximum_interval_ms": 22.020339965820312,
+      "intervals_over_25ms": 0,
+      "intervals_over_50ms": 0,
+      "nonpositive_intervals": 0
+    }
+  },
+  "replay_baseline": {
+    "kind": "baseline_dynamic",
+    "scope": "Recorded calibration movement; no independent ground truth. Candidate VI fit used first 60 seconds. Baseline rectification applied offline to raw mono images.",
+    "playback_rate": 0.5,
+    "estimator_exit": 0,
+    "state_rows": 2786,
+    "visual_updates": 2786,
+    "frames_with_retained_visual_updates": 691,
+    "dynamic_initialization": true,
+    "imu_input_reports": [
+      "[IMU_INPUT]: received=9336 gaps_over_50ms=7 nonpositive_intervals=0 max_dt_ms=309.124"
+    ],
+    "max_displacement_m": 18919.607283884157,
+    "final_displacement_m": 18919.607283884157,
+    "duration_s": 92.78402018547058,
+    "finite": true,
+    "max_speed_mps": 607.488860147665
+  },
+  "replay_new_profile": {
+    "kind": "candidate_dynamic",
+    "scope": "Recorded calibration movement; no independent ground truth. Candidate VI fit used first 60 seconds. Baseline rectification applied offline to raw mono images.",
+    "playback_rate": 0.5,
+    "estimator_exit": 0,
+    "state_rows": 2741,
+    "visual_updates": 2741,
+    "frames_with_retained_visual_updates": 2725,
+    "dynamic_initialization": true,
+    "imu_input_reports": [
+      "[IMU_INPUT]: received=9336 gaps_over_50ms=6 nonpositive_intervals=0 max_dt_ms=309.124"
+    ],
+    "max_displacement_m": 0.4684795432417514,
+    "final_displacement_m": 0.2451735931233215,
+    "duration_s": 91.28392004966736,
+    "finite": true,
+    "max_speed_mps": 0.3457465838876792
+  },
+  "board_reference_comparison": {
+    "baseline_dynamic": {
+      "reference": "AprilGrid camera-derived PnP; shared camera observations and fitted camera model, not independent ground truth",
+      "alignment": "Rigid SE3 without scale, fitted on first 60 seconds; evaluate transfer after 60 seconds",
+      "samples": 181,
+      "overall_rmse_m": 6509.939551039349,
+      "after_60s_samples": 68,
+      "after_60s_rmse_m": 10516.760246731283,
+      "after_60s_max_error_m": 17889.13992168094,
+      "after_60s_median_error_m": 9098.92375222468
+    },
+    "candidate_dynamic": {
+      "reference": "AprilGrid camera-derived PnP; shared camera observations and fitted camera model, not independent ground truth",
+      "alignment": "Rigid SE3 without scale, fitted on first 60 seconds; evaluate transfer after 60 seconds",
+      "samples": 178,
+      "overall_rmse_m": 0.019103265550783333,
+      "after_60s_samples": 68,
+      "after_60s_rmse_m": 0.026742546919897553,
+      "after_60s_max_error_m": 0.03537023234401452,
+      "after_60s_median_error_m": 0.02642695736589376
+    }
+  },
+  "compute_scope": "Physical diagnostic run with recording, DEBUG logging and RViz; not a matched ORB comparison",
+  "compute": {
+    "processes": [
+      {
+        "command": [
+          "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/hw290_stereo/../install_camera/usb_cam/lib/usb_cam/usb_cam_node_exe",
+          "--ros-args",
+          "--params-file",
+          "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/hw290_stereo/usb_cam_hw290.yaml"
+        ],
+        "wall_seconds": 944.7629358170016,
+        "cpu_seconds": 128.78566,
+        "cpu_percent_one_core": 13.631531796770814,
+        "peak_rss_mib": 224.25,
+        "exit_code": 0,
+        "forced_shutdown": false,
+        "role": "camera"
+      },
+      {
+        "command": [
+          "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/hw290_stereo/../install_vio/ov_msckf/lib/ov_msckf/run_subscribe_msckf",
+          "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/screen_calibration_20261001_134827_547/physical_candidate/estimator_config.yaml",
+          "--ros-args",
+          "-r",
+          "__ns:=/ov_msckf",
+          "-p",
+          "use_sim_time:=false",
+          "-p",
+          "publish_calibration_tf:=false",
+          "-p",
+          "verbosity:=DEBUG",
+          "-p",
+          "save_total_state:=true",
+          "-p",
+          "filepath_est:=/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/hw290_stereo/../benchmark/results/hw290_openvins_20261001_165958_VkGYYe/state_estimate.txt",
+          "-p",
+          "filepath_std:=/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/hw290_stereo/../benchmark/results/hw290_openvins_20261001_165958_VkGYYe/state_deviation.txt",
+          "-p",
+          "filepath_gt:=/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/hw290_stereo/../benchmark/results/hw290_openvins_20261001_165958_VkGYYe/state_groundtruth.txt"
+        ],
+        "wall_seconds": 933.8142248900003,
+        "cpu_seconds": 527.24949,
+        "cpu_percent_one_core": 56.46192528948763,
+        "peak_rss_mib": 185.13671875,
+        "exit_code": 0,
+        "forced_shutdown": false,
+        "role": "estimator"
+      },
+      {
+        "command": [
+          "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/hw290_stereo/../install_vio/ov_hw290/lib/ov_hw290/hw290_imu",
+          "--ros-args",
+          "-p",
+          "raw_log_path:=/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/hw290_stereo/../benchmark/results/hw290_openvins_20261001_165958_VkGYYe/imu_raw.txt"
+        ],
+        "wall_seconds": 939.6411083950006,
+        "cpu_seconds": 17.445899,
+        "cpu_percent_one_core": 1.8566555724450275,
+        "peak_rss_mib": 23.375,
+        "exit_code": 0,
+        "forced_shutdown": false,
+        "role": "imu"
+      },
+      {
+        "command": [
+          "ros2",
+          "bag",
+          "record",
+          "--qos-profile-overrides-path",
+          "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/hw290_stereo/../benchmark/results/hw290_openvins_20261001_165958_VkGYYe/record_qos.yaml",
+          "-o",
+          "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/hw290_stereo/../benchmark/results/hw290_openvins_20261001_165958_VkGYYe/sensors_bag",
+          "/cam0/image_raw",
+          "/cam1/image_raw",
+          "/cam0/camera_info",
+          "/cam1/camera_info",
+          "/imu0",
+          "/ov_msckf/poseimu"
+        ],
+        "wall_seconds": 941.7874090619989,
+        "cpu_seconds": 94.85752500000001,
+        "cpu_percent_one_core": 10.072074025121674,
+        "peak_rss_mib": 79.49609375,
+        "exit_code": 0,
+        "forced_shutdown": false,
+        "role": "recorder"
+      },
+      {
+        "command": [
+          "rviz2",
+          "-d",
+          "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/hw290_stereo/rviz_hw290.rviz"
+        ],
+        "wall_seconds": 933.9235010140001,
+        "cpu_seconds": 194.666071,
+        "cpu_percent_one_core": 20.843898969095736,
+        "peak_rss_mib": 196.109375,
+        "exit_code": 0,
+        "forced_shutdown": false,
+        "role": "rviz"
+      },
+      {
+        "command": [
+          "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/hw290_stereo/../install_vio/ov_hw290/lib/ov_hw290/stereo_splitter",
+          "--ros-args",
+          "-p",
+          "calibration_file:=/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/screen_calibration_20261001_134827_547/physical_candidate/stereo_opencv.yaml",
+          "-p",
+          "auto_timestamp_correction:=false",
+          "-p",
+          "rectify_images:=true"
+        ],
+        "wall_seconds": 941.6430875189981,
+        "cpu_seconds": 223.020709,
+        "cpu_percent_one_core": 23.684208162946927,
+        "peak_rss_mib": 54.75390625,
+        "exit_code": 0,
+        "forced_shutdown": false,
+        "role": "splitter"
+      },
+      {
+        "command": [
+          "/opt/ros/humble/lib/tf2_ros/static_transform_publisher",
+          "--x",
+          "0.021613377054583018",
+          "--y",
+          "0.029849680009360967",
+          "--z",
+          "-0.05615000440546437",
+          "--qx",
+          "-0.36240409056666945",
+          "--qy",
+          "0.6175847196917773",
+          "--qz",
+          "-0.5878356620481057",
+          "--qw",
+          "0.3764327610188036",
+          "--frame-id",
+          "imu",
+          "--child-frame-id",
+          "cam0"
+        ],
+        "wall_seconds": 936.1114616420018,
+        "cpu_seconds": 0.44426999999999994,
+        "cpu_percent_one_core": 0.04745909202102074,
+        "peak_rss_mib": 24.125,
+        "exit_code": 0,
+        "forced_shutdown": false,
+        "role": "tf_cam0"
+      },
+      {
+        "command": [
+          "/opt/ros/humble/lib/tf2_ros/static_transform_publisher",
+          "--x",
+          "-0.005372265978851652",
+          "--y",
+          "-0.02307202328387816",
+          "--z",
+          "-0.05846201520869986",
+          "--qx",
+          "-0.36240409056667083",
+          "--qy",
+          "0.617584719691776",
+          "--qz",
+          "-0.5878356620481049",
+          "--qw",
+          "0.37643276101880524",
+          "--frame-id",
+          "imu",
+          "--child-frame-id",
+          "cam1"
+        ],
+        "wall_seconds": 935.7180180790019,
+        "cpu_seconds": 0.445659,
+        "cpu_percent_one_core": 0.04762748941341571,
+        "peak_rss_mib": 23.625,
+        "exit_code": 0,
+        "forced_shutdown": false,
+        "role": "tf_cam1"
+      }
+    ],
+    "child_cpu_seconds": 1186.915283,
+    "launch_wall_seconds": 945.06964802742,
+    "logged_updates": 20663,
+    "reported_i2c_read_errors": 0,
+    "diagnostics_enabled": true
+  }
+}

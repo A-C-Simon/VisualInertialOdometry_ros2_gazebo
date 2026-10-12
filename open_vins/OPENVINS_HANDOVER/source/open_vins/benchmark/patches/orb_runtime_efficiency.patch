@@ -1,0 +1,670 @@
+diff --git a/ORB_SLAM/orb_slam_ros2/config/ELP_640x480_inertial.yaml b/ORB_SLAM/orb_slam_ros2/config/ELP_640x480_inertial.yaml
+index 3fb2869..e1cb90d 100644
+--- a/ORB_SLAM/orb_slam_ros2/config/ELP_640x480_inertial.yaml
++++ b/ORB_SLAM/orb_slam_ros2/config/ELP_640x480_inertial.yaml
+@@ -1,21 +1,18 @@
+ %YAML:1.0
+ 
+-# ELP 3DGS1200P01 + HW-290 MPU6050 - ORB-SLAM3 stereo-inertial settings
++# ELP 3DGS1200P01 + HW-290 (WHO_AM_I 0x98) - ORB-SLAM3 stereo-inertial settings
+ # Images: rectified 640x480 pair from ov_hw290/stereo_splitter (usb_cam 1280x480
+ # side-by-side MJPG). Intrinsics are P1/P2 from
+ # calibration/elp_3dgs1200p01/calib/calibration_opencv.yaml scaled 1600x1200->640x480
+ # (sx=sy=0.4): fx=433.10635826, cx=325.54584656, cy=245.57666931.
+ # Distortion is zero because the splitter already undistorts/rectifies.
+ # Baseline from P2 Tx: 64.853007/1082.765896 = 0.0598957 m (raw T gives 0.0598913 m).
+-# IMU: HW-290 MPU6050 via Arduino Nano /imu0 at 100 Hz, +/-2g (16384 LSB/g),
+-# +/-250 dps (131 LSB/dps). Noise values from
++# IMU: HW-290 (WHO_AM_I 0x98) via Arduino Nano /imu0 at 100 Hz, +/-4g (8192 LSB/g),
++# +/-500 dps (65.5 LSB/dps). Noise values from
+ # open_vins/hw290_stereo/kalibr_imu_chain.yaml (provisional, uncalibrated IMU).
+-# T_b_c1 from open_vins/hw290_stereo/kalibr_imucam_chain.yaml cam0 T_imu_cam
+-# (provisional rotation-only motion capture, 0.64 deg median residual, single
+-# capture, translation assumed zero - see hw290_stereo/README.md).
+-# Time offset timeshift_cam_imu=0.155 s is NOT compensated here; ORB-SLAM3 has no
+-# time-shift parameter. Keep rig rigid, hold still ~2 s at start, then excite
+-# with slow rotation+translation in a textured 0.5-2 m scene for IMU init.
++# T_b_c1: current rotation/time capture 2026-09-25; translation approximated
++# from user 4 cm lens distances + photographs, not a full spatial calibration.
++# The launcher reads camera_imu_offset from the OpenVINS calibration YAML.
+ File.version: "1.0"
+ 
+ Camera.type: "PinHole"
+@@ -50,31 +47,28 @@ Camera.fps: 30
+ # Splitter publishes rgb8; ORB-SLAM3 treats 0=BGR 1=RGB for color conversion.
+ Camera.RGB: 1
+ 
+-# Rectified pair: identity rotation, -baseline on X.
++# Right-camera coordinates to left-camera coordinates: +baseline on X.
+ Stereo.T_c1_c2: !!opencv-matrix
+   rows: 4
+   cols: 4
+   dt: f
+-  data: [1.0, 0.0, 0.0, -0.0598957,
++  data: [1.0, 0.0, 0.0, 0.0598957,
+          0.0, 1.0, 0.0, 0.0,
+          0.0, 0.0, 1.0, 0.0,
+          0, 0, 0, 1.0]
+ 
+ Stereo.ThDepth: 40.0
+ 
+-# Body (IMU) -> left camera. Provisional - see header.
++# Left camera -> body (IMU). Provisional translation - see header.
+ IMU.T_b_c1: !!opencv-matrix
+   rows: 4
+   cols: 4
+   dt: f
+-  data: [-0.91612506, 0.12585504, -0.38062112, 0.0,
+-         0.38469910, 0.00891262, -0.92299904, 0.0,
+-         -0.11276280, -0.99201242, -0.05657884, 0.0,
+-         0.0, 0.0, 0.0, 1.0]
++  data: [-0.0614365316, 0.1058871785, 0.9924784421, 0.0143651204, -0.9918715778, -0.1174863603, -0.0488643866, 0.0263304734, 0.1114285678, -0.9874132167, 0.1122444373, -0.0264641170, 0.0000000000, 0.0000000000, 0.0000000000, 1.0000000000]
+ 
+ IMU.InsertKFsWhenLost: 0
+ 
+-# MPU6050 cheap-IMU values (kalibr_imu_chain.yaml).
++# Provisional IMU noise densities (kalibr_imu_chain.yaml).
+ IMU.NoiseGyro: 0.005
+ IMU.NoiseAcc: 0.02
+ IMU.GyroWalk: 0.00002
+@@ -82,7 +76,7 @@ IMU.AccWalk: 0.003
+ IMU.Frequency: 100.0
+ 
+ # Lighter than the 1600x1200 / 2000-feature pure-stereo config: N100 has 4 cores.
+-ORBextractor.nFeatures: 1000
++ORBextractor.nFeatures: 800
+ ORBextractor.scaleFactor: 1.2
+ ORBextractor.nLevels: 8
+ ORBextractor.iniThFAST: 20
+@@ -99,3 +93,6 @@ Viewer.ViewpointY: -0.7
+ Viewer.ViewpointZ: -1.8
+ Viewer.ViewpointF: 500.0
+ Viewer.imageViewScale: 1.0
++
++# Keep local inertial mapping; disable loop closure for this VIO profile.
++loopClosing: 0
+diff --git a/ORB_SLAM/orb_slam_ros2/config/rviz_hw290_vio.rviz b/ORB_SLAM/orb_slam_ros2/config/rviz_hw290_vio.rviz
+index acf90fe..8d99fda 100644
+--- a/ORB_SLAM/orb_slam_ros2/config/rviz_hw290_vio.rviz
++++ b/ORB_SLAM/orb_slam_ros2/config/rviz_hw290_vio.rviz
+@@ -42,9 +42,9 @@ Visualization Manager:
+     Frame Rate: 30
+   Name: root
+   Tools:
+-    - Class: rviz_common/Interact
+-    - Class: rviz_common/MoveCamera
+-    - Class: rviz_common/Select
++    - Class: rviz_default_plugins/Interact
++    - Class: rviz_default_plugins/MoveCamera
++    - Class: rviz_default_plugins/Select
+   Views:
+     Current:
+       Class: rviz_default_plugins/Orbit
+diff --git a/ORB_SLAM/orb_slam_ros2/launch/stereo_inertial_topics.launch.py b/ORB_SLAM/orb_slam_ros2/launch/stereo_inertial_topics.launch.py
+index 987e2a4..3c8f172 100644
+--- a/ORB_SLAM/orb_slam_ros2/launch/stereo_inertial_topics.launch.py
++++ b/ORB_SLAM/orb_slam_ros2/launch/stereo_inertial_topics.launch.py
+@@ -23,8 +23,11 @@ def generate_launch_description():
+         DeclareLaunchArgument("left_topic", default_value="/cam0/image_raw"),
+         DeclareLaunchArgument("right_topic", default_value="/cam1/image_raw"),
+         DeclareLaunchArgument("imu_topic", default_value="/imu0"),
+-        DeclareLaunchArgument("viewer", default_value="true"),
++        DeclareLaunchArgument("viewer", default_value="false"),
+         DeclareLaunchArgument("publish_tf", default_value="true"),
++        DeclareLaunchArgument("opencv_threads", default_value="1"),
++        DeclareLaunchArgument("visualization_hz", default_value="5.0"),
++        DeclareLaunchArgument("camera_imu_offset", default_value="0.0"),
+         DeclareLaunchArgument("trajectory_path", default_value="vio_session.txt"),
+         DeclareLaunchArgument(
+             "keyframe_trajectory_path", default_value="kf_vio_session.txt"
+@@ -49,6 +52,9 @@ def generate_launch_description():
+                 "imu_topic": LaunchConfiguration("imu_topic"),
+                 "use_viewer": LaunchConfiguration("viewer"),
+                 "publish_tf": LaunchConfiguration("publish_tf"),
++                "opencv_threads": LaunchConfiguration("opencv_threads"),
++                "visualization_hz": LaunchConfiguration("visualization_hz"),
++                "camera_imu_offset": LaunchConfiguration("camera_imu_offset"),
+                 "trajectory_path": LaunchConfiguration("trajectory_path"),
+                 "keyframe_trajectory_path": LaunchConfiguration(
+                     "keyframe_trajectory_path"
+diff --git a/ORB_SLAM/orb_slam_ros2/src/stereo_imu_node.cpp b/ORB_SLAM/orb_slam_ros2/src/stereo_imu_node.cpp
+index 3322e7c..56f5f84 100644
+--- a/ORB_SLAM/orb_slam_ros2/src/stereo_imu_node.cpp
++++ b/ORB_SLAM/orb_slam_ros2/src/stereo_imu_node.cpp
+@@ -6,14 +6,13 @@
+ // hw290_imu.py). Runs ORB-SLAM3 System::IMU_STEREO and publishes the same
+ // pose/path/points/tracking-image/state topics as stereo_node.cpp.
+ //
+-// Timestamp base: ROS header time (seconds) for both images and IMU, so the
+-// IMU buffer and stereo frames share one clock. IMU messages use arrival-time
+-// stamps from hw290_imu.py; the splitter forwards usb_cam stamps (with optional
+-// auto timestamp correction). The provisional 0.155 s cam-vs-imu offset from
+-// kalibr_imucam_chain.yaml is NOT compensated here - ORB-SLAM3 has no
+-// time-shift parameter.
++// Sensor timestamps: camera_imu_offset shifts camera capture time into the
++// IMU acquisition clock. Use the current rigid-mount calibration. pose_imu
++// exposes online body poses for comparison with OpenVINS; retrospective map
++// exports can differ after inertial initialization or map optimization.
+ 
+ #include <algorithm>
++#include <atomic>
+ #include <chrono>
+ #include <cmath>
+ #include <cstdint>
+@@ -53,6 +52,7 @@
+ #include <ImuTypes.h>
+ #include <MapPoint.h>
+ #include <System.h>
++#include <Settings.h>
+ 
+ namespace orb_slam_ros2
+ {
+@@ -70,8 +70,10 @@ public:
+     declare_parameters();
+     read_parameters();
+     validate_files();
++    if (opencv_threads_ >= 0) cv::setNumThreads(opencv_threads_);
+ 
+     pose_pub_ = create_publisher<geometry_msgs::msg::PoseStamped>("pose", 10);
++    imu_pose_pub_ = create_publisher<geometry_msgs::msg::PoseStamped>("pose_imu", 10);
+     path_pub_ = create_publisher<nav_msgs::msg::Path>("path", 10);
+     points_pub_ = create_publisher<sensor_msgs::msg::PointCloud2>("tracked_map_points", 10);
+     tracking_image_pub_ = create_publisher<Image>("tracking_image", 10);
+@@ -84,6 +86,8 @@ public:
+     slam_ = std::make_unique<ORB_SLAM3::System>(
+       vocabulary_path_, settings_path_, ORB_SLAM3::System::IMU_STEREO, use_viewer_);
+     image_scale_ = slam_->GetImageScale();
++    ORB_SLAM3::Settings imu_settings(settings_path_, ORB_SLAM3::System::IMU_STEREO);
++    t_camera_imu_ = imu_settings.Tbc().inverse();
+ 
+     reset_service_ = create_service<std_srvs::srv::Trigger>(
+       "reset",
+@@ -93,14 +97,31 @@ public:
+         slam_->Reset();
+         path_.poses.clear();
+         imu_buffer_.clear();
++        pending_stereo_.clear();
++        last_input_timestamp_ = -1.0;
+         last_stereo_t_ = -1.0;
+         response->success = true;
+         response->message = "ORB-SLAM3 atlas reset";
+       });
+ 
++    imu_group_ = create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
++    rclcpp::SubscriptionOptions imu_options;
++    imu_options.callback_group = imu_group_;
+     imu_sub_ = create_subscription<Imu>(
+-      imu_topic_, rclcpp::SensorDataQoS(),
+-      std::bind(&StereoImuNode::imu_callback, this, std::placeholders::_1));
++      imu_topic_, rclcpp::SensorDataQoS().keep_last(500),
++      std::bind(&StereoImuNode::imu_callback, this, std::placeholders::_1), imu_options);
++    pending_timer_ = create_wall_timer(std::chrono::milliseconds(2), [this] {
++      if (pending_stereo_.empty()) return;
++      const auto & pair = pending_stereo_.front();
++      const double t = rclcpp::Time(pair.first->header.stamp).seconds() + camera_imu_offset_;
++      {
++        std::lock_guard<std::mutex> lock(imu_mutex_);
++        if (imu_buffer_.empty() || imu_buffer_.back().t < t) return;
++      }
++      auto ready = pair;
++      pending_stereo_.pop_front();
++      track_stereo(ready.first, ready.second);
++    });
+ 
+     left_sub_.subscribe(this, left_topic_, rmw_qos_profile_sensor_data);
+     right_sub_.subscribe(this, right_topic_, rmw_qos_profile_sensor_data);
+@@ -135,9 +156,12 @@ private:
+     declare_parameter<std::string>("imu_topic", "/imu0");
+     declare_parameter<int>("sync_queue_size", 10);
+     declare_parameter<double>("max_sync_interval", 0.02);
+-    declare_parameter<bool>("use_viewer", true);
++    declare_parameter<bool>("use_viewer", false);
+     declare_parameter<bool>("publish_tf", true);
+     declare_parameter<bool>("publish_tracking_image", true);
++    declare_parameter<int>("opencv_threads", 1);
++    declare_parameter<double>("visualization_hz", 5.0);
++    declare_parameter<double>("camera_imu_offset", 0.0);
+     declare_parameter<std::string>("map_frame", "map");
+     declare_parameter<std::string>("camera_frame", "camera_optical_frame");
+     declare_parameter<int>("max_path_length", 10000);
+@@ -158,6 +182,9 @@ private:
+     use_viewer_ = get_parameter("use_viewer").as_bool();
+     publish_tf_ = get_parameter("publish_tf").as_bool();
+     publish_tracking_image_ = get_parameter("publish_tracking_image").as_bool();
++    opencv_threads_ = get_parameter("opencv_threads").as_int();
++    visualization_hz_ = get_parameter("visualization_hz").as_double();
++    camera_imu_offset_ = get_parameter("camera_imu_offset").as_double();
+     map_frame_ = get_parameter("map_frame").as_string();
+     camera_frame_ = get_parameter("camera_frame").as_string();
+     max_path_length_ = static_cast<std::size_t>(
+@@ -208,20 +235,33 @@ private:
+   }
+ 
+   void stereo_callback(const Image::ConstSharedPtr & left_msg, const Image::ConstSharedPtr & right_msg)
++  {
++    pending_stereo_.emplace_back(left_msg, right_msg);
++    if (pending_stereo_.size() > static_cast<std::size_t>(sync_queue_size_)) {
++      pending_stereo_.pop_front();
++      RCLCPP_WARN_THROTTLE(get_logger(), *get_clock(), 2000,
++        "Stereo queue overflow: processing too slow or IMU clock is behind camera");
++    }
++  }
++
++  void track_stereo(const Image::ConstSharedPtr & left_msg, const Image::ConstSharedPtr & right_msg)
+   {
+     if (stop_if_slam_shutdown()) {
+       return;
+     }
+     cv::Mat left_mono, right_mono;
++    cv_bridge::CvImageConstPtr left_owner, right_owner;
+     try {
+-      left_mono = cv_bridge::toCvCopy(left_msg, "mono8")->image;
+-      right_mono = cv_bridge::toCvCopy(right_msg, "mono8")->image;
++      left_owner = cv_bridge::toCvShare(left_msg, "mono8");
++      left_mono = left_owner->image;
++      right_owner = cv_bridge::toCvShare(right_msg, "mono8");
++      right_mono = right_owner->image;
+     } catch (const cv_bridge::Exception & error) {
+       RCLCPP_ERROR_THROTTLE(
+         get_logger(), *get_clock(), 2000, "Image conversion failed: %s", error.what());
+       return;
+     }
+-    const double timestamp = rclcpp::Time(left_msg->header.stamp).seconds();
++    const double timestamp = rclcpp::Time(left_msg->header.stamp).seconds() + camera_imu_offset_;
+     if (!std::isfinite(timestamp)) {
+       return;
+     }
+@@ -273,7 +313,7 @@ private:
+         get_logger(), *get_clock(), 2000,
+         "Skipping stereo frame %.3f: %zu IMU samples in (%.3f, %.3f], oldest %.3f (imu received: %zu)",
+         timestamp, vImuMeas.size(), last_stereo_t_, timestamp,
+-        vImuMeas.empty() ? -1.0 : vImuMeas.front().t, imu_count_);
++        vImuMeas.empty() ? -1.0 : vImuMeas.front().t, imu_count_.load());
+       return;
+     }
+     {
+@@ -281,7 +321,7 @@ private:
+       last_stereo_t_ = timestamp;
+     }
+ 
+-    const rclcpp::Time stamp(left_msg->header.stamp);
++    const rclcpp::Time stamp(static_cast<int64_t>(timestamp * 1e9), RCL_ROS_TIME);
+     process_stereo(left_mono, right_mono, timestamp, stamp, vImuMeas);
+   }
+ 
+@@ -331,10 +371,18 @@ private:
+     tracking_state_pub_->publish(state_msg);
+     log_state_transition(state);
+ 
+-    const auto tracked_points = slam_->GetTrackedMapPoints();
+-    publish_points(tracked_points, stamp);
+-    if (publish_tracking_image_) {
+-      publish_tracking_image(left, tracked_points, stamp);
++    const auto now = std::chrono::steady_clock::now();
++    visualization_due_ = visualization_hz_ > 0 &&
++      std::chrono::duration<double>(now - last_visualization_).count() >= 1.0 / visualization_hz_;
++    if (visualization_due_) {
++      last_visualization_ = now;
++      const bool points_needed = points_pub_->get_subscription_count() > 0;
++      const bool image_needed = publish_tracking_image_ && tracking_image_pub_->get_subscription_count() > 0;
++      if (points_needed || image_needed) {
++        const auto tracked_points = slam_->GetTrackedMapPoints();
++        if (points_needed) publish_points(tracked_points, stamp);
++        if (image_needed) publish_tracking_image(left, tracked_points, stamp);
++      }
+     }
+ 
+     if (state == 2 || state == 5) {
+@@ -358,13 +406,23 @@ private:
+     pose.pose.orientation.z = rotation.z();
+     pose.pose.orientation.w = rotation.w();
+     pose_pub_->publish(pose);
++    if (imu_pose_pub_->get_subscription_count() > 0) {
++      const Sophus::SE3f t_world_imu = t_world_camera * t_camera_imu_;
++      auto imu_pose = pose;
++      const auto p = t_world_imu.translation();
++      const auto q = t_world_imu.unit_quaternion();
++      imu_pose.pose.position.x = p.x(); imu_pose.pose.position.y = p.y(); imu_pose.pose.position.z = p.z();
++      imu_pose.pose.orientation.x = q.x(); imu_pose.pose.orientation.y = q.y();
++      imu_pose.pose.orientation.z = q.z(); imu_pose.pose.orientation.w = q.w();
++      imu_pose_pub_->publish(imu_pose);
++    }
+ 
+     path_.header = pose.header;
+     path_.poses.push_back(pose);
+     if (path_.poses.size() > max_path_length_) {
+       path_.poses.erase(path_.poses.begin());
+     }
+-    path_pub_->publish(path_);
++    if (visualization_due_ && path_pub_->get_subscription_count() > 0) path_pub_->publish(path_);
+ 
+     if (tf_broadcaster_) {
+       geometry_msgs::msg::TransformStamped transform;
+@@ -508,7 +566,15 @@ private:
+   std::string imu_topic_;
+   int sync_queue_size_{10};
+   double max_sync_interval_{0.02};
+-  bool use_viewer_{true};
++  int opencv_threads_{1};
++  double visualization_hz_{5.0};
++  double camera_imu_offset_{0.0};
++  bool visualization_due_{false};
++  std::chrono::steady_clock::time_point last_visualization_{};
++  bool use_viewer_{false};
++  rclcpp::CallbackGroup::SharedPtr imu_group_;
++  rclcpp::TimerBase::SharedPtr pending_timer_;
++  std::deque<std::pair<Image::ConstSharedPtr, Image::ConstSharedPtr>> pending_stereo_;
+   bool publish_tf_{true};
+   bool publish_tracking_image_{true};
+   std::string map_frame_;
+@@ -518,6 +584,8 @@ private:
+   std::string keyframe_trajectory_path_;
+   std::string timing_path_;
+ 
++  Sophus::SE3f t_camera_imu_;
++  rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr imu_pose_pub_;
+   std::unique_ptr<ORB_SLAM3::System> slam_;
+   float image_scale_{1.0F};
+   bool shutdown_{false};
+@@ -527,7 +595,7 @@ private:
+   double last_stereo_t_{-1.0};
+   std::size_t successful_pose_count_{0};
+   std::size_t frame_count_{0};
+-  std::size_t imu_count_{0};
++  std::atomic<std::size_t> imu_count_{0};
+   std::vector<float> track_times_ms_;
+ 
+   std::mutex imu_mutex_;
+@@ -562,7 +630,9 @@ int main(int argc, char ** argv)
+   rclcpp::init(argc, argv);
+   try {
+     auto node = std::make_shared<orb_slam_ros2::StereoImuNode>();
+-    rclcpp::spin(node);
++    rclcpp::executors::MultiThreadedExecutor executor(rclcpp::ExecutorOptions(), 2);
++    executor.add_node(node);
++    executor.spin();
+   } catch (const std::exception & error) {
+     RCLCPP_FATAL(rclcpp::get_logger("orb_slam3_stereo_imu"), "%s", error.what());
+     rclcpp::shutdown();
+diff --git a/ORB_SLAM/orbslam3_hw290_vio.sh b/ORB_SLAM/orbslam3_hw290_vio.sh
+index 1e4ad7e..e22eba9 100755
+--- a/ORB_SLAM/orbslam3_hw290_vio.sh
++++ b/ORB_SLAM/orbslam3_hw290_vio.sh
+@@ -2,28 +2,32 @@
+ # ORB-SLAM3 stereo-inertial live test with ELP camera + HW-290 IMU.
+ # Pipeline: usb_cam (1280x480 side-by-side) -> ov_hw290 stereo_splitter
+ # (rectified 640x480 /cam0,/cam1) + hw290_imu.py (/imu0 100 Hz) ->
+-# orb_slam_ros2 stereo_imu_node (IMU_STEREO) with Pangolin viewer ->
+-# RViz2 (/orbslam_vio/path, points, tracking image).
++# orb_slam_ros2 stereo_imu_node (IMU_STEREO); viewers are opt-in.
+ #
+ # Calibration status is provisional (see orb_slam_ros2/config/
+ # ELP_640x480_inertial.yaml header and open_vins/hw290_stereo/README.md):
+-# rotation-only cam-to-IMU estimate, zero translation, 0.155 s time offset
+-# NOT compensated. Hold still ~2 s at start, then slow rotation+translation
++# Current rotation/+0.020 s time offset, approximate measured lever arm.
++# Hold still ~2 s at start, then slow rotation+translation
+ # in a textured 0.5-2 m static scene for IMU initialization.
+ set -Eeo pipefail
+ 
+ SENSORS_ONLY=false
+-SHOW_RVIZ=true
+-USE_VIEWER=true
++SHOW_RVIZ=false
++USE_VIEWER=false
++EFFICIENT=false
+ for arg in "$@"; do
+   case "$arg" in
+     --sensors-only) SENSORS_ONLY=true ;;
++    --efficient) EFFICIENT=true ;;
++    --rviz) SHOW_RVIZ=true ;;
++    --viewer) USE_VIEWER=true ;;
+     --no-rviz) SHOW_RVIZ=false ;;
+     --no-viewer) USE_VIEWER=false ;;
+     --help|-h)
+-      echo "Usage: $0 [--sensors-only] [--no-rviz] [--no-viewer]"
++      echo "Usage: $0 [--sensors-only] [--efficient] [--rviz] [--viewer] [--no-rviz] [--no-viewer]"
++      echo "  --efficient    use 600 features and capped local BA (validated on EuRoC)"
+       echo "  --sensors-only  publish camera+IMU only, skip ORB-SLAM3"
+-      echo "  --no-rviz       skip RViz2 (Pangolin still shows unless --no-viewer)"
++      echo "  --no-rviz       skip RViz2 (default; --viewer enables Pangolin)"
+       echo "  --no-viewer     disable Pangolin viewer (headless benchmark)"
+       exit 0 ;;
+     *) echo "Unknown argument: $arg" >&2; exit 2 ;;
+@@ -49,97 +53,62 @@ export DISPLAY="${DISPLAY:-:1}"
+ SPLITTER="${VIO_ROOT}/install_vio/ov_hw290/lib/ov_hw290/stereo_splitter"
+ IMU_PY="${HW290_DIR}/hw290_imu.py"
+ USB_CAM_PARAMS="${HW290_DIR}/usb_cam_hw290.yaml"
++CAMERA_PREFIX="${VIO_ROOT}/install_camera/usb_cam"
++CAMERA_NODE="$CAMERA_PREFIX/lib/usb_cam/usb_cam_node_exe"
++[[ -x "$CAMERA_NODE" ]] || { echo "Build open_vins/hw290_stereo/build_camera_driver.sh first" >&2; exit 1; }
++export LD_LIBRARY_PATH="$CAMERA_PREFIX/lib:${LD_LIBRARY_PATH:-}"
++SETTINGS_PATH="${ORB_ROOT}/orb_slam_ros2/config/ELP_640x480_inertial.yaml"
++if [[ "$EFFICIENT" == true ]]; then
++  CORE_DIR="${VIO_ROOT}/benchmark/build_orb_core"
++  [[ -r "$CORE_DIR/libORB_SLAM3.so" ]] || { echo "Run python3 open_vins/benchmark/build_orb_core.py first" >&2; exit 1; }
++  export LD_LIBRARY_PATH="$CORE_DIR:${LD_LIBRARY_PATH:-}"
++  export ORB_LOCAL_BA_WINDOW="${ORB_LOCAL_BA_WINDOW:-12}"
++  SETTINGS_PATH="${ORB_ROOT}/orb_slam_ros2/config/ELP_640x480_inertial_efficient.yaml"
++fi
+ RVIZ_VIO="${ORB_ROOT}/orb_slam_ros2/config/rviz_hw290_vio.rviz"
+ RVIZ_SENSORS="${HW290_DIR}/rviz_hw290_sensors.rviz"
+ [[ -x "$SPLITTER" ]] || { echo "Splitter missing: $SPLITTER (build ov_hw290 first)" >&2; exit 1; }
+ [[ -r "$IMU_PY" ]] || { echo "IMU bridge missing: $IMU_PY" >&2; exit 1; }
+ [[ -r "$CALIBRATION" ]] || { echo "Stereo calibration unavailable: $CALIBRATION" >&2; exit 1; }
+-[[ -r /dev/video0 && -r /dev/ttyUSB0 ]] || { echo "Camera (/dev/video0) or Nano (/dev/ttyUSB0) unavailable" >&2; exit 1; }
++[[ -r /dev/video0 && -r /dev/ttyUSB0 ]] || echo "Camera or Nano unavailable; RViz diagnostics will remain available." >&2
+ [[ -r "${ORB_SLAM3_ROOT}/Vocabulary/ORBvoc.txt" ]] || { echo "ORB vocabulary missing at ${ORB_SLAM3_ROOT}/Vocabulary/ORBvoc.txt" >&2; exit 1; }
+ 
+ echo "ROS_DOMAIN_ID=${ROS_DOMAIN_ID} DISPLAY=${DISPLAY} viewer=${USE_VIEWER} rviz=${SHOW_RVIZ} sensors_only=${SENSORS_ONLY}"
+ echo "TIP: keep the rig still ~2 s, then move slowly (rotation+translation) facing textured static objects 0.5-2 m away."
+ 
+-PIDS=()
+-cleanup() {
+-  trap - INT TERM EXIT
+-  echo ""
+-  echo "Stopping nodes..."
+-  for p in "${PIDS[@]:-}"; do kill "$p" 2>/dev/null || true; done
+-  sleep 3
+-  for p in "${PIDS[@]:-}"; do kill -KILL "$p" 2>/dev/null || true; done
+-  wait 2>/dev/null || true
+-  benchmark_summary || true
+-}
+-trap cleanup INT TERM EXIT
+-
+-benchmark_sampler() {
+-  # 1 Hz sampler: timestamp + %CPU/RSS for the VIO processes + load average.
+-  echo "# epoch comm pid cpu% rss_kb" > /tmp/orb_vio_bench_ps.log
+-  while true; do
+-    now=$(date +%s)
+-    ps -eo pid,comm,%cpu,rss --sort=-%cpu 2>/dev/null | \
+-      awk -v t="$now" '$2 ~ /stereo_imu_node|stereo_splitter|usb_cam|hw290|rviz2|orb_slam/ {print t, $2, $1, $3, $4}' \
+-      >> /tmp/orb_vio_bench_ps.log
+-    sleep 1
+-  done
+-}
+-
+-benchmark_summary() {
+-  echo "================ benchmark summary ================"
+-  echo "--- sensor rates (7 s sample each) ---"
+-  for t in /cam0/image_raw /imu0; do
+-    rate=$(timeout 9 ros2 topic hz "$t" 2>/dev/null | grep -m1 "average rate" || echo "n/a (no data)")
+-    echo "$t: $rate"
+-  done
+-  if [[ "$SENSORS_ONLY" == false ]]; then
+-    echo "--- ORB-SLAM3 output rate ---"
+-    timeout 9 ros2 topic hz /orbslam_vio/path 2>/dev/null | grep -m1 "average rate" || echo "/orbslam_vio/path: n/a (no poses yet - move the rig)"
+-    echo "--- TrackStereo timing (vio_timing.txt) ---"
+-    if [[ -r vio_timing.txt ]]; then
+-      python3 -c "
+-import numpy as np, sys
+-d = np.loadtxt('vio_timing.txt')
+-t = d[:,1] if d.ndim == 2 else d
+-print(f'frames={len(t)} mean={t.mean():.1f} ms median={np.median(t):.1f} p95={np.percentile(t,95):.1f} max={t.max():.1f} -> effective SLAM rate ~{1000.0/t.mean():.1f} Hz')
+-"
+-    else
+-      echo "vio_timing.txt not written yet (no frames processed or still running from another directory)"
+-    fi
+-    ls -lh vio_session.txt kf_vio_session.txt vio_timing.txt 2>/dev/null || true
+-  fi
+-  echo "--- CPU/MEM by process (mean over /tmp/orb_vio_bench_ps.log) ---"
+-  if [[ -r /tmp/orb_vio_bench_ps.log ]]; then
+-    awk 'NR>1 {cpu[$2]+=$4; rss[$2]+=$5; n[$2]++} END {for (k in n) printf "%-18s samples=%-5d avg_cpu=%6.1f%% avg_rss=%8.1f MB\n", k, n[k], cpu[k]/n[k], (rss[k]/n[k])/1024}' \
+-      /tmp/orb_vio_bench_ps.log | sort
+-    echo "host: $(nproc) cores, $(free -h | awk '/Mem:/{print $2}') RAM; load: $(cut -d' ' -f1-3 /proc/loadavg)"
+-  fi
+-  echo "full logs: /tmp/orb_vio_{usb_cam,splitter,imu,slam,rviz,bench_ps}.log"
+-  echo "==================================================="
+-}
++RUN_LABEL=hw290_orb
++source "$HW290_DIR/process_helpers.sh"
+ 
+-/opt/ros/humble/lib/usb_cam/usb_cam_node_exe --ros-args --params-file "$USB_CAM_PARAMS" > /tmp/orb_vio_usb_cam.log 2>&1 & PIDS+=("$!")
++start_node camera /tmp/orb_vio_usb_cam.log "$CAMERA_NODE" --ros-args --params-file "$USB_CAM_PARAMS"
+ sleep 3
+-"$SPLITTER" --ros-args -p calibration_file:="$CALIBRATION" -p auto_timestamp_correction:=false > /tmp/orb_vio_splitter.log 2>&1 & PIDS+=("$!")
+-python3 "$IMU_PY" > /tmp/orb_vio_imu.log 2>&1 & PIDS+=("$!")
+-/opt/ros/humble/lib/tf2_ros/static_transform_publisher 0 0 0 2.74403274 0.11300759 -1.62777045 imu camera_link > /tmp/orb_vio_tf_imu.log 2>&1 & PIDS+=("$!")
+-/opt/ros/humble/lib/tf2_ros/static_transform_publisher 0 0 0 0 0 0 camera_link cam0 > /tmp/orb_vio_tf_cam0.log 2>&1 & PIDS+=("$!")
+-/opt/ros/humble/lib/tf2_ros/static_transform_publisher 0.05989 0 0 0 0 0 camera_link cam1 > /tmp/orb_vio_tf_cam1.log 2>&1 & PIDS+=("$!")
++start_node splitter /tmp/orb_vio_splitter.log "$SPLITTER" --ros-args -p calibration_file:="$CALIBRATION" -p auto_timestamp_correction:=false
++start_hw290_imu /tmp/orb_vio_imu.log
++IMU_READY=true
++if ! wait_for_imu /tmp/orb_vio_imu.log; then
++  IMU_READY=false
++  echo "Starting RViz in sensor view; VIO unavailable until IMU is restored and launcher restarted." >&2
++fi
++for camera in cam0 cam1; do
++  mapfile -t TF_ARGS < <(python3 "$HW290_DIR/static_transform_args.py" "$camera")
++  start_node "tf_$camera" "/tmp/orb_vio_tf_${camera}.log" /opt/ros/humble/lib/tf2_ros/static_transform_publisher "${TF_ARGS[@]}"
++done
++CALIBRATED_OFFSET=$(python3 "$HW290_DIR/static_transform_args.py" time_offset)
++
+ 
+-benchmark_sampler > /tmp/orb_vio_bench_sampler.log 2>&1 & PIDS+=("$!")
+ 
+-if [[ "$SENSORS_ONLY" == false ]]; then
++if [[ "$SENSORS_ONLY" == false && "$IMU_READY" == true ]]; then
++  mapfile -t ORB_IMU_TF < <(python3 "$HW290_DIR/static_transform_args.py" orb_imu)
++  start_node tf_orb_imu /tmp/orb_vio_tf_orb_imu.log /opt/ros/humble/lib/tf2_ros/static_transform_publisher "${ORB_IMU_TF[@]}"
+   sleep 2
+-  ros2 launch orb_slam_ros2 stereo_inertial_topics.launch.py \
+-    namespace:=orbslam_vio viewer:="$USE_VIEWER" \
+-    > /tmp/orb_vio_slam.log 2>&1 & PIDS+=("$!")
++  start_node estimator /tmp/orb_vio_slam.log ros2 launch orb_slam_ros2 stereo_inertial_topics.launch.py \
++    namespace:=orbslam_vio viewer:="$USE_VIEWER" settings_path:="$SETTINGS_PATH" camera_imu_offset:="${CAMERA_IMU_OFFSET:-$CALIBRATED_OFFSET}" \
++    trajectory_path:="$RUN_DIR/vio_session.txt" keyframe_trajectory_path:="$RUN_DIR/kf_vio_session.txt" timing_path:="$RUN_DIR/vio_timing.txt"
+ fi
+ if [[ "$SHOW_RVIZ" == true ]]; then
+-  sleep 4
+   RVIZ_CONFIG="$RVIZ_VIO"
+-  [[ "$SENSORS_ONLY" == true ]] && RVIZ_CONFIG="$RVIZ_SENSORS"
+-  rviz2 -d "$RVIZ_CONFIG" > /tmp/orb_vio_rviz.log 2>&1 & PIDS+=("$!")
++  [[ "$SENSORS_ONLY" == true || "$IMU_READY" == false ]] && RVIZ_CONFIG="$RVIZ_SENSORS"
++  start_node rviz /tmp/orb_vio_rviz.log rviz2 -d "$RVIZ_CONFIG"
+ fi
+ 
+ echo "ORB-SLAM3 HW290 VIO running (sensors_only=${SENSORS_ONLY}). Ctrl-C stops all nodes + prints benchmark."
+-wait
++wait_for_run
+--- /dev/null
++++ b/ORB_SLAM/orb_slam_ros2/config/ELP_640x480_inertial_efficient.yaml
+@@ -0,0 +1,98 @@
++%YAML:1.0
++
++# ELP 3DGS1200P01 + HW-290 (WHO_AM_I 0x98) - ORB-SLAM3 stereo-inertial settings
++# Images: rectified 640x480 pair from ov_hw290/stereo_splitter (usb_cam 1280x480
++# side-by-side MJPG). Intrinsics are P1/P2 from
++# calibration/elp_3dgs1200p01/calib/calibration_opencv.yaml scaled 1600x1200->640x480
++# (sx=sy=0.4): fx=433.10635826, cx=325.54584656, cy=245.57666931.
++# Distortion is zero because the splitter already undistorts/rectifies.
++# Baseline from P2 Tx: 64.853007/1082.765896 = 0.0598957 m (raw T gives 0.0598913 m).
++# IMU: HW-290 (WHO_AM_I 0x98) via Arduino Nano /imu0 at 100 Hz, +/-4g (8192 LSB/g),
++# +/-500 dps (65.5 LSB/dps). Noise values from
++# open_vins/hw290_stereo/kalibr_imu_chain.yaml (provisional, uncalibrated IMU).
++# T_b_c1: current rotation/time capture 2026-09-25; translation approximated
++# from user 4 cm lens distances + photographs, not a full spatial calibration.
++# The launcher reads camera_imu_offset from the OpenVINS calibration YAML.
++File.version: "1.0"
++
++Camera.type: "PinHole"
++
++Camera1.fx: 433.10635826
++Camera1.fy: 433.10635826
++Camera1.cx: 325.54584656
++Camera1.cy: 245.57666931
++
++Camera1.k1: 0.0
++Camera1.k2: 0.0
++Camera1.p1: 0.0
++Camera1.p2: 0.0
++Camera1.k3: 0.0
++
++Camera2.fx: 433.10635826
++Camera2.fy: 433.10635826
++Camera2.cx: 325.54584656
++Camera2.cy: 245.57666931
++
++Camera2.k1: 0.0
++Camera2.k2: 0.0
++Camera2.p1: 0.0
++Camera2.p2: 0.0
++Camera2.k3: 0.0
++
++Camera.width: 640
++Camera.height: 480
++
++Camera.fps: 30
++
++# Splitter publishes rgb8; ORB-SLAM3 treats 0=BGR 1=RGB for color conversion.
++Camera.RGB: 1
++
++# Right-camera coordinates to left-camera coordinates: +baseline on X.
++Stereo.T_c1_c2: !!opencv-matrix
++  rows: 4
++  cols: 4
++  dt: f
++  data: [1.0, 0.0, 0.0, 0.0598957,
++         0.0, 1.0, 0.0, 0.0,
++         0.0, 0.0, 1.0, 0.0,
++         0, 0, 0, 1.0]
++
++Stereo.ThDepth: 40.0
++
++# Left camera -> body (IMU). Provisional translation - see header.
++IMU.T_b_c1: !!opencv-matrix
++  rows: 4
++  cols: 4
++  dt: f
++  data: [-0.0614365316, 0.1058871785, 0.9924784421, 0.0143651204, -0.9918715778, -0.1174863603, -0.0488643866, 0.0263304734, 0.1114285678, -0.9874132167, 0.1122444373, -0.0264641170, 0.0000000000, 0.0000000000, 0.0000000000, 1.0000000000]
++
++IMU.InsertKFsWhenLost: 0
++
++# Provisional IMU noise densities (kalibr_imu_chain.yaml).
++IMU.NoiseGyro: 0.005
++IMU.NoiseAcc: 0.02
++IMU.GyroWalk: 0.00002
++IMU.AccWalk: 0.003
++IMU.Frequency: 100.0
++
++# Lighter than the 1600x1200 / 2000-feature pure-stereo config: N100 has 4 cores.
++ORBextractor.nFeatures: 600
++ORBextractor.scaleFactor: 1.2
++ORBextractor.nLevels: 8
++ORBextractor.iniThFAST: 20
++ORBextractor.minThFAST: 7
++
++Viewer.KeyFrameSize: 0.05
++Viewer.KeyFrameLineWidth: 1.0
++Viewer.GraphLineWidth: 0.9
++Viewer.PointSize: 2.0
++Viewer.CameraSize: 0.08
++Viewer.CameraLineWidth: 3.0
++Viewer.ViewpointX: 0.0
++Viewer.ViewpointY: -0.7
++Viewer.ViewpointZ: -1.8
++Viewer.ViewpointF: 500.0
++Viewer.imageViewScale: 1.0
++
++# Keep local inertial mapping; disable loop closure for this VIO profile.
++loopClosing: 0

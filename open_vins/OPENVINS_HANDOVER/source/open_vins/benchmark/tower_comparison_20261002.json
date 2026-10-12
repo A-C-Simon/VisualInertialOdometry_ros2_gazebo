@@ -1,0 +1,74 @@
+{
+  "date": "2026-10-02",
+  "input": "benchmark/results/hw290_openvins_20261002_150426_Rg52ai/sensors_bag",
+  "input_duration_s": 166.51693397,
+  "input_messages": {
+    "imu": 16071,
+    "images_per_camera": 5002
+  },
+  "playback_rate": 1,
+  "sequential": true,
+  "scope": "Single trial per profile. Estimator process includes startup and shutdown. No viewer, recorder or hardware driver. Independent ground truth absent. ORB frame coverage is lower and its trajectory invalidated by resets/flights.",
+  "calibration": "hw290_stereo/calibration/20261002_tower/candidate",
+  "orb_features": 600,
+  "orb_local_ba_window": 12,
+  "orb_loop_closure": false,
+  "trials": {
+    "openvins_fixed": {
+      "active_map_resets": 0,
+      "initialization_progress": [],
+      "online_pose_count": 3849,
+      "pose_span_s": 128.19485998153687,
+      "max_displacement_m": 0.9100781043723666,
+      "max_position_step_m": 0.021030970210620347,
+      "max_pose_interval_s": 0.036170005798339844,
+      "finite": true,
+      "valid_trial": true,
+      "resources": {
+        "cpu_seconds": 112.08226,
+        "wall_seconds": 175.50796489299682,
+        "cpu_percent_one_core": 63.861637315624954,
+        "peak_rss_mib": 241.96875,
+        "exit_code": 0
+      },
+      "timing_ms": {
+        "mean": 13.542000519615485,
+        "median": 13.28,
+        "p95": 18.01,
+        "max": 49.06,
+        "count": 3849,
+        "scope": "OpenVINS logged update total; ORB TrackStereo only, excludes background mapping"
+      },
+      "evidence": "benchmark/results/tower_matched_20261002/openvins_fixed",
+      "summary_sha256": "22915525d3ad6c5b9b1a06358c83f57d954a633704dd5401453712d0a6895a29"
+    },
+    "orb_native600": {
+      "active_map_resets": 54,
+      "initialization_progress": [],
+      "online_pose_count": 4566,
+      "pose_span_s": 162.13953495025635,
+      "max_displacement_m": 4.500965924911889,
+      "max_position_step_m": 4.431532373344194,
+      "max_pose_interval_s": 2.000041961669922,
+      "finite": true,
+      "valid_trial": true,
+      "resources": {
+        "cpu_seconds": 134.012143,
+        "wall_seconds": 176.2857074420026,
+        "cpu_percent_one_core": 76.01985716515875,
+        "peak_rss_mib": 803.5546875,
+        "exit_code": 0
+      },
+      "timing_ms": {
+        "mean": 13.966179600863,
+        "median": 13.6598,
+        "p95": 16.89786,
+        "max": 45.627,
+        "count": 4635,
+        "scope": "OpenVINS logged update total; ORB TrackStereo only, excludes background mapping"
+      },
+      "evidence": "benchmark/results/tower_matched_20261002/orb_native600",
+      "summary_sha256": "e252a62e690b2a02e04564ec8031f47ed560a76faa8d47d8ff82d79a4114f622"
+    }
+  }
+}

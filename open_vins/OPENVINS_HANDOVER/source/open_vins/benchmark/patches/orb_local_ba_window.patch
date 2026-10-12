@@ -1,0 +1,46 @@
+--- a/src/Optimizer.cc
++++ b/src/Optimizer.cc
+@@ -21,6 +21,7 @@
+ 
+ 
+ #include <complex>
++#include <cstdlib>
+ 
+ #include <Eigen/StdVector>
+ #include <Eigen/Dense>
+@@ -2391,6 +2392,18 @@
+         maxOpt=25;
+         opt_it=4;
+     }
++    // Keep initialization/global inertial BA intact. Optionally bound the
++    // number of locally optimized keyframe states once local BA is invoked.
++    static const int window_cap = []() {
++        const char* value = std::getenv("ORB_LOCAL_BA_WINDOW");
++        if (!value) return 25;
++        char* end = nullptr;
++        const long cap = std::strtol(value, &end, 10);
++        if (*end != '\0' || cap < 6 || cap > 25) return 25;
++        std::cout << "Local inertial BA window cap: " << cap << std::endl;
++        return static_cast<int>(cap);
++    }();
++    maxOpt = std::min(maxOpt, window_cap);
+     const int Nd = std::min((int)pCurrentMap->KeyFramesInMap()-2,maxOpt);
+     const unsigned long maxKFid = pKF->mnId;
+ 
+--- a/src/Settings.cc
++++ b/src/Settings.cc
+@@ -308,6 +308,14 @@
+                 vPinHoleDistorsion2_[3] = readParameter<float>(fSettings,"Camera2.p2",found);
+             }
+         }
++        else if(cameraType_ == Rectified){
++            // Rectified stereo uses the common pinhole model. Initialize the
++            // second camera too: settings diagnostics dereference this object.
++            for (size_t i = 0; i < 4; ++i)
++                vCalibration.push_back(calibration1_->getParameter(i));
++            calibration2_ = new Pinhole(vCalibration);
++            originalCalib2_ = new Pinhole(vCalibration);
++        }
+         else if(cameraType_ == KannalaBrandt){
+             //Read intrinsic parameters
+             float fx = readParameter<float>(fSettings,"Camera2.fx",found);

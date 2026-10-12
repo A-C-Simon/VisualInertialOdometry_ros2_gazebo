@@ -1,0 +1,168 @@
+#!/usr/bin/env bash
+set -Eeo pipefail
+SENSORS_ONLY=false
+SHOW_RVIZ=true
+DIAGNOSTICS=false
+RAW_STEREO=false
+IMU_ALLAN=false
+CALIBRATION_SCREEN=false
+CALIBRATION_TEST=false
+for arg in "$@"; do
+  case "$arg" in
+    --sensors-only) SENSORS_ONLY=true ;;
+    --no-rviz) SHOW_RVIZ=false ;;
+    --diagnostics) DIAGNOSTICS=true ;;
+    --raw-stereo) RAW_STEREO=true ;;
+    --imu-allan) IMU_ALLAN=true ;;
+    --calibration-screen) CALIBRATION_SCREEN=true ;;
+    --calibration-test) CALIBRATION_TEST=true ;;
+    --help|-h)
+      echo "Usage: $0 [--sensors-only] [--no-rviz] [--diagnostics] [--raw-stereo] [--imu-allan] [--calibration-screen] [--calibration-test]"
+      echo "Diagnostics records a sensor bag, raw IMU records and estimator state/debug logs."
+      echo "Raw stereo disables rectification for offline camera calibration."
+      echo "IMU Allan records only /imu0 for a long stationary noise measurement."
+      echo "Calibration screen shows the target and a live stereo preview with timed recording."
+      echo "Calibration test accepts a fitted current-mount profile awaiting movement validation."
+      echo "A valid VIO trajectory requires a rigid camera-IMU mount and measured extrinsics."
+      exit 0 ;;
+    *) echo "Unknown argument: $arg" >&2; exit 2 ;;
+  esac
+done
+if [[ "$CALIBRATION_SCREEN" == true ]]; then
+  [[ "$IMU_ALLAN" == false && "$DIAGNOSTICS" == false ]] || {
+    echo "--calibration-screen manages its own recording; use it separately from --imu-allan and --diagnostics." >&2
+    exit 2
+  }
+  SENSORS_ONLY=true
+  SHOW_RVIZ=false
+  RAW_STEREO=true
+fi
+if [[ "$IMU_ALLAN" == true && "$RAW_STEREO" == true ]]; then
+  echo "--imu-allan and --raw-stereo are separate recording modes." >&2
+  exit 2
+fi
+if [[ "$IMU_ALLAN" == true ]]; then
+  SENSORS_ONLY=true
+  SHOW_RVIZ=false
+  DIAGNOSTICS=true
+fi
+if [[ "$RAW_STEREO" == true && "$SENSORS_ONLY" == false ]]; then
+  echo "--raw-stereo requires --sensors-only because the VIO configuration expects rectified images." >&2
+  exit 2
+fi
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source /opt/ros/humble/setup.bash
+source "${ROOT}/../install_vio/setup.bash"
+CAMERA_PREFIX="${ROOT}/../install_camera/usb_cam"
+CAMERA_NODE="$CAMERA_PREFIX/lib/usb_cam/usb_cam_node_exe"
+export LD_LIBRARY_PATH="$CAMERA_PREFIX/lib:${LD_LIBRARY_PATH:-}"
+export ROS_DOMAIN_ID="${ROS_DOMAIN_ID:-48}"
+export DISPLAY="${DISPLAY:-:1}"
+SPLITTER="${ROOT}/../install_vio/ov_hw290/lib/ov_hw290/stereo_splitter"
+ESTIMATOR="${ROOT}/../install_vio/ov_msckf/lib/ov_msckf/run_subscribe_msckf"
+CALIBRATION="${HW290_STEREO_CALIBRATION:-${ROOT}/calibration/20261002_tower/candidate/stereo_opencv.yaml}"
+ESTIMATOR_CONFIG="${HW290_VIO_CONFIG:-${ROOT}/estimator_config.yaml}"
+MOUNT_METADATA="${ROOT}/calibration/current_mount.yaml"
+MOUNT_CHECK="${ROOT}/../install_vio/ov_hw290/lib/ov_hw290/check_mount_calibration"
+MOUNT_VALID=false
+MOUNT_ARGS=()
+[[ "$CALIBRATION_TEST" == false ]] || MOUNT_ARGS=(--candidate)
+if [[ -x "$MOUNT_CHECK" ]] && "$MOUNT_CHECK" "$MOUNT_METADATA" "$ESTIMATOR_CONFIG" "$CALIBRATION" "${MOUNT_ARGS[@]}"; then
+  MOUNT_VALID=true
+fi
+if [[ "$SENSORS_ONLY" == false && "$MOUNT_VALID" == false ]]; then
+  echo "VIO stopped before sensor startup: calibrate the current mount with --calibration-screen. Build ov_hw290 if its mount checker is missing." >&2
+  exit 2
+fi
+if [[ "$IMU_ALLAN" == false ]]; then
+  [[ -x "$CAMERA_NODE" ]] || { echo "Build the corrected camera driver: hw290_stereo/build_camera_driver.sh" >&2; exit 1; }
+  [[ -x "$SPLITTER" && -x "$ESTIMATOR" ]] || { echo "Build ov_hw290 and ov_msckf first" >&2; exit 1; }
+  [[ -r "$CALIBRATION" ]] || { echo "Stereo calibration unavailable: $CALIBRATION" >&2; exit 1; }
+  [[ -r "$ESTIMATOR_CONFIG" ]] || { echo "Estimator configuration unavailable: $ESTIMATOR_CONFIG" >&2; exit 1; }
+  [[ -r /dev/video0 && -r /dev/ttyUSB0 ]] || echo "Camera or Nano unavailable; RViz diagnostics will remain available." >&2
+else
+  [[ -r /dev/ttyUSB0 ]] || echo "Nano unavailable; the Allan recording cannot start." >&2
+fi
+if [[ "$CALIBRATION_SCREEN" == true ]]; then
+  [[ -x "${ROOT}/../install_vio/ov_hw290/lib/ov_hw290/calibration_screen" ]] || {
+    echo "Build ov_hw290 first to install the calibration screen." >&2; exit 1;
+  }
+fi
+echo "ROS_DOMAIN_ID=${ROS_DOMAIN_ID}"
+HW290_DIR="$ROOT"
+RUN_LABEL=hw290_openvins
+[[ "$IMU_ALLAN" == true ]] && RUN_LABEL=hw290_imu_allan
+source "$ROOT/process_helpers.sh"
+[[ ! -r "$MOUNT_METADATA" ]] || cp "$MOUNT_METADATA" "$RUN_DIR/current_mount.yaml"
+[[ "$CALIBRATION_TEST" == false ]] || touch "$RUN_DIR/calibration_test"
+if [[ "$IMU_ALLAN" == true ]]; then
+  cp "$ROOT/record_qos.yaml" "$RUN_DIR/record_qos.yaml"
+  start_node recorder /tmp/hw290_recorder.log ros2 bag record --qos-profile-overrides-path "$RUN_DIR/record_qos.yaml" -o "$RUN_DIR/imu_bag" /imu0
+  sleep 1
+  start_hw290_imu /tmp/hw290_imu.log
+  wait_for_imu /tmp/hw290_imu.log
+  echo "Stationary IMU Allan recording running. Keep the rig untouched for at least 3 hours; Ctrl-C stops and saves it."
+  wait_for_run
+  exit 0
+fi
+start_node camera /tmp/hw290_usb_cam.log "$CAMERA_NODE" --ros-args --params-file "${ROOT}/usb_cam_hw290.yaml"
+sleep 1
+# usb_cam 0.8.1 does not reliably apply this camera's UVC exposure controls.
+# Reapply the tested low-blur manual setting after startup and verify it.
+configure_hw290_camera /tmp/hw290_v4l2_controls.log
+sleep 2
+# The local usb_cam fixes the clock-unit bug. Do not apply arrival-time
+# correction to properly converted V4L2 capture timestamps.
+SPLITTER_RECTIFY=true
+if [[ "$RAW_STEREO" == true ]]; then
+  SPLITTER_RECTIFY=false
+  echo "Raw unrectified stereo output enabled for offline calibration."
+fi
+start_node splitter /tmp/hw290_splitter.log "$SPLITTER" --ros-args -p calibration_file:="$CALIBRATION" -p auto_timestamp_correction:=false -p rectify_images:="$SPLITTER_RECTIFY"
+if [[ "$DIAGNOSTICS" == true ]]; then
+  echo 'Diagnostic recording enabled; recording/debug CPU costs are included in this run.'
+  touch "$RUN_DIR/diagnostics_enabled"
+  cp "$ROOT/record_qos.yaml" "$RUN_DIR/record_qos.yaml"
+  start_node recorder /tmp/hw290_recorder.log ros2 bag record --qos-profile-overrides-path "$RUN_DIR/record_qos.yaml" -o "$RUN_DIR/sensors_bag" /cam0/image_raw /cam1/image_raw /cam0/camera_info /cam1/camera_info /imu0 /ov_msckf/poseimu
+  sleep 2
+fi
+start_hw290_imu /tmp/hw290_imu.log
+IMU_READY=true
+if ! wait_for_imu /tmp/hw290_imu.log; then
+  IMU_READY=false
+  echo "Starting RViz in sensor view; VIO is unavailable until the IMU connection is restored and this launcher is restarted." >&2
+fi
+if [[ "$MOUNT_VALID" == true ]]; then
+for camera in cam0 cam1; do
+  HW290_TF_OUTPUT=$(python3 "$ROOT/static_transform_args.py" "$camera" --estimator-config "$ESTIMATOR_CONFIG")
+  mapfile -t TF_ARGS <<< "$HW290_TF_OUTPUT"
+  start_node "tf_$camera" "/tmp/hw290_tf_${camera}.log" /opt/ros/humble/lib/tf2_ros/static_transform_publisher "${TF_ARGS[@]}"
+done
+else
+  echo "Recording sensor frames only; camera-to-IMU TF is unverified for this mount." >&2
+fi
+if [[ "$SENSORS_ONLY" == false && "$IMU_READY" == true ]]; then
+  echo "Using the selected camera/IMU calibration. IMU noise remains provisional; see hw290_stereo/calibration/README.md." >&2
+  sleep 2
+  ESTIMATOR_ARGS=()
+  if [[ "$DIAGNOSTICS" == true ]]; then
+    ESTIMATOR_ARGS=(-p verbosity:=DEBUG -p save_total_state:=true -p filepath_est:="$RUN_DIR/state_estimate.txt" -p filepath_std:="$RUN_DIR/state_deviation.txt" -p filepath_gt:="$RUN_DIR/state_groundtruth.txt")
+  fi
+  start_node estimator /tmp/hw290_openvins.log "$ESTIMATOR" "$ESTIMATOR_CONFIG" --ros-args -r __ns:=/ov_msckf -p use_sim_time:=false -p publish_calibration_tf:=false "${ESTIMATOR_ARGS[@]}"
+fi
+if [[ "$SHOW_RVIZ" == true ]]; then
+  RVIZ_CONFIG="${ROOT}/rviz_hw290.rviz"
+  [[ "$SENSORS_ONLY" == true || "$IMU_READY" == false ]] && RVIZ_CONFIG="${ROOT}/rviz_hw290_sensors.rviz"
+  start_node rviz /tmp/hw290_rviz.log rviz2 -d "$RVIZ_CONFIG"
+fi
+echo "HW290 stereo sensors running (sensors_only=${SENSORS_ONLY}, rviz=${SHOW_RVIZ}). Ctrl-C stops all nodes."
+if [[ "$CALIBRATION_SCREEN" == true ]]; then
+  start_node calibration_screen /tmp/hw290_calibration_screen.log \
+    "${ROOT}/../install_vio/ov_hw290/lib/ov_hw290/calibration_screen" --ros-args \
+    -p target_image:="${ROOT}/calibration/aprilgrid_6x6.png" \
+    -p output_root:="${ROOT}/../benchmark/results" \
+    -p record_seconds:="${CALIBRATION_SECONDS:-90}" \
+    -p tag_size_m:="${CALIBRATION_TAG_SIZE_M:-0.040}"
+fi
+# Keep the diagnostic window available even when a sensor fails.
+wait_for_run

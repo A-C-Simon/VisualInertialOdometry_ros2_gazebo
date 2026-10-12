@@ -1,0 +1,412 @@
+#include <QApplication>
+#include <QDateTime>
+#include <QDir>
+#include <QDoubleSpinBox>
+#include <QElapsedTimer>
+#include <QFile>
+#include <QHBoxLayout>
+#include <QKeyEvent>
+#include <QLabel>
+#include <QPainter>
+#include <QProcess>
+#include <QPushButton>
+#include <QTimer>
+#include <QVBoxLayout>
+#include <rclcpp/rclcpp.hpp>
+#include <sensor_msgs/msg/image.hpp>
+#include <sensor_msgs/msg/imu.hpp>
+#include <apriltags/TagDetector.h>
+#include <apriltags/Tag36h11.h>
+#include <opencv2/imgproc.hpp>
+#include <array>
+#include <cmath>
+#include <csignal>
+#include <deque>
+#include <set>
+#include <unistd.h>
+
+// All ROS callbacks and widget updates run on the Qt thread.
+class CalibrationScreen : public QWidget {
+ public:
+  explicit CalibrationScreen(std::shared_ptr<rclcpp::Node> node) : node_(node) {
+    executor_.add_node(node_);
+    clock_.start();
+    const auto target = node_->declare_parameter<std::string>("target_image", "");
+    target_.load(QString::fromStdString(target));
+    if (target_.isNull()) throw std::runtime_error("Cannot load target_image");
+    image_path_ = QString::fromStdString(target);
+    output_root_ = QString::fromStdString(node_->declare_parameter<std::string>("output_root", "/tmp"));
+    seconds_ = node_->declare_parameter<int>("record_seconds", 90);
+    tag_size_ = node_->declare_parameter<double>("tag_size_m", 0.040);
+    armed_ = node_->declare_parameter<bool>("auto_prepare", true);
+    measurement_only_ = node_->declare_parameter<bool>("measurement_only", false);
+    if (seconds_ < 1 || seconds_ > 600 || tag_size_ <= 0)
+      throw std::runtime_error("Invalid recording duration or measured tag size");
+    setWindowTitle("HW290 screen calibration");
+    setStyleSheet("background: #222; color: white;");
+    panel_ = new QWidget(this);
+    panel_->setFixedWidth(420);
+    auto layout = new QVBoxLayout(panel_);
+    auto previews = new QHBoxLayout;
+    for (auto &label : views_) {
+      label = new QLabel("Waiting for camera", panel_);
+      label->setFixedSize(190, 145);
+      label->setAlignment(Qt::AlignCenter);
+      previews->addWidget(label);
+    }
+    layout->addLayout(previews);
+    status_ = new QLabel(panel_);
+    status_->setWordWrap(true);
+    layout->addWidget(status_);
+    auto help = new QLabel(measurement_only_ ?
+        "Measure one complete black tag edge on this fullscreen grid with a ruler. Enter millimetres below and click Save. Measure the black edge, not the white gap. No recording or movement is needed. Esc cancels." :
+        QString("The saved tag edge is %1 mm unless changed below. Keep the grid visible in both previews. Hold still during the red countdown, then move when green. Capture starts automatically after the checks. Esc cancels.").arg(tag_size_ * 1000.0, 0, 'f', 1), panel_);
+    help->setWordWrap(true);
+    layout->addWidget(help);
+    auto measured = new QDoubleSpinBox(panel_);
+    measured_ = measured;
+    measured->setRange(1.0, 200.0);
+    measured->setDecimals(1);
+    measured->setSingleStep(0.1);
+    measured->setPrefix("Measured tag edge: ");
+    measured->setSuffix(" mm");
+    measured->setValue(tag_size_ * 1000.0);
+    layout->addWidget(measured);
+    connect(measured, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this,
+            [this](double mm) { tag_size_ = mm / 1000.0; });
+    prepare_ = new QPushButton(measurement_only_ ? "Save fullscreen tag size" :
+        (armed_ ? "Cancel capture" : QString("Prepare %1 second recording").arg(seconds_)), panel_);
+    layout->addWidget(prepare_);
+    connect(prepare_, &QPushButton::clicked, this, [this, measured] {
+      if (measurement_only_) { saveMeasurement(); return; }
+      if (armed_) { close(); return; }
+      armed_ = true;
+      stable_since_ = -1;
+      prepare_->setText("Cancel capture");
+      measured->setEnabled(false);
+    });
+    recorder_.setProcessChannelMode(QProcess::MergedChannels);
+    connect(&recorder_, &QProcess::readyReadStandardOutput, this, [this] {
+      recorder_log_ += recorder_.readAllStandardOutput();
+    });
+    connect(&recorder_, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this,
+            [this](int, QProcess::ExitStatus) {
+      writeLog();
+      if (!finishing_) {
+        failed_ = true;
+        border(false, "Recorder stopped unexpectedly. Return to chat to inspect the log.");
+      }
+    });
+    for (int camera = 0; camera < 2; ++camera) {
+      subscriptions_[camera] = node_->create_subscription<sensor_msgs::msg::Image>(
+          "/cam" + std::to_string(camera) + "/image_raw", rclcpp::SensorDataQoS(),
+          [this, camera](sensor_msgs::msg::Image::ConstSharedPtr message) {
+        if (message->encoding != "mono8" || message->width == 0 || message->height == 0 ||
+            message->step < message->width || message->data.size() < message->step * size_t(message->height)) return;
+        cv::Mat image(message->height, message->width, CV_8UC1,
+                      const_cast<uint8_t*>(message->data.data()), message->step);
+        images_[camera] = image.clone();
+        image_times_[camera] = clock_.elapsed();
+        stamps_[camera] = message->header.stamp.sec + 1e-9 * message->header.stamp.nanosec;
+      });
+    }
+    imu_ = node_->create_subscription<sensor_msgs::msg::Imu>("/imu0", rclcpp::SensorDataQoS().keep_last(200),
+        [this](sensor_msgs::msg::Imu::ConstSharedPtr message) {
+      const auto &a = message->linear_acceleration;
+      const auto &g = message->angular_velocity;
+      if (!std::isfinite(a.x) || !std::isfinite(a.y) || !std::isfinite(a.z) ||
+          !std::isfinite(g.x) || !std::isfinite(g.y) || !std::isfinite(g.z)) return;
+      imu_times_.push_back(clock_.elapsed());
+    });
+    connect(&timer_, &QTimer::timeout, this, [this] { tick(); });
+    timer_.start(50);
+    border(false, "RED: hold the rig steady. Waiting for camera and IMU.");
+    if (measurement_only_) {
+      for (auto view : views_) view->setText("Measurement only");
+      border(false, "MEASUREMENT ONLY: use a ruler on this fullscreen grid, enter the black tag edge below and click Save. Nothing is being recorded.");
+    }
+  }
+
+  ~CalibrationScreen() override { stopRecorder(); }
+
+ protected:
+  void paintEvent(QPaintEvent*) override {
+    QPainter painter(this);
+    const int side = std::min(height(), width() - 460);
+    painter.fillRect(rect(), QColor("#222"));
+    if (side > 0) painter.drawPixmap(QRect(0, (height() - side) / 2, side, side), target_);
+  }
+  void resizeEvent(QResizeEvent*) override {
+    panel_->move(width() - panel_->width() - 10, 10);
+  }
+  void keyPressEvent(QKeyEvent *event) override {
+    if (event->key() == Qt::Key_Escape) close();
+    else QWidget::keyPressEvent(event);
+  }
+
+ private:
+  void border(bool green, const QString &text) {
+    const auto color = green ? "#16c94b" : "#f43b3b";
+    for (auto label : views_) label->setStyleSheet(QString("border: 5px solid %1; background: black;").arg(color));
+    status_->setText(text);
+  }
+  void writeLog() {
+    if (run_dir_.isEmpty()) return;
+    QFile file(run_dir_ + "/recorder.log");
+    if (file.open(QIODevice::WriteOnly)) file.write(recorder_log_);
+  }
+  void saveMeasurement() {
+    if (finishing_) { close(); return; }
+    run_dir_ = output_root_ + "/screen_target_measurement_" + QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss_zzz");
+    if (!QDir().mkpath(run_dir_)) {
+      border(false, "Cannot create the measurement directory.");
+      return;
+    }
+    QFile file(run_dir_ + "/target.yaml");
+    if (!file.open(QIODevice::WriteOnly)) {
+      border(false, "Cannot save the measurement. Esc cancels.");
+      return;
+    }
+    const auto yaml = QString("target_type: aprilgrid\ntagCols: 6\ntagRows: 6\ntagSize: %1\ntagSpacing: 0.3\n")
+        .arg(tag_size_, 0, 'g', 10).toUtf8();
+    if (file.write(yaml) != yaml.size()) {
+      border(false, "Measurement write failed. Esc cancels.");
+      return;
+    }
+    file.close();
+    QFile display(run_dir_ + "/display_geometry.txt");
+    if (display.open(QIODevice::WriteOnly)) {
+      display.write(QString("fullscreen_width_px=%1\nfullscreen_height_px=%2\ntarget_side_px=%3\n")
+          .arg(width()).arg(height()).arg(std::min(height(), width() - 460)).toUtf8());
+    }
+    timer_.stop();
+    finishing_ = true;
+    measured_->setEnabled(false);
+    prepare_->setText("Close");
+    border(false, "SAVED: fullscreen tag size recorded in " + run_dir_ + ". Return to chat.");
+    showNormal();
+    resize(1100, 800);
+    raise();
+    activateWindow();
+  }
+  void stopRecorder() {
+    finishing_ = true;
+    if (recorder_.state() != QProcess::NotRunning) {
+      ::kill(recorder_.processId(), SIGINT);
+      if (!recorder_.waitForFinished(5000)) {
+        recorder_.terminate();
+        if (!recorder_.waitForFinished(2000)) {
+          recorder_.kill();
+          recorder_.waitForFinished(2000);
+        }
+      }
+    }
+    if (recorder_.isOpen()) recorder_log_ += recorder_.readAllStandardOutput();
+    writeLog();
+  }
+  void startRecorder() {
+    measured_->setEnabled(false);
+    run_dir_ = output_root_ + "/screen_calibration_" + QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss_zzz");
+    if (!QDir().mkpath(run_dir_)) {
+      failed_ = true;
+      border(false, "Cannot create the recording directory.");
+      return;
+    }
+    QFile::copy(image_path_, run_dir_ + "/displayed_target.png");
+    QFile yaml(run_dir_ + "/target.yaml");
+    if (!yaml.open(QIODevice::WriteOnly)) {
+      failed_ = true;
+      border(false, "Cannot save measured target dimensions.");
+      return;
+    }
+    yaml.write(QString("target_type: aprilgrid\ntagCols: 6\ntagRows: 6\ntagSize: %1\ntagSpacing: 0.3\n")
+                   .arg(tag_size_, 0, 'g', 10).toUtf8());
+    yaml.close();
+    // Keep a bounded IMU queue large enough for short recorder stalls while
+    // writing stereo images. Preserve this configuration with the recording.
+    QFile qos(run_dir_ + "/record_qos.yaml");
+    if (!qos.open(QIODevice::WriteOnly)) {
+      failed_ = true;
+      border(false, "Cannot save recording QoS configuration.");
+      return;
+    }
+    qos.write("/imu0:\n  history: keep_last\n  depth: 1000\n  reliability: reliable\n  durability: volatile\n");
+    qos.close();
+    recorder_.start("ros2", {"bag", "record", "--qos-profile-overrides-path", run_dir_ + "/record_qos.yaml",
+                    "-o", run_dir_ + "/sensors_bag",
+                    "/cam0/image_raw", "/cam1/image_raw", "/cam0/camera_info", "/cam1/camera_info", "/imu0"});
+    recorder_start_ = clock_.elapsed();
+  }
+  void tick() {
+    if (!rclcpp::ok()) { close(); return; }
+    if (measurement_only_) return;
+    // Drain all queued callbacks. One spin_some call per 50 ms GUI tick can
+    // process only one sample per subscription and falsely report a 20 Hz IMU.
+    executor_.spin_all(std::chrono::milliseconds(5));
+    const auto now = clock_.elapsed();
+    while (!imu_times_.empty() && now - imu_times_.front() > 2000) imu_times_.pop_front();
+    const bool streams = image_times_[0] >= 0 && image_times_[1] >= 0 &&
+        now - image_times_[0] < 800 && now - image_times_[1] < 800 &&
+        !imu_times_.empty() && now - imu_times_.back() < 500;
+    const double rate = imu_times_.size() >= 2 ?
+        (imu_times_.size() - 1) * 1000.0 / std::max<qint64>(1, imu_times_.back() - imu_times_.front()) : 0;
+    if (now - last_detection_ >= 200) {
+      last_detection_ = now;
+      std::array<std::set<int>, 2> ids;
+      for (int camera = 0; camera < 2; ++camera) {
+        if (images_[camera].empty()) continue;
+        const auto detections = detector_.extractTags(images_[camera]);
+        cv::Mat preview;
+        cv::cvtColor(images_[camera], preview, cv::COLOR_GRAY2RGB);
+        for (const auto &tag : detections) {
+          bool valid = tag.good && tag.id >= 0 && tag.id < 36;
+          std::vector<cv::Point> corners;
+          for (const auto &corner : tag.p) {
+            valid = valid && corner.first >= 4 && corner.second >= 4 &&
+                corner.first <= images_[camera].cols - 4 && corner.second <= images_[camera].rows - 4;
+            corners.emplace_back(cvRound(corner.first), cvRound(corner.second));
+          }
+          if (!valid) continue;
+          ids[camera].insert(tag.id);
+          cv::polylines(preview, corners, true, cv::Scalar(0, 255, 0), 1);
+          cv::putText(preview, std::to_string(tag.id), corners[0], cv::FONT_HERSHEY_SIMPLEX, 0.4,
+                      cv::Scalar(0, 255, 0), 1);
+        }
+        tag_counts_[camera] = ids[camera].size();
+        QImage qt(preview.data, preview.cols, preview.rows, preview.step, QImage::Format_RGB888);
+        views_[camera]->setPixmap(QPixmap::fromImage(qt.copy()).scaled(180, 135, Qt::KeepAspectRatio));
+      }
+      common_tags_ = 0;
+      for (int id : ids[0]) if (ids[1].count(id)) ++common_tags_;
+    }
+    if (failed_ || finishing_) return;
+    const bool sensor_health = streams && rate >= 80 && rate <= 120;
+    const bool target_visible = tag_counts_[0] >= 7 && tag_counts_[1] >= 7 && common_tags_ >= 4;
+    const bool ready = sensor_health &&
+        std::abs(stamps_[0] - stamps_[1]) < 0.005 &&
+        target_visible;
+    if (now - last_log_ >= 3000) {
+      last_log_ = now;
+      RCLCPP_INFO(node_->get_logger(), "preview: common_tags=%d imu_rate=%.1f streams=%s ready=%s",
+                  common_tags_, rate, streams ? "yes" : "no", ready ? "yes" : "no");
+    }
+    if (recording_since_ >= 0) {
+      if (!streams) {
+        failed_ = true;
+        stopRecorder();
+        border(false, "RED: sensor data stopped. Recording saved but incomplete. Return to chat.");
+        showNormal();
+        return;
+      }
+      const int left = seconds_ - int((now - recording_since_) / 1000);
+      if (left <= 0) {
+        stopRecorder();
+        border(false, "FINISHED: stop moving. Saved in " + run_dir_ + ". Return to chat.");
+        showNormal();
+      } else {
+        border(true, QString("GREEN: move slowly through different distances, positions and tilts. %1 seconds left. %2 common tags, IMU %3 Hz.%4")
+            .arg(left).arg(common_tags_).arg(rate, 0, 'f', 1)
+            .arg(common_tags_ < 4 ? " Bring the full grid back into view." : ""));
+      }
+      return;
+    }
+    if (recorder_start_ >= 0) {
+      const bool subscribed = recorder_log_.contains("Subscribed to topic '/cam0/image_raw'") &&
+          recorder_log_.contains("Subscribed to topic '/cam1/image_raw'") &&
+          recorder_log_.contains("Subscribed to topic '/imu0'");
+      if (now - recorder_start_ > 20000 && !subscribed) {
+        failed_ = true;
+        stopRecorder();
+        border(false, "RED: recorder did not subscribe to the sensors. Return to chat.");
+      } else if (subscribed && (countdown_since_ >= 0 || ready)) {
+        // Readiness starts the countdown; it is not a stillness measurement.
+        // The two latest callbacks can temporarily refer to adjacent stereo
+        // frames. Do not restart a running countdown on that snapshot or a
+        // brief tag-detection fluctuation. Require sustained target loss.
+        if (!streams) {
+          failed_ = true;
+          stopRecorder();
+          border(false, "RED: sensor data stopped before movement. Recording saved but incomplete. Return to chat.");
+          showNormal();
+          return;
+        }
+        if (!sensor_health || !target_visible) {
+          if (countdown_bad_since_ < 0) countdown_bad_since_ = now;
+          if (now - countdown_bad_since_ >= 1500) {
+            countdown_since_ = -1;
+            border(false, !sensor_health ? "RED: waiting for a stable 80-120 Hz IMU stream." :
+                                         "RED: bring the grid back into both camera views.");
+            return;
+          }
+        } else countdown_bad_since_ = -1;
+        if (countdown_since_ < 0) {
+          countdown_since_ = now;
+          countdown_bad_since_ = -1;
+        }
+        const int remaining = 5 - int((now - countdown_since_) / 1000);
+        if (remaining <= 0 && sensor_health && target_visible) recording_since_ = now;
+        border(false, QString("RED: hold steady. Start moving when green, in %1 seconds.").arg(std::max(0, remaining)));
+      } else {
+        border(false, "RED: hold steady with the grid visible. Waiting for recorder and sensors.");
+      }
+      return;
+    }
+    border(false, QString("RED: left %1 tags, right %2 tags, IMU %3 Hz. %4")
+        .arg(tag_counts_[0]).arg(tag_counts_[1]).arg(rate, 0, 'f', 1)
+        .arg(tag_counts_[0] < 7 || tag_counts_[1] < 7 ?
+             "Aim straight at the grid and move closer until at least 7 tags appear in each view. Keep the complete grid visible." :
+             (armed_ ? "Hold steady while I check the image." :
+              QString("Click Prepare; hold still until green, then move for %1 seconds.").arg(seconds_))));
+    if (armed_ && ready) {
+      if (stable_since_ < 0) stable_since_ = now;
+      if (now - stable_since_ >= 3000) startRecorder();
+    } else stable_since_ = -1;
+  }
+  std::shared_ptr<rclcpp::Node> node_;
+  rclcpp::executors::SingleThreadedExecutor executor_;
+  std::array<rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr, 2> subscriptions_;
+  rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr imu_;
+  AprilTags::TagDetector detector_{AprilTags::tagCodes36h11, 2};
+  std::array<cv::Mat, 2> images_;
+  std::array<qint64, 2> image_times_{{-1, -1}};
+  std::array<double, 2> stamps_{{0, 0}};
+  std::array<int, 2> tag_counts_{{0, 0}};
+  std::deque<qint64> imu_times_;
+  QWidget *panel_;
+  std::array<QLabel*, 2> views_;
+  QLabel *status_;
+  QPushButton *prepare_;
+  QDoubleSpinBox *measured_;
+  QPixmap target_;
+  QString image_path_, output_root_, run_dir_;
+  QByteArray recorder_log_;
+  QProcess recorder_;
+  QElapsedTimer clock_;
+  QTimer timer_;
+  qint64 last_detection_ = -1000, last_log_ = -3000, stable_since_ = -1, recorder_start_ = -1,
+         countdown_since_ = -1, countdown_bad_since_ = -1, recording_since_ = -1;
+  int seconds_ = 90, common_tags_ = 0;
+  double tag_size_ = 0.040;
+  bool armed_ = false, finishing_ = false, failed_ = false, measurement_only_ = false;
+};
+
+int main(int argc, char **argv) {
+  rclcpp::init(argc, argv);
+  QApplication app(argc, argv);
+  try {
+    auto node = std::make_shared<rclcpp::Node>("hw290_calibration_screen");
+    CalibrationScreen window(node);
+    window.showFullScreen();
+    QTimer::singleShot(500, &window, [&window] {
+      window.raise();
+      window.activateWindow();
+    });
+    const int result = app.exec();
+    rclcpp::shutdown();
+    return result;
+  } catch (const std::exception &error) {
+    fprintf(stderr, "Calibration screen: %s\n", error.what());
+    rclcpp::shutdown();
+    return 1;
+  }
+}

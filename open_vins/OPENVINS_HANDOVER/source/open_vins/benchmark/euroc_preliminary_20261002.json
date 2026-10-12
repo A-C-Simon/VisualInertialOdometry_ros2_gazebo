@@ -1,0 +1,115 @@
+{
+  "dataset": "EuRoC V1_01_easy",
+  "resources": [
+    {
+      "trial": "euroc_20261002_openvins_fixed_cached",
+      "cpu_seconds": 69.89,
+      "peak_rss_mib": 121.875,
+      "completion": {
+        "elapsed_s": 151.82102380100696,
+        "estimator_exit": 0,
+        "player_exit": 0
+      }
+    },
+    {
+      "trial": "euroc_20261002_orb_motion_gate_600",
+      "cpu_seconds": 129.63,
+      "peak_rss_mib": 693.984375,
+      "completion": {
+        "elapsed_s": 156.61703687800036,
+        "estimator_exit": 0,
+        "player_exit": 0
+      }
+    },
+    {
+      "trial": "euroc_20261002_orb_motion_gate_480",
+      "cpu_seconds": 84.81,
+      "peak_rss_mib": 689.41015625,
+      "completion": {
+        "elapsed_s": 156.62681980799243,
+        "estimator_exit": 0,
+        "player_exit": 0
+      }
+    }
+  ],
+  "post_initialization": {
+    "common_start_s": 1403715303.262143,
+    "common_end_s": 1403715417.962143,
+    "alignment": "SE(3), no scale; GT position interpolated",
+    "results": [
+      {
+        "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261002_openvins_fixed_cached/online.txt",
+        "poses": 2295,
+        "duration_s": 114.70000004768372,
+        "approximate_20hz_coverage": 0.9999999995844556,
+        "max_pose_gap_s": 0.05000019073486328,
+        "ate_rmse_m": 0.033395816919724354,
+        "ate_p95_m": 0.04718543991177807,
+        "rpe_1s_translation_rmse_m": 0.009888085038859786
+      },
+      {
+        "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261002_orb_motion_gate_600/online.txt",
+        "poses": 2193,
+        "duration_s": 114.65000009536743,
+        "approximate_20hz_coverage": 0.9555555551584798,
+        "max_pose_gap_s": 0.2999999523162842,
+        "ate_rmse_m": 0.02007246527041862,
+        "ate_p95_m": 0.03388252486642003,
+        "rpe_1s_translation_rmse_m": 0.012116275000459165
+      },
+      {
+        "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261002_orb_motion_gate_480/online.txt",
+        "poses": 2261,
+        "duration_s": 114.70000004768372,
+        "approximate_20hz_coverage": 0.9851851847757971,
+        "max_pose_gap_s": 0.10000014305114746,
+        "ate_rmse_m": 0.05262284086667345,
+        "ate_p95_m": 0.10442113052617061,
+        "rpe_1s_translation_rmse_m": 0.02410476707609264
+      }
+    ]
+  },
+  "full_common_interval": {
+    "common_start_s": 1403715287.662143,
+    "common_end_s": 1403715417.962143,
+    "alignment": "SE(3), no scale; GT position interpolated",
+    "results": [
+      {
+        "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261002_openvins_fixed_cached/online.txt",
+        "poses": 2607,
+        "duration_s": 130.29999995231628,
+        "approximate_20hz_coverage": 1.0,
+        "max_pose_gap_s": 0.05000019073486328,
+        "ate_rmse_m": 0.0382283764332218,
+        "ate_p95_m": 0.060685280941981286,
+        "rpe_1s_translation_rmse_m": 0.009879360524271815
+      },
+      {
+        "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261002_orb_motion_gate_600/online.txt",
+        "poses": 2495,
+        "duration_s": 130.25,
+        "approximate_20hz_coverage": 0.9570387421989656,
+        "max_pose_gap_s": 0.2999999523162842,
+        "ate_rmse_m": 0.05780381217594672,
+        "ate_p95_m": 0.05237415557288125,
+        "rpe_1s_translation_rmse_m": 0.03561340293881621
+      },
+      {
+        "trajectory": "/home/ac/VisualInertialOdometry_ros2_gazebo/open_vins/benchmark/results/euroc_20261002_orb_motion_gate_480/online.txt",
+        "poses": 2567,
+        "duration_s": 130.29999995231628,
+        "approximate_20hz_coverage": 0.9846566938776532,
+        "max_pose_gap_s": 0.10000014305114746,
+        "ate_rmse_m": 0.0924945016559739,
+        "ate_p95_m": 0.24901000845412977,
+        "rpe_1s_translation_rmse_m": 0.03219400576880181
+      }
+    ]
+  },
+  "status": "Preliminary, best-effort ORB image subscriptions missed stereo pairs; reliable-delivery reruns required.",
+  "ground_truth": {
+    "path": "ov_data/euroc_mav/V1_01_easy.csv",
+    "source": "https://github.com/rpng/open_vins/blob/master/ov_data/euroc_mav/V1_01_easy.csv",
+    "reason": "Upstream corrected V1_01 orientation; original dataset CSV has an orientation issue documented at https://docs.openvins.com/gs-datasets.html"
+  }
+}

@@ -1,0 +1,12 @@
+--- a/src/Tracking.cc
++++ b/src/Tracking.cc
+@@ -51,6 +51,9 @@
+     // Load camera parameters from settings file
+     if(settings){
+         newParameterLoader(settings);
++        // The legacy loader sets this; the version 1.0 loader omitted it.
++        // Tracking and inertial optimization must use a deterministic window.
++        mnFramesToResetIMU = mMaxFrames;
+     }
+     else{
+         cv::FileStorage fSettings(strSettingPath, cv::FileStorage::READ);

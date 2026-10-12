@@ -1,0 +1,49 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+  - Class: rviz_common/Views
+    Name: Views
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz_default_plugins/TF
+      Name: TF
+      Enabled: true
+    - Class: rviz_default_plugins/Path
+      Name: OpenVINS path
+      Topic: /ov_msckf/pathimu
+      Enabled: true
+      Color: 0; 255; 0
+      Line Style: Lines
+      Line Width: 0.03
+    - Class: rviz_default_plugins/PointCloud2
+      Name: MSCKF features
+      Topic: /ov_msckf/points_msckf
+      Enabled: true
+      Size (Pixels): 3
+    - Class: rviz_default_plugins/Image
+      Name: Left camera
+      Topic: /cam0/image_raw
+      Enabled: true
+      Normalize Range: true
+    - Class: rviz_default_plugins/Image
+      Name: Right camera
+      Topic: /cam1/image_raw
+      Enabled: true
+      Normalize Range: true
+  Enabled: true
+  Global Options:
+    Fixed Frame: global
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz_default_plugins/Interact
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Select
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 5
+      Focal Point: 0; 0; 0
+      Pitch: 1.0
+      Yaw: 0.8

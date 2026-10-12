@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<package format="3">
+
+    <!-- Package Information -->
+    <name>ov_msckf</name>
+    <version>2.7.0</version>
+    <description>
+        Implementation of a type-based error-state Kalman filter.
+    </description>
+    <url type="website">https://docs.openvins.com/</url>
+    <url type="bugtracker">https://github.com/rpng/open_vins/issues</url>
+    <url type="repository">https://github.com/rpng/open_vins</url>
+
+    <!-- Code Authors -->
+    <author email="pgeneva@udel.edu">Patrick Geneva</author>
+    <author email="keck@udel.edu">Kevin Eckenhoff</author>
+    <author email="ghuang@udel.edu">Guoquan Huang</author>
+    <maintainer email="pgeneva@udel.edu">Patrick Geneva</maintainer>
+
+    <!-- Licensing -->
+    <license>GNU General Public License v3.0</license>
+
+    <!-- ROS2: Dependencies needed to compile this package. -->
+    <buildtool_depend>ament_cmake</buildtool_depend>
+    <depend>rclcpp</depend>
+    <depend>tf2_ros</depend>
+    <depend>tf2_geometry_msgs</depend>
+    <depend>std_msgs</depend>
+    <depend>geometry_msgs</depend>
+    <depend>sensor_msgs</depend>
+    <depend>nav_msgs</depend>
+    <depend>cv_bridge</depend>
+    <depend>image_transport</depend>
+    <depend>ov_core</depend>
+    <depend>ov_init</depend>
+
+    <!-- System dependencies -->
+    <depend>eigen</depend>
+    <depend>libopencv-dev</depend>
+    <depend>libopencv-contrib-dev</depend>
+    <depend>boost</depend>
+    <depend>libceres-dev</depend>
+
+    <!-- Note the export is required to expose the executables -->
+    <export>
+        <build_type>ament_cmake</build_type>
+        <rosdoc config="rosdoc.yaml" />
+    </export>
+
+    <!-- These are really "soft" dependencies, and are just required if you need them for launch... -->
+    <!--    <depend>ov_eval</depend>-->
+    <!--    <depend>ov_data</depend>-->
+
+</package>
