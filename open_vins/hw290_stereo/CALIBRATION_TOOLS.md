@@ -45,7 +45,7 @@ Use Kalibr's [official Docker build method](https://github.com/ethz-asl/kalibr/w
 with a pinned source revision and two compilation jobs:
 
 ```bash
-export VIO_WS="$HOME/VisualInertialOdometry_ros2_gazebo/open_vins"
+export VIO_WS="$HOME/OPENVINS_HANDOVER/source/open_vins"
 export CAL_TOOLS="$HOME/vio_calibration_tools"
 mkdir -p "$CAL_TOOLS"
 git clone https://github.com/ethz-asl/kalibr.git "$CAL_TOOLS/kalibr"

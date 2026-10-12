@@ -1,7 +1,7 @@
 # OpenVINS stereo VIO: implementation and commissioning guide
 
-Revision: 9 October 2026. Reference runtime: repository commit `21d83df`.
-Handover with automated setup: `openvins-hw290-setup-20261009`.
+Revision: 12 October 2026. The complete local source is in
+`OPENVINS_HANDOVER/source/open_vins`; its version is recorded in `SOURCE_REVISION`.
 
 ## 1. Purpose and scope
 
@@ -32,6 +32,8 @@ IMU noise and intrinsic correction matrices remain provisional.
 
 All shell commands use Bash. Run them from the `open_vins` directory unless
 a command explicitly changes directory. Replace paths labelled `REPLACE_...`.
+Installation examples assume the supplied folder is at `$HOME/OPENVINS_HANDOVER`.
+Change that path if the folder is stored elsewhere. No project Git clone is needed.
 Stop the running launcher before changing firmware, configuration or wiring.
 
 ## 2. System architecture
@@ -161,16 +163,12 @@ time offset. The IMU die center also differs from the breakout board center.
 
 ### Automated setup
 
-On Ubuntu 22.04, install Git if needed, then obtain the version including the
-setup scripts:
+Copy the complete supplied folder to `$HOME/OPENVINS_HANDOVER` on Ubuntu 22.04.
+The source, setup scripts, firmware and calibration files are already inside it.
+Internet access is needed for system packages and external tools:
 
 ```bash
-sudo apt update
-sudo apt install git
-git clone https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo.git \
-  "$HOME/VisualInertialOdometry_ros2_gazebo"
-cd "$HOME/VisualInertialOdometry_ros2_gazebo/open_vins"
-git checkout openvins-hw290-setup-20261009
+cd "$HOME/OPENVINS_HANDOVER/source/open_vins"
 ./hw290_stereo/setup_hw290_openvins.sh --with-calibration-tools
 source hw290_stereo/env_hw290.sh
 ```
@@ -238,15 +236,11 @@ Use the distribution OpenCV libraries, including those used by `cv_bridge`.
 Mixing incompatible OpenCV builds can crash the process. Gazebo, ORB-SLAM3,
 Pangolin and CUDA are not needed for this hardware pipeline.
 
-### 4.2 Obtain this fork and build the four hardware packages
+### 4.2 Build the four hardware packages from the supplied source
 
 ```bash
-git clone https://github.com/A-C-Simon/VisualInertialOdometry_ros2_gazebo.git \
-  "$HOME/VisualInertialOdometry_ros2_gazebo"
-export VIO_WS="$HOME/VisualInertialOdometry_ros2_gazebo/open_vins"
+export VIO_WS="$HOME/OPENVINS_HANDOVER/source/open_vins"
 cd "$VIO_WS"
-# The tag includes this guide and the documented runtime.
-git checkout openvins-hw290-setup-20261009
 source /opt/ros/humble/setup.bash
 colcon --log-base log_vio build \
   --base-paths ov_core ov_init ov_msckf ov_hw290 \
@@ -395,7 +389,7 @@ export ROS_DOMAIN_ID=48
 In a second terminal:
 
 ```bash
-cd "$HOME/VisualInertialOdometry_ros2_gazebo/open_vins"
+cd "$HOME/OPENVINS_HANDOVER/source/open_vins"
 source /opt/ros/humble/setup.bash
 source install_vio/setup.bash
 export ROS_DOMAIN_ID=48
@@ -709,7 +703,7 @@ the new files. Do not leave defaults pointing at the old tower profile.
 For the unchanged reference tower:
 
 ```bash
-cd "$HOME/VisualInertialOdometry_ros2_gazebo/open_vins"
+cd "$HOME/OPENVINS_HANDOVER/source/open_vins"
 export ROS_DOMAIN_ID=48
 ./hw290_stereo/run_hw290_openvins.sh
 ```
