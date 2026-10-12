@@ -56,6 +56,7 @@ elif name == 'colcon':
             p.parent.mkdir(parents=True, exist_ok=True); p.write_text('#!/bin/bash\nexit 0\n'); p.chmod(0o755)
     (root / 'install_vio/setup.bash').write_text('# fake overlay\n')
 elif name == 'git':
+    if os.environ.get('TEST_GIT_FAIL'): sys.exit(128)
     if args[0] == 'init': (pathlib.Path(args[1]) / '.git').mkdir(parents=True)
     if 'fetch' in args:
         p = pathlib.Path(args[1]) / 'Dockerfile_ros1_20_04'
@@ -175,6 +176,27 @@ chmod +x "$TEST_ROOT/install_camera/usb_cam/lib/usb_cam/usb_cam_node_exe"
         self.assertNotEqual(r.returncode, 0)
         self.assertFalse(any(c[0] in ('sudo','curl','colcon','apt-get') for c in self.recorded()))
         self.assertFalse((self.root / 'benchmark').exists())
+
+    @unittest.skipIf(os.geteuid() == 0, 'Installer deliberately rejects root accounts')
+    def test_source_archive_records_its_revision_without_git(self):
+        revision = 'b' * 40 + '\n'
+        (self.root / 'SOURCE_REVISION').write_text(revision)
+        self.env['TEST_GIT_FAIL'] = '1'
+        r = self.run_setup('--skip-system', '--skip-build')
+        self.assertEqual(r.returncode, 0, r.stdout+r.stderr)
+        logs = list((self.root / 'benchmark/results').glob('setup_*/source_revision.txt'))
+        self.assertEqual(len(logs), 1)
+        self.assertEqual(logs[0].read_text(), revision)
+        self.assertFalse(any(c[0] == 'git' for c in self.recorded()))
+
+    @unittest.skipIf(os.geteuid() == 0, 'Installer deliberately rejects root accounts')
+    def test_missing_git_metadata_does_not_fail_setup(self):
+        self.env['TEST_GIT_FAIL'] = '1'
+        r = self.run_setup('--skip-system', '--skip-build')
+        self.assertEqual(r.returncode, 0, r.stdout+r.stderr)
+        logs = list((self.root / 'benchmark/results').glob('setup_*/source_revision.txt'))
+        self.assertEqual(len(logs), 1)
+        self.assertEqual(logs[0].read_text(), 'unversioned local source\n')
 
 
 if __name__ == '__main__':

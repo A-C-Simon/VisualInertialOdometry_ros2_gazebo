@@ -226,7 +226,12 @@ fi
 STAGE='software verification'
 # The image builder already smoke-checked Docker, including sudo when needed.
 if [[ "$BUILD" == true ]]; then ready_check false; fi
-git -C "$ROOT" rev-parse HEAD > "$LOG_DIR/source_revision.txt"
+if [[ -r "$ROOT/SOURCE_REVISION" ]]; then
+  cp "$ROOT/SOURCE_REVISION" "$LOG_DIR/source_revision.txt"
+else
+  git -C "$ROOT" rev-parse HEAD > "$LOG_DIR/source_revision.txt" 2>/dev/null || \
+    printf '%s\n' 'unversioned local source' > "$LOG_DIR/source_revision.txt"
+fi
 dpkg-query -W -f='${Package}\t${Version}\n' "${PACKAGES[@]}" > "$LOG_DIR/packages.txt"
 arduino-cli version > "$LOG_DIR/arduino_version.txt"
 arduino-cli core list > "$LOG_DIR/arduino_cores.txt"
