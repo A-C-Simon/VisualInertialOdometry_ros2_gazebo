@@ -1,17 +1,32 @@
 # OpenVINS hardware source
 
-This directory is the build workspace. It contains the four ROS 2 packages,
-hardware scripts, firmware, calibration files, configurations and benchmark tools.
-The source version is recorded in SOURCE_REVISION. Git metadata is not included.
+This directory is the ROS 2 build workspace. The source version is recorded in
+`SOURCE_REVISION`.
 
-From this directory on Ubuntu 22.04, run as a normal account:
+| Directory | Component |
+| --- | --- |
+| `ov_core/` | Feature tracking, camera models and mathematical types |
+| `ov_init/` | State initialization |
+| `ov_msckf/` | Estimation, ROS subscriptions and state publication |
+| `ov_hw290/` | IMU bridge, stereo splitter and calibration utilities |
+| `hw290_stereo/` | Setup, firmware, configuration and launch scripts |
+| `config/` | Estimator configuration files |
+| `benchmark/` | Trajectory error and resource measurement utilities |
+
+## Build
+
+On Ubuntu 22.04, run as a normal account:
 
 ```bash
 ./hw290_stereo/setup_hw290_openvins.sh --with-calibration-tools
 source hw290_stereo/env_hw290.sh
 ```
 
-Read the [implementation guide](../../OPENVINS_IMPLEMENTATION_GUIDE.md) before
-flashing firmware or operating a new rig. A new assembly needs calibration.
-Internet access is required for system packages and external tools.
-ORB-SLAM3 source and historical raw sensor recordings are not included.
+The installer builds the estimator packages and patched camera driver for the
+destination computer. See the [implementation guide](../../OPENVINS_IMPLEMENTATION_GUIDE.md)
+for manual installation, hardware commissioning and acceptance criteria.
+
+## Licensing
+
+OpenVINS licensing is defined in `LICENSE`. The AprilTag dependency retains its
+license in `ov_hw290/third_party/ethz_apriltag2/LICENSE`.

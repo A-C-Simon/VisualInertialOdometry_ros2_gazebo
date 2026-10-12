@@ -1,238 +1,52 @@
-# HW290 offline calibration
+# Camera and IMU calibration
 
-For a clean installation and new device, follow the
-[implementation guide](../OPENVINS_IMPLEMENTATION_GUIDE.md) and
-[offline tools build and fitting commands](../CALIBRATION_TOOLS.md).
-They include the Docker image build that the historical commands below assume.
+Calibrate each assembled camera/IMU rig before normal operation. The procedure
+requires a measured AprilGrid, raw stereo recordings, dynamic IMU data and a
+stationary noise measurement.
 
-**Start with [the tested drift correction and repeatable method](../DRIFT_FIX.md).**
+## Procedure
 
-The [current tower mount](20261002_tower/README.md) uses the October 2
-[measured profile](20261002_tower/candidate/README.md), which passed desk motion
-after both estimator delivery fixes. Both launchers check `current_mount.yaml` and refuse live VIO with a chain
-from the previous mount. Raw recording remains available. The
-[October 1 profile](20261001/README.md) passed earlier-mount desk checks;
-ORB received that profile on October 2, before the tower change. IMU noise
-remains provisional. Preserve historical profiles for old recordings.
+1. Complete the electrical and acquisition checks in
+   [the implementation guide](../OPENVINS_IMPLEMENTATION_GUIDE.md#6-check-acquisition-before-calibration).
+2. Measure the target dimensions at the printed or fullscreen size used during
+   capture. Save a matching target YAML with each recording.
+3. Record stationary IMU data for Allan analysis, stereo views covering both
+   image fields, and dynamic roll, pitch, yaw and translation.
+4. Build and run the pinned Kalibr and Allan tools using
+   [CALIBRATION_TOOLS.md](../CALIBRATION_TOOLS.md).
+5. Review residuals, baseline, spatial transforms and time offsets. Generate
+   the matching raw and rectified profiles with `build_rectified_profile`.
+6. Record file fingerprints in `current_mount.yaml` and complete
+   [physical acceptance](../OPENVINS_IMPLEMENTATION_GUIDE.md#9-validate-and-activate-the-new-profile).
 
-## 1. Print the target
+## Capture commands
 
-Print `aprilgrid_6x6_a4.pdf` at 100 percent or actual size on flat A4 paper.
-Measure one black tag edge after printing. It must be 23.0 mm. If the printer
-scaled it, enter the measured edge length in metres as `tagSize` in
-`aprilgrid_6x6_a4.yaml`. Keep the sheet flat and rigid.
-
-Alternatively, use the calibration screen described below and measure one
-complete black tag edge with a ruler. The gap divided by tag edge must be
-0.30. Keep display scaling and target size fixed during both recordings.
-The screen measurement on October 1 was approximately 40 mm per tag with
-12 mm gaps. The printed target YAML still describes the 23 mm printed tags.
-For screen recordings, use the saved run's `target.yaml` in both Kalibr commands
-below. Keep the screen fixed and move the rig for both recordings. Check
-captured images for glare and flicker before collecting calibration data.
-
-## 2. Measure IMU noise
-
-Place the complete rig on a vibration-free surface and do not touch it for at
-least three hours:
+Run from the source workspace:
 
 ```bash
-./hw290_stereo/run_hw290_openvins.sh --imu-allan
-```
-
-The saved run contains `imu_bag` and the raw serial log. Use Allan variance to
-replace the four provisional noise and random-walk values before the final
-camera to IMU calibration.
-
-The C++ `allan_variance_ros` tool is built locally in the ignored
-`.allan_workspace` directory. It uses upstream commit
-`1d54b602ee7f2ba0427865d63afe4945d913ed24` from
-https://github.com/ori-drs/allan_variance_ros. It was checked on the 8,870-message
-IMU smoke bag; that 89.6 second check is too short for bias noise calibration.
-The following commands are for a completed stationary recording of at least
-three hours. Put only that one converted bag in the analysis directory.
-
-```bash
-rosbags-convert --src /path/to/run/imu_bag \
-  --dst /path/to/allan_results/imu.bag
-cp hw290_stereo/calibration/allan_hw290.yaml /path/to/allan_results/
-docker run --rm --cpus=2 -e OMP_NUM_THREADS=2 \
-  -v "$PWD/hw290_stereo/calibration/.allan_workspace:/allan_ws" \
-  -v /path/to/allan_results:/data \
-  --entrypoint /bin/bash kalibr-hw290 -lc \
-  'set -e; source /allan_ws/devel/setup.bash; \
-   roscore > /data/roscore.log 2>&1 & core_pid=$!; \
-   trap '\''kill "$core_pid" 2>/dev/null || true'\'' EXIT; sleep 2; \
-   rosrun allan_variance_ros allan_variance /data /data/allan_hw290.yaml \
-   > /data/computation.log 2>&1; \
-   cd /data; MPLBACKEND=Agg rosrun allan_variance_ros analysis.py \
-   --data allan_variance.csv --config allan_hw290.yaml --output imu.yaml'
-```
-
-The result includes `acceleration.png`, `gyro.png` and a flat Kalibr `imu.yaml`.
-Inspect the curves and fit before using the four noise values. The configuration
-uses integer rates because the upstream tool reads `measure_rate` as an integer.
-If `.allan_workspace` is absent, rebuild it from the pinned source:
-
-```bash
-mkdir -p hw290_stereo/calibration/.allan_workspace/src
-git clone https://github.com/ori-drs/allan_variance_ros.git \
-  hw290_stereo/calibration/.allan_workspace/src/allan_variance_ros
-git -C hw290_stereo/calibration/.allan_workspace/src/allan_variance_ros \
-  checkout 1d54b602ee7f2ba0427865d63afe4945d913ed24
-docker run --rm \
-  -v "$PWD/hw290_stereo/calibration/.allan_workspace:/allan_ws" \
-  --entrypoint /bin/bash kalibr-hw290 -lc \
-  'source /catkin_ws/devel/setup.bash; cd /allan_ws; \
-   catkin init; catkin config --cmake-args -DCMAKE_BUILD_TYPE=Release; \
-   catkin build allan_variance_ros --no-status --jobs 2'
-```
-
-## 3. Record raw stereo calibration data
-
-For a screen target, use the C++ calibration window:
-
-```bash
+# Fullscreen target and raw stereo/IMU recording
 ./hw290_stereo/run_hw290_openvins.sh --calibration-screen
-```
 
-It shows the target at full screen with two small camera previews in the top
-right, without covering the grid. Measure the tag edge at this display size
-and enter it in the measured tag edge field if it differs from the default.
-The field defaults to 40 mm; `CALIBRATION_TAG_SIZE_M` changes that default.
-The browser and fullscreen grid can have different physical scales. A browser
-ruler measurement must not be reused without checking the fullscreen black edge.
-To measure the fullscreen grid without sensors or starting a recording:
+# Stationary IMU recording for noise analysis
+./hw290_stereo/run_hw290_openvins.sh --imu-allan
 
-```bash
-source /opt/ros/humble/setup.bash
-./install_vio/ov_hw290/lib/ov_hw290/calibration_screen --ros-args \
-  -p measurement_only:=true \
-  -p target_image:="$PWD/hw290_stereo/calibration/aprilgrid_6x6.png" \
-  -p output_root:="$PWD/benchmark/results"
-```
-
-Use the ruler, enter millimetres in the window and click Save fullscreen tag
-size. The window saves a separate `screen_target_measurement_*/target.yaml`
-and display geometry, then returns to a normal window. No terminal response
-is needed while it is fullscreen. Use the measured value for capture and fit
-only when the fullscreen layout matches the recording.
-The border stays
-red while the window checks fresh stereo frames, at least seven tags per camera
-and four matching tags between the cameras,
-and 80 to 120 Hz IMU delivery. After the recorder subscribes to both cameras
-and IMU, a five second countdown appears. Capture starts automatically when
-the checks pass; there is no terminal prompt or Prepare click. Green means
-start moving. The Cancel button or Esc stops the capture.
-Once started, the countdown tolerates brief tag detection or stereo callback
-fluctuations. It checks stream health and target visibility rather than measuring
-perfect stillness. Target loss or an invalid IMU rate lasting 1.5 seconds restarts
-readiness; loss of sensor data ends the capture as incomplete.
-The timer stops recording after 90 seconds and returns to a normal window.
-Use `CALIBRATION_SECONDS=60` for the dynamic camera to IMU recording.
-Esc stops the recorder and closes the window; the launcher then stops sensors.
-Each recording saves `sensors_bag`, `target.yaml`, the displayed image and
-recorder log in a `screen_calibration_*` result directory. It also saves
-`record_qos.yaml` and applies a reliable, bounded 1,000-sample IMU recording
-queue to absorb brief stalls while stereo images are written. Check recorded
-IMU timestamp intervals after capture; preview rate alone does not verify bag
-completeness. Under the simulated stereo load, the default recorder saved
-139 IMU samples over 7.11 seconds; the explicit queue saved 704 over 7.03 seconds.
-This verifies that recording case; physical capture still needs its own check.
-Use the saved `target.yaml`
-with Kalibr. A live preview and tag count confirm visibility; the Kalibr report
-must still verify calibration quality. The preview uses Kalibr's native
-`ethz_apriltag2` tag36h11 detector with a two-bit black border. On the live
-images Kalibr accepted 126 left and 105 right corners while OpenCV reported
-too few tags. The native preview detected 32 left and 27 right tags in the
-same images. It checks tag validity and a four-pixel image border margin.
-Images saved in the bag remain raw.
-
-Run this command twice, stopping each run with Ctrl-C:
-
-```bash
+# Raw acquisition with a printed target
 ./hw290_stereo/run_hw290_openvins.sh \
   --sensors-only --no-rviz --diagnostics --raw-stereo
 ```
 
-For the first run, change the relative pose of rig and target for one to two
-minutes. With a printed grid, hold the rig fixed and move the grid. With a
-screen, move the rig. Cover the full image, use different distances, and tilt
-the rig or grid.
+The fullscreen tool saves the measured target YAML and stops automatically.
+For manual printed-target capture, stop with Ctrl-C and create a target YAML
+using the measured black tag edge and gap-to-edge ratio.
 
-For the second run, fix the grid and move the rig smoothly for 30 to 60
-seconds. Keep the full grid visible while rotating around roll, pitch and yaw
-and translating in all three directions. Avoid shocks and motion blur.
+## Reference calibration
 
-## 4. Run Kalibr
+The [tower geometry](20261002_tower/README.md) and
+[measured profile](20261002_tower/candidate/README.md) document the reference
+assembly. IMU noise coefficients are provisional. Use measured coefficients
+when qualifying a new sensor.
 
-Convert each ROS 2 `sensors_bag` to a ROS 1 bag using `rosbags-convert`. Run the
-static stereo calibration at about 4 Hz with `pinhole-radtan` for both cameras.
-Then run `kalibr_calibrate_imu_camera` with its default time calibration using
-the stereo camchain and measured IMU noise file. The local Docker image is
-`kalibr-hw290`.
-
-Example conversion and static calibration:
-
-```bash
-rosbags-convert --src /path/to/static_run/sensors_bag \
-  --dst /path/to/static_run/static.bag
-docker run --rm -v /path/to/static_run:/data \
-  -v "$PWD/hw290_stereo/calibration:/config:ro" \
-  --entrypoint /bin/bash kalibr-hw290 -lc \
-  'source /catkin_ws/devel/setup.bash; cd /data; rosrun kalibr \
-   kalibr_calibrate_cameras --bag static.bag --bag-freq 4.0 \
-   --topics /cam0/image_raw /cam1/image_raw \
-   --models pinhole-radtan pinhole-radtan \
-   --target /config/aprilgrid_6x6_a4.yaml --dont-show-report'
-```
-
-Convert the dynamic bag, copy the generated stereo camchain into its directory
-as `camchain.yaml`, and place the Allan result there as a flat Kalibr
-`imu.yaml`. It must contain the four measured noise values, `/imu0` as the
-topic, and `100.0` as the update rate. Then run:
-
-```bash
-docker run --rm -v /path/to/dynamic_run:/data \
-  -v "$PWD/hw290_stereo/calibration:/config:ro" \
-  --entrypoint /bin/bash kalibr-hw290 -lc \
-  'source /catkin_ws/devel/setup.bash; cd /data; rosrun kalibr \
-   kalibr_calibrate_imu_camera --bag dynamic.bag \
-   --cams camchain.yaml --imu imu.yaml \
-   --target /config/aprilgrid_6x6_a4.yaml --dont-show-report'
-```
-
-OpenVINS describes roughly 0.2 to 0.5 pixel reprojection errors as a useful
-camera calibration range. Inspect predicted IMU curves, residual and bias
-bounds, and mount geometry as well. See the [official calibration guidance](https://docs.openvins.com/gs-calibration.html).
-Finally, repeat the continuous desk test and require displacement to remain
-below the 1.72 m workspace diagonal. This checks gross divergence; independent
-ground truth is still needed for a trajectory accuracy score.
-
-## 5. Build matching rectified profiles
-
-After reviewing the raw camera/IMU fit, use the C++ converter to create a new
-directory. It refuses to overwrite an existing profile:
-
-```bash
-./install_vio/ov_hw290/lib/ov_hw290/build_rectified_profile \
-  /path/to/dynamic-camchain-imucam.yaml \
-  hw290_stereo/calibration/20261001/imu.yaml \
-  hw290_stereo/estimator_config.yaml /path/to/new_profile
-```
-
-The second argument is an OpenVINS IMU model, including its intrinsic matrices;
-the historical file above contains provisional noise. Replace it with measured
-noise when available. The converter preserves those values and the estimator
-settings. It accepts the HW290's 640x480 pinhole/radtan pair, checks that the
-stereo and IMU transforms agree, and runs OpenCV `stereoRectify` with zero
-disparity and alpha 0. It applies each rectification rotation before inverting
-the raw `T_cam_imu` into the OpenVINS `T_imu_cam`.
-
-The directory contains `camchain_raw.yaml`, `camchain.yaml`, `imu.yaml`,
-`estimator_config.yaml` and `stereo_opencv.yaml`. Select the estimator and
-splitter files together; use the existing C++ ORB exporter for that same pair.
-OpenCV versions can produce slightly different alpha-0 focal lengths. Keep
-each generated chain with its generated projection matrices. This conversion
-does not validate a fit or activate a mount; follow the current mount's
-validation procedure first.
+`current_mount.yaml` binds the active profile to its chain and stereo-file hashes.
+Normal operation requires status `validated`. Use `fitted_pending_validation`
+with `--calibration-test` during acceptance; `requires_calibration` permits
+raw acquisition but blocks estimation.

@@ -11,15 +11,15 @@ It covers installation, acquisition, calibration, operation and acceptance.
 The estimator reports the IMU's position and orientation in a local metric
 frame. It does not provide GPS coordinates or a globally corrected trajectory.
 
-**A new device needs its own calibration.** The supplied October 2 tower
-profile is evidence and a file-format reference. Reuse it for live operation
+**A new device needs its own calibration.** The reference tower
+profile documents the calibration format and measured assembly. Reuse it for live operation
 only on that physically unchanged camera/IMU assembly, with the same camera
 mode and acquisition settings. A similar printed mount is insufficient.
 
-The reference passed a confirmed two-minute desk movement test without large
-trajectory flights. This establishes bounded operation for that test, not
-accuracy against independent ground truth or indefinite drift-free operation.
-IMU noise and intrinsic correction matrices remain provisional.
+Reference validation covered two minutes of continuous motion within a measured
+desk workspace. Section 11 records the trajectory and resource measurements.
+Independent ground-truth accuracy and long-duration drift require separate
+qualification. IMU noise and intrinsic correction matrices remain provisional.
 
 ### Implementation order
 
@@ -28,12 +28,12 @@ IMU noise and intrinsic correction matrices remain provisional.
 3. [Flash the firmware](#5-flash-and-verify-imu-firmware) and [check delivery.](#6-check-acquisition-before-calibration)
 4. [Record and fit the new assembly](#7-calibrate-a-new-device), observing [the conventions.](#8-calibration-conventions-and-reference-settings)
 5. [Validate a candidate](#9-validate-and-activate-the-new-profile), then [run normally.](#10-normal-operation)
-6. [Save diagnostics](#11-diagnostics-and-computational-cost), retain [delivery fixes](#12-delivery-fixes-required-by-this-fork) and [troubleshoot.](#13-troubleshooting-and-handover-checklist)
+6. [Save diagnostics](#11-diagnostics-and-computational-cost), retain [delivery fixes](#12-sensor-delivery-requirements) and [troubleshoot.](#13-troubleshooting-and-commissioning-record)
 
 All shell commands use Bash. Run them from the `open_vins` directory unless
 a command explicitly changes directory. Replace paths labelled `REPLACE_...`.
 Installation examples assume the supplied folder is at `$HOME/OPENVINS_HANDOVER`.
-Change that path if the folder is stored elsewhere. No project Git clone is needed.
+Change that path if the folder is stored elsewhere.
 Stop the running launcher before changing firmware, configuration or wiring.
 
 ## 2. System architecture
@@ -110,7 +110,7 @@ measured rigid IMU-to-base transform.
 | MCU | Classic Nano, ATmega328P, CH340 USB ID `1a86:7523` |
 | Firmware target | `arduino:avr:nano:cpu=atmega328old`, AVR core 1.8.8 |
 | Acquisition | 100 Hz, ±8 g, ±1000 degrees/s, I2C 100 kHz, serial 115200 baud |
-| Mount | Camera and IMU fixed together in the October 2 printed tower |
+| Mount | Camera and IMU rigidly fixed in a printed tower |
 
 HW290 is a module label, not sufficient identification of its chip or power
 circuit. The firmware accepts identities `0x98` and `0x68` only. Another IMU
@@ -140,10 +140,9 @@ already provide before adding resistors. Check bus rise time and logic levels
 with an oscilloscope if communication is unreliable; an idle voltmeter reading
 or continuity test cannot establish signal integrity during motion.
 
-Keep the leads short and secure. The reference shortened approximately 50 cm
-loose jumpers to approximately 17 cm, soldered the Nano end and secured the
-module end. Secure USB plugs and provide slack so moving the tower does not
-pull on them. A source data failure invalidates the VIO test.
+Use short, mechanically secured I2C leads; the reference assembly uses
+approximately 17 cm leads with soldered Nano connections. Secure USB plugs
+and provide strain relief. Verify sensor continuity during motion.
 
 The CAD source is [vio_rig_stand_simple.scad](reference_files/hw290_stereo/vio_rig_stand_simple.scad).
 Its rig axes are X right, Y forward, Z up, origin at the base center. The
@@ -200,10 +199,9 @@ unchanged. Log out and in if groups were newly added, then source
 `env_hw290.sh` in each operating shell. It preserves an existing ROS domain
 or defaults to 48; the conversion venv stays off Python's search path.
 
-After successful setup, continue at Section 5. The steps below provide the
-manual installation alternative. The automated flow is covered by simulated
-installation tests; a complete clean-host installation and fresh calibration
-image build have not been completed on 9 October.
+After successful setup, continue at Section 5. Sections 4.1-4.4 provide the
+manual installation procedure. Qualify installation, container builds and
+hardware operation on the destination computer before deployment.
 
 ### 4.1 Operating system and dependencies
 
@@ -356,14 +354,15 @@ not substituted for source acquisition time.
 
 Opening the serial port resets this Nano. Restart the complete VIO launch
 after a reset or disconnection. Do not reconnect a reset MCU into an estimator
-that still contains the previous time history. Do not run the temporary
-`HW290_IDLE_VOLTAGE` diagnostic firmware for VIO.
+that still contains the previous clock history. Compile the acquisition
+firmware without `HW290_IDLE_VOLTAGE`; that diagnostic mode suspends sensor
+acquisition for bus-voltage measurements.
 
 ## 6. Check acquisition before calibration
 
 ### 6.1 Mark a new physical assembly as uncalibrated
 
-On a **new assembly's checkout**, save the shipped mount metadata separately,
+For a new assembly, archive the reference mount metadata,
 then replace `hw290_stereo/calibration/current_mount.yaml` with:
 
 ```yaml
@@ -375,8 +374,7 @@ reason: "New assembly; camera/IMU geometry and time offset not validated."
 ```
 
 This prevents normal VIO from accepting the reference tower's profile. Raw
-sensor acquisition remains available. Do not change a working tower's
-metadata merely to read this guide.
+sensor acquisition remains available.
 
 ### 6.2 Run the sensors
 
@@ -437,8 +435,8 @@ driver or acquisition mode requires renewed timing checks and calibration.
 ## 7. Calibrate a new device
 
 Build the offline tools using [CALIBRATION_TOOLS.md](CALIBRATION_TOOLS.md).
-That document covers the previously implicit Docker image, ROS bag conversion
-and Allan analysis. Perform the following steps in order.
+That document specifies the container builds, ROS bag conversion and Allan
+analysis commands. Perform the following steps in order.
 
 ### 7.1 Measure the target
 
@@ -463,7 +461,7 @@ The fullscreen window has stereo previews at the top right. Red means wait;
 green means recording has started and movement should begin. Readiness checks
 fresh stereo images, sufficient matching tags, IMU rate and recorder
 subscriptions, then counts down five seconds. It tolerates brief fluctuations.
-No terminal response is needed during fullscreen operation. Capture ends
+Capture is controlled by the graphical interface and ends
 automatically after 90 seconds; Esc cancels. Incomplete captures are not valid
 calibration data.
 
@@ -477,9 +475,9 @@ With normal firmware and a motionless, thermally stable rig:
 
 Record at least three hours and use Allan analysis as described in the tools
 document. Check fitted curves before accepting the four noise coefficients.
-The shipped successful profile used provisional values:
+The reference profile uses the following provisional coefficients:
 
-| Coefficient | Shipped value | Continuous-time units |
+| Coefficient | Reference value | Continuous-time units |
 |---|---:|---|
 | Accelerometer noise density | 0.02 | `(m/s²)/sqrt(Hz)` |
 | Accelerometer bias random walk | 0.003 | `(m/s²)/sqrt(s)` |
@@ -521,7 +519,7 @@ serial health before fitting. Adequate preview rate alone is insufficient.
 
 ### 7.4 Fit cameras, then camera/IMU geometry and timing
 
-Follow the copyable commands in [CALIBRATION_TOOLS.md](CALIBRATION_TOOLS.md).
+Follow the commands in [CALIBRATION_TOOLS.md](CALIBRATION_TOOLS.md).
 Fit stereo `pinhole-radtan` intrinsics/extrinsics from raw images, then fit
 camera/IMU extrinsics and time offsets using that stereo chain, the measured
 noise file and the dynamic recording. Inspect both PDF reports and residuals.
@@ -587,12 +585,12 @@ For stereo processing, this implementation uses cam0's fitted time offset.
 The stored cam1 offset is not independently applied to its image header.
 Do not also add the fitted shift in the camera driver or serial bridge.
 
-### 8.2 Selected tower profile
+### 8.2 Reference tower calibration
 
 Active configuration: [estimator_config.yaml](reference_files/hw290_stereo/estimator_config.yaml).
 Calibration bundle:
 [calibration/20261002_tower/candidate/](reference_files/hw290_stereo/calibration/20261002_tower/candidate/README.md).
-Despite the directory name, this is the selected, validated tower profile.
+This directory contains the validated profile for the reference assembly.
 
 | Quantity | Measured / configured value |
 |---|---:|
@@ -605,10 +603,9 @@ Despite the directory name, this is the selected, validated tower profile.
 | Raw cam0 IMU origin | [27.639, -9.326, -54.567] mm |
 
 The fitted baseline differs from the nominal 60 mm CAD value. The fitted IMU
-origin is 24.808 mm from the CAD board-center prior; this remains unexplained.
-Do not describe that agreement as established. The old root file
-`hw290_stereo/kalibr_imucam_chain.yaml` and October 1 profile belong to the
-previous mount and must not replace this tower bundle.
+origin differs by 24.808 mm from the CAD board-center prior. The board center
+and IMU die center are distinct reference points; the full discrepancy has
+not been resolved. Verify the physical lever arm when qualifying a new assembly.
 
 ### 8.3 Estimator settings to preserve initially
 
@@ -700,7 +697,7 @@ the new files. Do not leave defaults pointing at the old tower profile.
 
 ## 10. Normal operation
 
-For the unchanged reference tower:
+For an assembly with a validated active profile:
 
 ```bash
 cd "$HOME/OPENVINS_HANDOVER/source/open_vins"
@@ -709,7 +706,7 @@ export ROS_DOMAIN_ID=48
 ```
 
 For another validated assembly, export its two profile paths as in Section 9
-before this command. Use the same ROS domain in observer terminals. Keep the
+before launching. Use the same ROS domain in observer terminals. Keep the
 desktop's existing `DISPLAY`; the launcher's `:1` fallback may be wrong on
 another machine. For operation without a desktop:
 
@@ -719,14 +716,15 @@ another machine. For operation without a desktop:
 
 Hold still until initialization finishes and valid poses appear. The
 initializer uses a two-second window and visible static features. Do not
-shake the IMU to create a TF frame. Move smoothly while viewing textured,
+move the rig during stationary initialization. After initialization, move
+smoothly while viewing textured,
 stationary objects, approximately 0.5 to 2 m away in the tested scene.
 
 RViz uses fixed frame `global`. It becomes available only after the estimator
 produces a valid pose. Static `imu -> cam0/cam1` transforms come from the same
 chain used by estimation; the estimator's duplicate calibration TF publishing
-is disabled. Do not add a fake `global -> imu` transform to hide initialization
-failure.
+is disabled. Diagnose a missing `global` frame through sensor delivery and
+initialization logs.
 
 Ctrl-C stops the owned processes, closes recording and prints the summary.
 If IMU startup fails, VIO is skipped and RViz can remain in sensor view.
@@ -754,7 +752,7 @@ Each run saves `benchmark/results/hw290_openvins_TIMESTAMP_SUFFIX/`:
 Fullscreen calibration saves a separate `screen_calibration_*` directory with
 its bag, target YAML, display information and recorder log. Live temporary
 logs are `/tmp/hw290_*.log`; copied per-run logs preserve the evidence.
-Archive the selected config, whole calibration bundle, Git revision, firmware
+Archive the selected config, whole calibration bundle, source version, firmware
 build, target dimensions, device settings and test notes with accepted data.
 
 CPU accounting uses accumulated user plus system time. `100%` means one fully
@@ -771,8 +769,9 @@ the same metric and named reference on both sides.
 
 ### Reference validation evidence
 
-Run `hw290_openvins_20261002_150426_Rg52ai` completed 120.052 seconds of
-confirmed continuous desk movement without reported flights:
+The reference test covered 120.052 seconds of continuous movement in a
+1.40 x 0.80 x 0.60 m workspace. The saved trajectory remained within the
+workspace displacement bound. Results are recorded in the validation evidence:
 
 | Metric | Result |
 |---|---:|
@@ -790,22 +789,23 @@ confirmed continuous desk movement without reported flights:
 The run included drivers, RViz, recording and debug logging. The CPU/RSS rows
 above describe the estimator process, not the whole pipeline. Startup and
 shutdown explain different bag and estimator stream lengths. A 1.904-second
-processing stall occurred without a large trajectory jump; this is not a
-hard real-time guarantee. No matched ground-truth accuracy score or CPU saving
-on a different device follows from these numbers.
+processing stall occurred without a large trajectory jump. Applications with
+latency or accuracy requirements need additional measurements on the target
+hardware and independent ground truth.
 
-## 12. Delivery fixes required by this fork
+## 12. Sensor delivery requirements
 
-Calibration alone did not resolve the tower's live failures. Preserve these
-changes in [ROS2Visualizer.cpp](source/open_vins/ov_msckf/src/ros/ROS2Visualizer.cpp) and its
-worker lifecycle if porting or rebasing:
+The ROS 2 subscriber and update worker are implemented in
+[ROS2Visualizer.cpp](source/open_vins/ov_msckf/src/ros/ROS2Visualizer.cpp).
+Preserve the following requirements when porting or modifying the interface:
 
-| Failure observed | Correction retained |
+| Failure mode | Required configuration or behavior |
 |---|---|
-| Estimator IMU gaps up to 680.785 ms while recorded source gaps stayed below 21.523 ms; trajectory reached 15.856 m | Increase estimator IMU subscription depth from 5 to 1000. It remains SensorDataQoS / best effort, not a guaranteed-lossless channel. |
-| Camera queue mutex held through tracking and visualization; two-second visual update gap and a 1.378 m jump | Pop a ready stereo frame under the lock, then release the lock before expensive processing. |
-| Asynchronous worker could use a callback timestamp after its scope ended | Capture the timestamp by value; own and join the worker before reuse/destruction. |
-| Default recording queue lost IMU samples under image-writing load | Apply explicit recorder QoS, including a reliable depth-1000 IMU queue. |
+| IMU samples dropped during processing stalls | Use SensorDataQoS with subscription depth 1000; monitor subscriber intervals because best-effort transport can still lose samples. |
+| Camera callbacks blocked by tracking or visualization | Remove a ready frame under the queue mutex, then release the mutex before expensive processing. |
+| Callback timestamp used after its scope ends | Capture the timestamp by value in the asynchronous worker. |
+| Update worker outlives its owner or overlaps reuse | Own and join the worker before reuse or destruction. |
+| Recorder loses IMU samples under image-writing load | Apply `record_qos.yaml`, including a reliable depth-1000 IMU queue. |
 
 A depth of 1000 represents about ten seconds of samples at 100 Hz, but is a
 buffer capacity, not an acceptable delay target. Persistent overload still
@@ -813,7 +813,7 @@ needs correction. Compare source timestamps, subscriber intervals, camera
 update times and processing latency separately. A clean bag does not prove
 clean estimator delivery.
 
-## 13. Troubleshooting and handover checklist
+## 13. Troubleshooting and commissioning record
 
 | Symptom | First checks and action |
 |---|---|
@@ -824,7 +824,7 @@ clean estimator delivery.
 | Mount check rejects launch | Check selected paths, metadata state and file hashes. Recalibrate changed hardware; do not bypass the check. |
 | No `global` frame or no trajectory | Check IMU_READY, stationary initialization, features and estimator logs; set RViz fixed frame to `global`. |
 | Black or blurred images | Inspect exposure readback, lighting, gain, focus and actual recorded frames. Fix visual observations before filter tuning. |
-| Large flight with clean sensor bag | Inspect estimator IMU gaps and camera update gaps; retain Section 12 fixes. Check raw/rectified model pairing and time-offset sign. |
+| Nonphysical trajectory excursion with clean sensor bag | Inspect estimator IMU gaps and camera update gaps; retain Section 12 fixes. Check raw/rectified model pairing and time-offset sign. |
 | Drift after moving/reseating the IMU | Repeat camera/IMU calibration. Geometry from the previous mount is invalid. |
 | Processing backlog | Close other estimators/viewers, check CPU and image delivery, and compare the same bag. Avoid reducing features blindly. |
 
@@ -840,7 +840,7 @@ tail -50 /tmp/hw290_openvins.log
 journalctl -k --since '10 minutes ago'
 ```
 
-Before handing over a new implementation, deliver:
+Retain the following commissioning records for each assembly:
 
 - Exact source revision, build instructions, firmware and device-path changes.
 - Verified electrical interface, rigid mount description and camera settings.
@@ -854,4 +854,4 @@ Before handing over a new implementation, deliver:
 This splitter requires packed 1280 x 480 RGB input and the profile converter
 requires 640 x 480 per lens. A different resolution, camera layout, lens model,
 IMU or timestamp source needs corresponding driver/converter changes and a
-new calibration. Binary copying and calibration reuse are not a device port.
+new calibration.

@@ -1,13 +1,26 @@
-# OpenVINS source and documentation
+# OpenVINS stereo visual inertial odometry
 
-This folder contains the complete source for the working ELP stereo, HW290 and
-Arduino Nano pipeline, its setup scripts, technical documentation and test evidence.
-Copy the whole folder. No personal Git repository or account is needed.
+This package implements stereo visual inertial odometry using an ELP USB stereo
+camera, HW290 IMU and Arduino Nano. It provides ROS 2 pose, odometry, trajectory
+and TF outputs, together with sensor acquisition, calibration and diagnostic tools.
 
-## Install
+## System requirements
 
-The tested host is Ubuntu 22.04 x86_64 with ROS 2 Humble. Copy or extract this
-folder to `$HOME/OPENVINS_HANDOVER`, then open Bash as your normal account:
+| Component | Requirement |
+| --- | --- |
+| Operating system | Ubuntu 22.04; reference validation on x86_64 |
+| ROS | ROS 2 Humble |
+| Camera input | Side-by-side MJPEG, 1280 x 480 at 30 Hz |
+| IMU input | HW290 with supported identity, Nano bridge at approximately 100 Hz |
+| Mount | Rigid camera/IMU assembly with measured spatial and time calibration |
+| Installation | Internet access for system packages and external build tools |
+
+Electrical specifications, firmware configuration and coordinate conventions
+are defined in the [implementation guide](OPENVINS_IMPLEMENTATION_GUIDE.md).
+
+## Installation
+
+Extract the package to `$HOME/OPENVINS_HANDOVER`. Run in Bash as a normal account:
 
 ```bash
 cd "$HOME/OPENVINS_HANDOVER"
@@ -17,39 +30,33 @@ cd source/open_vins
 source hw290_stereo/env_hw290.sh
 ```
 
-Change the path if the folder is stored elsewhere. The installer requests sudo
-for system packages. Internet access is required for Ubuntu/ROS packages,
-Arduino tools, the public usb_cam driver and optional Kalibr/Allan builds.
-The OpenVINS implementation itself is already supplied locally.
+Adjust the path if the package is installed elsewhere. The installer uses sudo
+for system dependencies. Omit `--with-calibration-tools` when calibration fitting
+is performed on a separate computer.
 
-Continue with Sections 5-9 of the [implementation guide](OPENVINS_IMPLEMENTATION_GUIDE.md)
-for wiring checks, firmware upload, calibration and acceptance. A new assembly
-needs its own calibration. The included tower profile applies only to the
-unchanged reference assembly. IMU noise remains provisional.
+## Commissioning
 
-## Contents
+Follow Sections 5-9 of the implementation guide to verify wiring, upload firmware,
+check sensor delivery, calibrate the assembly and complete physical acceptance.
+Activate the resulting profile before normal operation:
 
-| Path | Contents |
+```bash
+./hw290_stereo/run_hw290_openvins.sh
+```
+
+The supplied reference calibration applies to its measured assembly. Each new
+camera/IMU assembly requires calibration and validation under its operating conditions.
+
+## Technical documentation
+
+| Document or directory | Contents |
 | --- | --- |
-| [Implementation guide](OPENVINS_IMPLEMENTATION_GUIDE.md) | Assembly, installation, calibration, operation and acceptance |
-| [Calibration tools](CALIBRATION_TOOLS.md) | Kalibr/Allan build and fitting procedures |
-| [Drift fixes](DRIFT_FIX.md) | Calibration and ROS delivery corrections |
-| [Source workspace](source/open_vins/README.md) | Estimator, sensor tools, scripts, firmware, configs and licenses |
-| `reference_files/` | Selected tower calibration, CAD and target files |
-| `evidence/calibration/` | Original fit reports and calibration results |
-| `evidence/desk_test/` | State estimates, trajectory plot and resource summaries |
-| [Files and sources](FILES_AND_SOURCES.md) | Local source map and public dependencies |
-| [Camera research](CAMERA_RESEARCH_100M.md) | Future 100 m aerial camera study |
+| [Implementation guide](OPENVINS_IMPLEMENTATION_GUIDE.md) | Architecture, assembly, installation, calibration, operation and acceptance |
+| [Calibration tools](CALIBRATION_TOOLS.md) | Kalibr, Allan analysis and bag conversion procedures |
+| [Calibration and delivery requirements](DRIFT_FIX.md) | Sensor models, timestamps, buffering and callback lifecycle |
+| [Source workspace](source/open_vins/README.md) | Estimator packages, sensor tools, firmware and scripts |
+| [Component and dependency index](FILES_AND_SOURCES.md) | Local source paths and dependency versions |
+| `reference_files/` | Reference calibration, CAD geometry and target definitions |
+| `evidence/calibration/` | Calibration fit reports and measured target data |
+| `evidence/desk_test/` | Validation trajectory, analysis and computational cost |
 | `manifest.json`, `SHA256SUMS` | Source version, file inventory and integrity checks |
-
-## Delivery limits
-
-No Git history, compiled binaries, Docker images or daily work reports are included.
-Build outputs are generated on the destination device. Software licenses and
-required notices remain in the source files.
-
-Historical raw bags are excluded: approximately 1.7 GB for calibration and 2.9 GB
-for the desk test. Record new data for a new device. The supplied reports and
-state estimates support inspection but cannot replay the original sensor stream.
-The desk result demonstrates bounded operation for that test, not independently
-measured accuracy. The camera study has no validated 100 m flight result.
