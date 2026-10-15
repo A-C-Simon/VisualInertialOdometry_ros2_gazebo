@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Summarize per-run process accounting and current-run estimator logs."""
 import json
+import csv
+import math
 from pathlib import Path
 import re
 import statistics
@@ -26,14 +28,39 @@ print(f'Measured child CPU total: {cpu:.2f} s; launch wall time: {wall:.2f} s; a
 print('Per-process peak memory is not simultaneous total memory. Includes viewers when enabled.')
 log = (root/'estimator.log').read_text(errors='replace') if (root/'estimator.log').exists() else ''
 log = re.sub(r'\x1b\[[0-9;]*m', '', log)
-timing = [float(v)*1000 for v in re.findall(r'\[TIME\]:\s*([0-9.]+) seconds total', log)]
+timing = [float(v)*1000 for v in re.findall(r'\[TIME\]:\s*([0-9.eE+\-]+) seconds (?:for )?total', log)]
+timing_source = 'estimator debug log'
+timing_stamps = []
+timing_csv = root/'estimator_timing.csv'
+if timing_csv.exists():
+    csv_timing = []
+    with timing_csv.open() as stream:
+        for fields in csv.reader(line for line in stream if line.strip() and not line.startswith('#')):
+            try:
+                stamp, seconds = float(fields[0]), float(fields[-1])
+            except (ValueError, IndexError):
+                continue
+            if math.isfinite(stamp) and math.isfinite(seconds) and seconds >= 0:
+                timing_stamps.append(stamp)
+                csv_timing.append(seconds*1000)
+    timing = csv_timing
+    timing_source = 'estimator stage CSV'
 orb_timing = root/'vio_timing.txt'
 if orb_timing.exists():
     timing = [float(line.split()[-1]) for line in orb_timing.read_text().splitlines() if line.strip() and not line.startswith('#')]
+    timing_source = 'ORB tracking file'
+    timing_stamps = []
+timing_stats = None
 if timing:
     ordered = sorted(timing)
-    print(f'Logged tracking/update timings: n={len(timing)}, mean={statistics.mean(timing):.2f} ms, median={statistics.median(timing):.2f}, p95={ordered[min(len(ordered)-1,int(.95*len(ordered)))]:.2f}, max={max(timing):.2f}')
+    timing_stats = dict(source=timing_source, count=len(timing), mean_ms=statistics.mean(timing),
+                        median_ms=statistics.median(timing), p95_ms=ordered[min(len(ordered)-1,int(.95*len(ordered)))],
+                        max_ms=max(timing))
+    print(f'Logged tracking/update timings: n={len(timing)}, mean={timing_stats["mean_ms"]:.2f} ms, median={timing_stats["median_ms"]:.2f}, p95={timing_stats["p95_ms"]:.2f}, max={timing_stats["max_ms"]:.2f} ({timing_source})')
     print('These are processing times, not measured output Hz or total estimator CPU.')
+    if len(timing_stamps)>1 and all(b>a for a,b in zip(timing_stamps,timing_stamps[1:])):
+        timing_stats['completed_update_hz'] = (len(timing_stamps)-1)/(timing_stamps[-1]-timing_stamps[0])
+        print(f'Completed update rate over recorded sensor timestamps: {timing_stats["completed_update_hz"]:.2f} Hz')
 else: print('No tracking/update timings from this run; estimator may not have initialized.')
 positions = [tuple(map(float,x)) for x in re.findall(r'p_IinG = ([\-0-9.]+),([\-0-9.]+),([\-0-9.]+)',log)]
 if positions:
@@ -61,6 +88,6 @@ if any(message in imu for message in ('IMU serial disconnected', 'IMU serial EOF
     print('SENSOR FAILURE: serial connection failed. VIO stopped; inspect the IMU connection.')
 if 'Not enough motion for initializing' in log:
     print('ORB reported insufficient initialization motion; tracking time alone does not establish valid VIO.')
-(root/'summary.json').write_text(json.dumps(dict(processes=rows,child_cpu_seconds=cpu,launch_wall_seconds=wall,logged_updates=len(timing),reported_i2c_read_errors=sum(health_errors),diagnostics_enabled=(root/'diagnostics_enabled').exists()),indent=2)+'\n')
+(root/'summary.json').write_text(json.dumps(dict(processes=rows,child_cpu_seconds=cpu,launch_wall_seconds=wall,logged_updates=len(timing),timing=timing_stats,reported_i2c_read_errors=sum(health_errors),diagnostics_enabled=(root/'diagnostics_enabled').exists(),benchmark_enabled=(root/'benchmark_enabled').exists()),indent=2)+'\n')
 print('Saved run:',root)
 print('=============================================')

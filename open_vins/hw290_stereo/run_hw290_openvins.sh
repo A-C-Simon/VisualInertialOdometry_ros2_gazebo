@@ -3,6 +3,7 @@ set -Eeo pipefail
 SENSORS_ONLY=false
 SHOW_RVIZ=true
 DIAGNOSTICS=false
+BENCHMARK=false
 RAW_STEREO=false
 IMU_ALLAN=false
 CALIBRATION_SCREEN=false
@@ -12,13 +13,16 @@ for arg in "$@"; do
     --sensors-only) SENSORS_ONLY=true ;;
     --no-rviz) SHOW_RVIZ=false ;;
     --diagnostics) DIAGNOSTICS=true ;;
+    --benchmark) BENCHMARK=true ;;
     --raw-stereo) RAW_STEREO=true ;;
     --imu-allan) IMU_ALLAN=true ;;
     --calibration-screen) CALIBRATION_SCREEN=true ;;
     --calibration-test) CALIBRATION_TEST=true ;;
     --help|-h)
-      echo "Usage: $0 [--sensors-only] [--no-rviz] [--diagnostics] [--raw-stereo] [--imu-allan] [--calibration-screen] [--calibration-test]"
+      echo "Usage: $0 [--sensors-only] [--no-rviz] [--diagnostics] [--benchmark] [--raw-stereo] [--imu-allan] [--calibration-screen] [--calibration-test]"
       echo "Diagnostics records a sensor bag, raw IMU records and estimator state/debug logs."
+      echo "Benchmark saves estimator stage timings without enabling image recording or debug logs."
+      echo "HW290_CAMERA_DEVICE and HW290_IMU_PORT override the sensor device paths."
       echo "Raw stereo disables rectification for offline camera calibration."
       echo "IMU Allan records only /imu0 for a long stationary noise measurement."
       echo "Calibration screen shows the target and a live stereo preview with timed recording."
@@ -148,8 +152,14 @@ if [[ "$SENSORS_ONLY" == false && "$IMU_READY" == true ]]; then
   echo "Using the selected camera/IMU calibration. IMU noise remains provisional; see hw290_stereo/calibration/README.md." >&2
   sleep 2
   ESTIMATOR_ARGS=()
+  if [[ "$BENCHMARK" == true ]]; then
+    ESTIMATOR_ARGS+=(-p record_timing_information:=true -p record_timing_filepath:="$RUN_DIR/estimator_timing.csv")
+    touch "$RUN_DIR/benchmark_enabled"
+    cp "$ESTIMATOR_CONFIG" "$RUN_DIR/estimator_config.yaml"
+    cp "$CALIBRATION" "$RUN_DIR/stereo_opencv.yaml"
+  fi
   if [[ "$DIAGNOSTICS" == true ]]; then
-    ESTIMATOR_ARGS=(-p verbosity:=DEBUG -p save_total_state:=true -p filepath_est:="$RUN_DIR/state_estimate.txt" -p filepath_std:="$RUN_DIR/state_deviation.txt" -p filepath_gt:="$RUN_DIR/state_groundtruth.txt")
+    ESTIMATOR_ARGS+=(-p verbosity:=DEBUG -p save_total_state:=true -p filepath_est:="$RUN_DIR/state_estimate.txt" -p filepath_std:="$RUN_DIR/state_deviation.txt" -p filepath_gt:="$RUN_DIR/state_groundtruth.txt")
   fi
   start_node estimator /tmp/hw290_openvins.log "$ESTIMATOR" "$ESTIMATOR_CONFIG" --ros-args -r __ns:=/ov_msckf -p use_sim_time:=false -p publish_calibration_tf:=false "${ESTIMATOR_ARGS[@]}"
 fi
