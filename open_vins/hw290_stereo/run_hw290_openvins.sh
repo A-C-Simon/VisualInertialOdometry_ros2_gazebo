@@ -58,6 +58,8 @@ CAMERA_NODE="$CAMERA_PREFIX/lib/usb_cam/usb_cam_node_exe"
 export LD_LIBRARY_PATH="$CAMERA_PREFIX/lib:${LD_LIBRARY_PATH:-}"
 export ROS_DOMAIN_ID="${ROS_DOMAIN_ID:-48}"
 export DISPLAY="${DISPLAY:-:1}"
+export HW290_CAMERA_DEVICE="${HW290_CAMERA_DEVICE:-/dev/video0}"
+export HW290_IMU_PORT="${HW290_IMU_PORT:-/dev/ttyUSB0}"
 SPLITTER="${ROOT}/../install_vio/ov_hw290/lib/ov_hw290/stereo_splitter"
 ESTIMATOR="${ROOT}/../install_vio/ov_msckf/lib/ov_msckf/run_subscribe_msckf"
 CALIBRATION="${HW290_STEREO_CALIBRATION:-${ROOT}/calibration/20261002_tower/candidate/stereo_opencv.yaml}"
@@ -79,9 +81,9 @@ if [[ "$IMU_ALLAN" == false ]]; then
   [[ -x "$SPLITTER" && -x "$ESTIMATOR" ]] || { echo "Build ov_hw290 and ov_msckf first" >&2; exit 1; }
   [[ -r "$CALIBRATION" ]] || { echo "Stereo calibration unavailable: $CALIBRATION" >&2; exit 1; }
   [[ -r "$ESTIMATOR_CONFIG" ]] || { echo "Estimator configuration unavailable: $ESTIMATOR_CONFIG" >&2; exit 1; }
-  [[ -r /dev/video0 && -r /dev/ttyUSB0 ]] || echo "Camera or Nano unavailable; RViz diagnostics will remain available." >&2
+  [[ -r "$HW290_CAMERA_DEVICE" && -r "$HW290_IMU_PORT" ]] || echo "Camera or Nano unavailable ($HW290_CAMERA_DEVICE, $HW290_IMU_PORT); RViz diagnostics will remain available." >&2
 else
-  [[ -r /dev/ttyUSB0 ]] || echo "Nano unavailable; the Allan recording cannot start." >&2
+  [[ -r "$HW290_IMU_PORT" ]] || echo "Nano unavailable ($HW290_IMU_PORT); the Allan recording cannot start." >&2
 fi
 if [[ "$CALIBRATION_SCREEN" == true ]]; then
   [[ -x "${ROOT}/../install_vio/ov_hw290/lib/ov_hw290/calibration_screen" ]] || {
@@ -89,6 +91,7 @@ if [[ "$CALIBRATION_SCREEN" == true ]]; then
   }
 fi
 echo "ROS_DOMAIN_ID=${ROS_DOMAIN_ID}"
+echo "Camera=$HW290_CAMERA_DEVICE IMU=$HW290_IMU_PORT"
 HW290_DIR="$ROOT"
 RUN_LABEL=hw290_openvins
 [[ "$IMU_ALLAN" == true ]] && RUN_LABEL=hw290_imu_allan
@@ -105,7 +108,7 @@ if [[ "$IMU_ALLAN" == true ]]; then
   wait_for_run
   exit 0
 fi
-start_node camera /tmp/hw290_usb_cam.log "$CAMERA_NODE" --ros-args --params-file "${ROOT}/usb_cam_hw290.yaml"
+start_node camera /tmp/hw290_usb_cam.log "$CAMERA_NODE" --ros-args --params-file "${ROOT}/usb_cam_hw290.yaml" -p video_device:="$HW290_CAMERA_DEVICE"
 sleep 1
 # usb_cam 0.8.1 does not reliably apply this camera's UVC exposure controls.
 # Reapply the tested low-blur manual setting after startup and verify it.

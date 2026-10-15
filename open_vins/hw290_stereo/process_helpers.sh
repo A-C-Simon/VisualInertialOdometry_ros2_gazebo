@@ -14,9 +14,9 @@ start_node() {
 configure_hw290_camera() {
   local control_log=$1
   command -v v4l2-ctl >/dev/null 2>&1 || { echo "v4l2-ctl is required for HW290 exposure control" >&2; return 1; }
-  v4l2-ctl -d /dev/video0 --set-ctrl=auto_exposure=1,exposure_time_absolute=50,brightness=0,backlight_compensation=0,gain=255 \
+  v4l2-ctl -d "${HW290_CAMERA_DEVICE:-/dev/video0}" --set-ctrl=auto_exposure=1,exposure_time_absolute=50,brightness=0,backlight_compensation=0,gain=255 \
     >"$control_log" 2>&1 || { echo "Failed to set HW290 exposure controls" >&2; return 1; }
-  v4l2-ctl -d /dev/video0 --get-ctrl=auto_exposure,exposure_time_absolute,brightness,backlight_compensation,gain \
+  v4l2-ctl -d "${HW290_CAMERA_DEVICE:-/dev/video0}" --get-ctrl=auto_exposure,exposure_time_absolute,brightness,backlight_compensation,gain \
     >>"$control_log" 2>&1 || { echo "Failed to read back HW290 exposure controls" >&2; return 1; }
   grep -Eq '^auto_exposure: 1([[:space:]]|$)' "$control_log" &&
   grep -Eq '^exposure_time_absolute: 50([[:space:]]|$)' "$control_log" &&
@@ -27,8 +27,8 @@ configure_hw290_camera() {
 }
 start_hw290_imu() {
   local log=$1
-  local raw_args=()
-  [[ "${DIAGNOSTICS:-false}" == true ]] && raw_args=(--ros-args -p raw_log_path:="$RUN_DIR/imu_raw.txt")
+  local raw_args=(--ros-args -p port:="${HW290_IMU_PORT:-/dev/ttyUSB0}")
+  [[ "${DIAGNOSTICS:-false}" == true ]] && raw_args+=(-p raw_log_path:="$RUN_DIR/imu_raw.txt")
   case "${HW290_IMU_BACKEND:-cpp}" in
     cpp) start_node imu "$log" "$HW290_DIR/../install_vio/ov_hw290/lib/ov_hw290/hw290_imu" "${raw_args[@]}" ;;
     python) start_node imu "$log" python3 "$HW290_DIR/hw290_imu.py" "${raw_args[@]}" ;;
