@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+# ROS setup files may read optional variables before defining them.
+set +u
 source /opt/ros/humble/setup.bash
+set -u
 work=$(mktemp -d /tmp/hw290-camera-build.XXXXXX)
 git clone --depth 1 --branch 0.8.1 https://github.com/ros-drivers/usb_cam.git "$work/source"
 git -C "$work/source" apply "$root/hw290_stereo/patches/usb_cam-0.8.1-timestamps.patch"
