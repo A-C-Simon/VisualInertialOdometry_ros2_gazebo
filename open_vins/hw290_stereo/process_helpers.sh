@@ -13,13 +13,20 @@ start_node() {
 }
 configure_hw290_camera() {
   local control_log=$1
+  local exposure_auto=auto_exposure exposure_time=exposure_time_absolute
   command -v v4l2-ctl >/dev/null 2>&1 || { echo "v4l2-ctl is required for HW290 exposure control" >&2; return 1; }
-  v4l2-ctl -d "${HW290_CAMERA_DEVICE:-/dev/video0}" --set-ctrl=auto_exposure=1,exposure_time_absolute=50,brightness=0,backlight_compensation=0,gain=255 \
-    >"$control_log" 2>&1 || { echo "Failed to set HW290 exposure controls" >&2; return 1; }
-  v4l2-ctl -d "${HW290_CAMERA_DEVICE:-/dev/video0}" --get-ctrl=auto_exposure,exposure_time_absolute,brightness,backlight_compensation,gain \
+  v4l2-ctl -d "${HW290_CAMERA_DEVICE:-/dev/video0}" --list-ctrls >"$control_log" 2>&1 || return 1
+  # Older V4L2 tools use different names for the same exposure control IDs.
+  if grep -Eq '^[[:space:]]+exposure_auto[[:space:]]' "$control_log"; then
+    exposure_auto=exposure_auto
+    exposure_time=exposure_absolute
+  fi
+  v4l2-ctl -d "${HW290_CAMERA_DEVICE:-/dev/video0}" --set-ctrl="$exposure_auto=1,$exposure_time=50,brightness=0,backlight_compensation=0,gain=255" \
+    >>"$control_log" 2>&1 || { echo "Failed to set HW290 exposure controls" >&2; return 1; }
+  v4l2-ctl -d "${HW290_CAMERA_DEVICE:-/dev/video0}" --get-ctrl="$exposure_auto,$exposure_time,brightness,backlight_compensation,gain" \
     >>"$control_log" 2>&1 || { echo "Failed to read back HW290 exposure controls" >&2; return 1; }
-  grep -Eq '^auto_exposure: 1([[:space:]]|$)' "$control_log" &&
-  grep -Eq '^exposure_time_absolute: 50([[:space:]]|$)' "$control_log" &&
+  grep -Eq "^$exposure_auto: 1([[:space:]]|$)" "$control_log" &&
+  grep -Eq "^$exposure_time: 50([[:space:]]|$)" "$control_log" &&
   grep -Eq '^gain: 255([[:space:]]|$)' "$control_log" || {
     echo "HW290 camera rejected the tested exposure controls; see $control_log" >&2
     return 1
@@ -41,6 +48,7 @@ cleanup() {
   for p in "${PIDS[@]}"; do kill -TERM "$p" 2>/dev/null || true; done
   for p in "${PIDS[@]}"; do wait "$p" 2>/dev/null || true; done
   for i in "${!LOGS[@]}"; do cp "${LOGS[$i]}" "$RUN_DIR/${ROLES[$i]}.log" 2>/dev/null || true; done
+  [[ ! -r /tmp/hw290_v4l2_controls.log ]] || cp /tmp/hw290_v4l2_controls.log "$RUN_DIR/camera_controls.log"
   python3 "$HW290_DIR/run_summary.py" "$RUN_DIR" | tee "$RUN_DIR/summary.txt"
   exit "$status"
 }
