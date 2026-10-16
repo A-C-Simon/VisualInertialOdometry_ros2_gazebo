@@ -23,13 +23,21 @@ Visualization Manager:
       Size (Pixels): 3
     - Class: rviz_default_plugins/Image
       Name: Left camera
-      Topic: /cam0/image_raw
-      Enabled: false
+      Topic:
+        Value: /cam0/image_raw
+        Reliability Policy: Best Effort
+        Durability Policy: Volatile
+        Depth: 1
+      Enabled: true
       Normalize Range: true
     - Class: rviz_default_plugins/Image
       Name: Right camera
-      Topic: /cam1/image_raw
-      Enabled: false
+      Topic:
+        Value: /cam1/image_raw
+        Reliability Policy: Best Effort
+        Durability Policy: Volatile
+        Depth: 1
+      Enabled: true
       Normalize Range: true
   Enabled: true
   Global Options:
